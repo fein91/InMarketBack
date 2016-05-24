@@ -69,25 +69,25 @@ public class OrderBook {
 		ArrayList<Trade> trades = new ArrayList<Trade>();
 		String side = quote.getSide();
 		int qtyRemaining = quote.getQuantity();
-		if (side =="bid") {
+		if (side == "bid") {
 			this.lastOrderSign = 1;
 			while ((qtyRemaining > 0) && (this.asks.getnOrders() > 0)) {
 				OrderList ordersAtBest = this.asks.minPriceList();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
-		}else if(side=="offer") {
+		} else if(side == "offer") {
 			this.lastOrderSign = -1;
 			while ((qtyRemaining > 0) && (this.bids.getnOrders() > 0)) {
 				OrderList ordersAtBest = this.bids.maxPriceList();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
-		}else {
+		} else {
 			throw new IllegalArgumentException("order neither market nor limit: " + 
 				    						    side);
 		}
-		OrderReport report = new OrderReport(trades, false);
+		OrderReport report = new OrderReport(trades, false, qtyRemaining);
 		return  report;
 	}
 	
@@ -141,7 +141,7 @@ public class OrderBook {
 			throw new IllegalArgumentException("order neither market nor limit: " + 
 				    						    side);
 		}
-		OrderReport report = new OrderReport(trades, orderInBook);
+		OrderReport report = new OrderReport(trades, orderInBook, qtyRemaining);
 		if (orderInBook) {
 			report.setOrder(quote);
 		}
@@ -154,12 +154,20 @@ public class OrderBook {
 								boolean verbose) {
 		String side = quote.getSide();
 		int buyer, seller;
-		int takerId = quote.gettId();
+		int takerId = quote.getTakerId();
 		long time = quote.getTimestamp();
 		while ((orders.getLength()>0) && (qtyRemaining>0)) {
 			int qtyTraded = 0;
 			Order headOrder = orders.getHeadOrder();
-			if (qtyRemaining < headOrder.getQuantity()) {
+
+			List<Integer> invoices = headOrder.getInvoicesQtyByGiverId().get(takerId);
+			if (invoices.isEmpty()) {
+				continue;
+			}
+
+			int headOrderActualQty = Math.min(headOrder.getQuantity(), invoices.iterator().next());
+
+			if (qtyRemaining < headOrderActualQty) {
 				qtyTraded = qtyRemaining;
 				if (side=="offer") {
 					this.bids.updateOrderQty(headOrder.getQuantity()-qtyRemaining, 
@@ -179,14 +187,14 @@ public class OrderBook {
 				qtyRemaining -= qtyTraded;
 			}
 			if (side=="offer") {
-				buyer = headOrder.gettId();
+				buyer = headOrder.getTakerId();
 				seller = takerId;
 			} else {
 				buyer = takerId;
-				seller = headOrder.gettId();
+				seller = headOrder.getTakerId();
 			}
 			Trade trade = new Trade(time, headOrder.getPrice(), qtyTraded, 
-									headOrder.gettId(),takerId, buyer, seller, 
+									headOrder.getTakerId(),takerId, buyer, seller,
 									headOrder.getqId());
 			trades.add(trade);
 			this.tape.add(trade);

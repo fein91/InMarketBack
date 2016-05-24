@@ -1,12 +1,12 @@
 package com.fein91;
 
+import com.fein91.core.model.OrderType;
 import com.fein91.dao.CounterpartyRepository;
 import com.fein91.dao.InvoiceRepository;
-import com.fein91.dao.OrderBookRepository;
+import com.fein91.dao.OrderRepository;
 import com.fein91.model.Counterparty;
 import com.fein91.model.Invoice;
-import com.fein91.model.OrderBook;
-import com.fein91.model.OrderType;
+import com.fein91.model.Request;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +18,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = InMarketApplication.class)
@@ -31,7 +32,7 @@ public class InMarketApplicationTests {
     @Autowired
     InvoiceRepository invoiceRepository;
     @Autowired
-    OrderBookRepository orderBookRepository;
+    OrderRepository orderRepository;
 
 
 	@Test
@@ -48,11 +49,23 @@ public class InMarketApplicationTests {
         Assert.assertEquals(SUPPLIER_ID, supplyerInvoice.getCounterPartyFrom().getId());
         Assert.assertEquals(BUYER_ID, supplyerInvoice.getCounterPartyTo().getId());
 
-        OrderBook order = orderBookRepository.findById(BigInteger.valueOf(111));
-        Assert.assertNotNull(order);
-        Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(order.getAmount()));
-        Assert.assertEquals(0, BigDecimal.valueOf(25).compareTo(order.getPrice()));
-        Assert.assertEquals(OrderType.ASK, order.getOrderType());
+        Request request = orderRepository.findById(BigInteger.valueOf(111));
+        Assert.assertNotNull(request);
+        Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(request.getQuantity()));
+        Assert.assertEquals(0, BigDecimal.valueOf(25).compareTo(request.getPrice()));
+        Assert.assertEquals(OrderType.ASK, request.getOrderType());
+    }
+
+    @Test
+    @Transactional
+    public void test() {
+        Counterparty supplier = counterpartyRepository.findById(SUPPLIER_ID);
+
+        List<Invoice> supplierInvoices = invoiceRepository.findByCounterPartyFrom(supplier);
+        Assert.assertTrue(!supplierInvoices.isEmpty());
+        Assert.assertEquals(3, supplierInvoices.size());
+
+
     }
 
 }

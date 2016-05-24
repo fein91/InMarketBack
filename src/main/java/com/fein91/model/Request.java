@@ -1,5 +1,7 @@
 package com.fein91.model;
 
+import com.fein91.core.model.OrderType;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -9,7 +11,7 @@ import java.util.Date;
  * Created by olta1014 on 23.05.2016.
  */
 @Entity
-public class OrderBook {
+public class Request {
 
     @Id
     BigInteger id;
@@ -20,7 +22,7 @@ public class OrderBook {
 
     BigDecimal price;
 
-    BigDecimal amount;
+    BigDecimal quantity;
 
     Date date;
 
@@ -50,12 +52,12 @@ public class OrderBook {
         this.price = price;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getQuantity() {
+        return quantity;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
     }
 
     public Date getDate() {
