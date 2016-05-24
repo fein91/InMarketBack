@@ -33,12 +33,12 @@ public class LimitOrderBookServiceTest {
         Counterparty buyer2 = counterpartyRepository.findById(BUYER2_ID);
         Counterparty buyer3 = counterpartyRepository.findById(BUYER3_ID);
 
-        limitOrderBookService.addBidLimitOrder(lob, buyer1, 100, 27d);
-        limitOrderBookService.addBidLimitOrder(lob, buyer2, 100, 28d);
-        limitOrderBookService.addBidLimitOrder(lob, buyer3, 100, 29d);
+        limitOrderBookService.addAskLimitOrder(lob, buyer1, 100, 27d);
+        limitOrderBookService.addAskLimitOrder(lob, buyer2, 100, 28d);
+        limitOrderBookService.addAskLimitOrder(lob, buyer3, 100, 29d);
 
         Counterparty supplier = counterpartyRepository.findById(SUPPLIER_ID);
-        limitOrderBookService.addAskMarketOrder(lob, supplier, 150);
+        limitOrderBookService.addBidMarketOrder(lob, supplier, 150);
 
     }
 }

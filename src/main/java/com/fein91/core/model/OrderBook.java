@@ -1,5 +1,7 @@
 package com.fein91.core.model;
 
+import org.springframework.util.CollectionUtils;
+
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -161,22 +163,22 @@ public class OrderBook {
 			Order headOrder = orders.getHeadOrder();
 
 			List<Integer> invoices = headOrder.getInvoicesQtyByGiverId().get(takerId);
-			if (invoices.isEmpty()) {
+			if (CollectionUtils.isEmpty(invoices)) {
 				continue;
 			}
 
 			int headOrderActualQty = Math.min(headOrder.getQuantity(), invoices.iterator().next());
 
-			if (qtyRemaining < headOrderActualQty) {
-				qtyTraded = qtyRemaining;
+			if (headOrderActualQty < headOrder.getQuantity()) {
+				qtyTraded = headOrderActualQty;
 				if (side=="offer") {
-					this.bids.updateOrderQty(headOrder.getQuantity()-qtyRemaining, 
+					this.bids.updateOrderQty(headOrder.getQuantity() - headOrderActualQty,
 											 headOrder.getqId());
 				} else {
-					this.asks.updateOrderQty(headOrder.getQuantity()-qtyRemaining, 
+					this.asks.updateOrderQty(headOrder.getQuantity() - headOrderActualQty,
 											 headOrder.getqId());
 				}
-				qtyRemaining = 0;
+				qtyRemaining -= qtyTraded;
 			} else {
 				qtyTraded = headOrder.getQuantity();
 				if (side=="offer") {
