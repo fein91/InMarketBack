@@ -1,9 +1,6 @@
 package com.fein91.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -16,11 +13,11 @@ public class Invoice {
     @Id
     BigInteger id;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="counterparty_from_fk")
     Counterparty counterPartyFrom;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="counterparty_to_fk")
     Counterparty counterPartyTo;
 

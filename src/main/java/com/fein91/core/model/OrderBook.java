@@ -167,27 +167,58 @@ public class OrderBook {
 				continue;
 			}
 
-			int headOrderActualQty = Math.min(headOrder.getQuantity(), invoices.iterator().next());
+			int localOrderQty = Math.min(headOrder.getQuantity(), invoices.iterator().next());
 
-			if (headOrderActualQty < headOrder.getQuantity()) {
-				qtyTraded = headOrderActualQty;
-				if (side=="offer") {
-					this.bids.updateOrderQty(headOrder.getQuantity() - headOrderActualQty,
-											 headOrder.getqId());
+			if (localOrderQty < headOrder.getQuantity()) {
+				if (qtyRemaining <= localOrderQty) {
+					//обновляем значением ASK - qtyRem
+					qtyTraded = qtyRemaining;
+					if (side=="offer") {
+						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+												 headOrder.getqId());
+					} else {
+						this.asks.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+												 headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
 				} else {
-					this.asks.updateOrderQty(headOrder.getQuantity() - headOrderActualQty,
-											 headOrder.getqId());
+					//обновляем значением ASK - localASK
+					qtyTraded = localOrderQty;
+					if (side=="offer") {
+						this.bids.updateOrderQty(headOrder.getQuantity() - localOrderQty,
+								headOrder.getqId());
+					} else {
+						this.asks.updateOrderQty(headOrder.getQuantity() - localOrderQty,
+								headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
 				}
-				qtyRemaining -= qtyTraded;
+			} else if (localOrderQty == headOrder.getQuantity()) {
+				if (localOrderQty <= qtyRemaining) {
+					//поглощаем
+					qtyTraded = localOrderQty;
+					if (side=="offer") {
+						this.bids.removeOrderByID(headOrder.getqId());
+					} else {
+						this.asks.removeOrderByID(headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
+				} else {
+					//обновляем значением ASK - qtyRem
+					qtyTraded = qtyRemaining;
+					if (side=="offer") {
+						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+								headOrder.getqId());
+					} else {
+						this.asks.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+								headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
+				}
 			} else {
-				qtyTraded = headOrder.getQuantity();
-				if (side=="offer") {
-					this.bids.removeOrderByID(headOrder.getqId());
-				} else {
-					this.asks.removeOrderByID(headOrder.getqId());
-				}
-				qtyRemaining -= qtyTraded;
+				throw new IllegalStateException("Shouldn't be here");
 			}
+
 			if (side=="offer") {
 				buyer = headOrder.getTakerId();
 				seller = takerId;
