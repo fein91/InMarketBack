@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
@@ -158,9 +159,10 @@ public class OrderBook {
 		int buyer, seller;
 		int takerId = quote.getTakerId();
 		long time = quote.getTimestamp();
-		while ((orders.getLength()>0) && (qtyRemaining>0)) {
+        Iterator<Order> iter = orders.iterator();
+		while ((orders.getLength()>0) && (qtyRemaining>0) && iter.hasNext()) {
 			int qtyTraded = 0;
-			Order headOrder = orders.getHeadOrder();
+			Order headOrder = iter.next();
 
 			List<Integer> invoices = headOrder.getInvoicesQtyByGiverId().get(takerId);
 			if (CollectionUtils.isEmpty(invoices)) {

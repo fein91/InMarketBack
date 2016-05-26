@@ -3,7 +3,7 @@ package com.fein91.core.model;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class OrderList implements Iterable<Order>, Iterator<Order>{
+public class OrderList implements Iterable<Order>{
 	/*
 	 * This class create a sorted, iterable list or orders for each price  level
 	 * in the order tree.
@@ -12,24 +12,6 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	private Order tailOrder = null;;
 	private int length = 0;
 	private int volume = 0;    // Total volume at this price level
-	private Order last = null;
-	
-	// The next three methods implement Iterator.
-	public boolean hasNext() {
-		if (this.last==null){
-			return false;
-	    }  
-	    return true;
-	}
-	
-	public Order next() {
-	    if (this.last == null) {
-	    	throw new NoSuchElementException();
-	    }
-	    Order returnVal = this.last;
-	    this.last = this.last.getNextOrder();
-	    return returnVal;
-	}
 
 	public void remove() {
 		throw new UnsupportedOperationException();
@@ -37,8 +19,7 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	  
 	// This method implements Iterable.
 	public Iterator<Order> iterator() {
-		this.last = headOrder;
-		return this;
+		return new OrderListIterator(headOrder);
 	}
 	
 	public void appendOrder(Order incomingOrder) {
@@ -127,5 +108,33 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	public void setVolume(Integer volume) {
 		this.volume = volume;
 	}
+
+    class OrderListIterator implements Iterator<Order> {
+
+        private Order lastOrder;
+
+        public OrderListIterator(Order lastOrder) {
+            this.lastOrder = lastOrder;
+        }
+
+        // The next three methods implement Iterator.
+        @Override
+        public boolean hasNext() {
+            if (this.lastOrder == null){
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public Order next() {
+            if (this.lastOrder == null) {
+                throw new NoSuchElementException();
+            }
+            Order returnVal = this.lastOrder;
+            this.lastOrder = this.lastOrder.getNextOrder();
+            return returnVal;
+        }
+    }
 	
 }
