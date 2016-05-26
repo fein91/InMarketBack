@@ -12,11 +12,13 @@ public class OrderReport {
 	private ArrayList<Trade> trades = new ArrayList<Trade>();
 	private boolean orderInBook = false;
 	private Order order;
+	private int qtyRemaining;
 	
 	public OrderReport(ArrayList<Trade> trades, 
-					   boolean orderInBook) {
+					   boolean orderInBook, int qtyRemaining) {
 		this.trades = trades;
 		this.orderInBook = orderInBook;
+		this.qtyRemaining = qtyRemaining;
 	}
 
 	public Order getOrder() {
@@ -34,15 +36,22 @@ public class OrderReport {
 	public boolean isOrderInBook() {
 		return orderInBook;
 	}
-	
+
+	public int getQtyRemaining() {
+		return qtyRemaining;
+	}
+
 	public String toString() {
 		String retString = "--- Order Report ---:\nTrades:\n";
 		for (Trade t : trades) {
 			retString += ("\n" + t.toString());
 		}
 		retString += ("order in book? " + orderInBook + "\n");
+		retString += ("remaining quantity: " + qtyRemaining + "\n");
 		retString+= ("\nOrders:\n");
-		retString += (order.toString());
+		if (order != null) {
+			retString += (order.toString());
+		}
 		return  retString + "\n--------------------------";
 	}
 	

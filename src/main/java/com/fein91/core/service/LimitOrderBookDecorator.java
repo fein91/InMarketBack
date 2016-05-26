@@ -3,12 +3,15 @@ package com.fein91.core.service;
 import com.fein91.core.model.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Random;
+import java.util.List;
+import java.util.Map;
 
 public class LimitOrderBookDecorator {
 
     private final static double DEFAULT_TICK_SIZE = 0.01;
+    private static final int APR_SCALE = 1;
 
     protected final OrderBook lob;
 
@@ -16,59 +19,88 @@ public class LimitOrderBookDecorator {
         this.lob = new OrderBook(DEFAULT_TICK_SIZE);
     }
 
-    public void addAskLimitOrder(int quantity, double price) {
-        Order order = new Order(System.nanoTime(), true, quantity, new Random(100000).nextInt(), OrderType.ASK.getCoreName(), price);
+    public void addAskLimitOrder(BigInteger counterPartyId,
+                                 Map<Integer, List<Integer>> invoicesQtyByGiverId,
+                                 int quantity,
+                                 double price) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("ASK quantity can't be 0");
+        } else if (price <= 0) {
+            throw new IllegalArgumentException("ASK price can't be 0");
+        }
+
+        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderType.ASK.getCoreName(), price);
+        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
+
         lob.processOrder(order, false);
         System.out.println(lob);
     }
 
-    public void addBidLimitOrder(int quantity, double price) {
-        Order order = new Order(System.nanoTime(), true, quantity, new Random(100000).nextInt(), OrderType.BID.getCoreName(), price);
+    public void addBidLimitOrder(BigInteger counterPartyId,
+                                 Map<Integer, List<Integer>> invoicesQtyByGiverId,
+                                 int quantity,
+                                 double price) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("ASK quantity can't be 0");
+        } else if (price <= 0) {
+            throw new IllegalArgumentException("ASK price can't be 0");
+        }
+
+        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderType.BID.getCoreName(), price);
+        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
+
         lob.processOrder(order, false);
         System.out.println(lob);
     }
 
-    public MarketOrderResult addAskMarketOrder(int quantity) {
+    public MarketOrderResult addAskMarketOrder(BigInteger counterPartyId,
+                                               Map<Integer, List<Integer>> invoicesQtyByGiverId,
+                                               int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("ASK quantity can't be 0");
+        }
+
         long time = System.nanoTime();
+        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderType.ASK.getCoreName());
+        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
-        Order order = new Order(time, false, quantity, new Random(100000).nextInt(), OrderType.ASK.getCoreName());
-        int volumeBefore = lob.volumeOnSide(OrderType.BID.getCoreName());
-        lob.processOrder(order, false);
-        int volumeAfter = lob.volumeOnSide(OrderType.BID.getCoreName());
+        OrderReport orderReport = lob.processOrder(order, false);
         System.out.println(lob);
 
-        int satisfiedDemand = volumeBefore - volumeAfter;
+        int satisfiedDemand = quantity - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(time, satisfiedDemand);
 
-        int unsatisfiedDemand = quantity - satisfiedDemand;
-        if (unsatisfiedDemand > 0) {
+        if (orderReport.getQtyRemaining() > 0) {
             System.out.println("Unsatisfied demand was moved to ask limit order!!!");
-            addAskLimitOrder(unsatisfiedDemand, apr.doubleValue());
+            //addAskLimitOrder(counterPartyId, orderReport.getQtyRemaining(), apr.doubleValue());
         }
 
         return new MarketOrderResult(apr, satisfiedDemand);
     }
 
-    public MarketOrderResult addBidMarketOrder(int quantity) {
+    public MarketOrderResult addBidMarketOrder(BigInteger counterPartyId,
+                                               Map<Integer, List<Integer>> invoicesQtyByGiverId,
+                                               int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("BID quantity can't be 0");
+        }
+
         long time = System.nanoTime();
 
-        Order order = new Order(time, false, quantity, new Random(100000).nextInt(), OrderType.BID.getCoreName());
+        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderType.BID.getCoreName());
+        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
-        int volumeBefore = lob.volumeOnSide(OrderType.ASK.getCoreName());
-        lob.processOrder(order, false);
-        int volumeAfter = lob.volumeOnSide(OrderType.ASK.getCoreName());
-
+        OrderReport orderReport = lob.processOrder(order, false);
         System.out.println(lob);
 
-        int satisfiedDemand = volumeBefore - volumeAfter;
+        int satisfiedDemand = quantity - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(time, satisfiedDemand);
 
-        int unsatisfiedDemand = quantity - satisfiedDemand;
-        if (unsatisfiedDemand > 0) {
+        if (orderReport.getQtyRemaining() > 0) {
             System.out.println("Unsatisfied demand was moved to bid limit order!!!");
-            addBidLimitOrder(unsatisfiedDemand, apr.doubleValue());
+            //addBidLimitOrder(counterPartyId, orderReport.getQtyRemaining(), apr.doubleValue());
         }
 
         return new MarketOrderResult(apr, satisfiedDemand);
@@ -82,7 +114,6 @@ public class LimitOrderBookDecorator {
             }
         }
 
-        apr.setScale(2, RoundingMode.HALF_UP);
-        return apr;
+        return apr.setScale(APR_SCALE, RoundingMode.HALF_UP);
     }
 }

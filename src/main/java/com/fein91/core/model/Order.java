@@ -1,6 +1,10 @@
 package com.fein91.core.model;
 
 
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
+
 public class Order {
 	private long timestamp;
 	private boolean limit;
@@ -8,17 +12,18 @@ public class Order {
 	private String side;
 	private double price;
 	private int qId;
-	private int tId;
+	private int takerId;
 	private Order nextOrder;
 	private Order prevOrder;
 	private OrderList oL;
+    private Map<Integer, List<Integer>> invoicesQtyByGiverId;
 	
-	public Order(long time, boolean limit, int quantity, int tId, String side) {
-		this(time, limit, quantity, tId, side, null);
+	public Order(long time, boolean limit, int quantity, int takerId, String side) {
+		this(time, limit, quantity, takerId, side, null);
 	}	
 	
 	public Order(long time, boolean limit, int quantity,
-				int tId, String side, Double price) {
+				int takerId, String side, Double price) {
 		
 		this.timestamp = time;
 		this.limit = limit;
@@ -27,7 +32,7 @@ public class Order {
 		if (price!=null) {
 			this.price = (double)price;
 		}
-		this.tId = tId;
+		this.takerId = takerId;
 	}
 	
 	public void updateQty(int qty, long tstamp) {
@@ -44,7 +49,7 @@ public class Order {
         return Integer.toString(quantity) + "\t@\t" + Double.toString(price) + 
         		"\tt=" + Long.toString(timestamp) +
         		"\tqId=" + Integer.toString(qId) +
-        		"\ttId=" + Integer.toString(tId);
+        		"\ttakerId=" + Integer.toString(takerId);
     }
 
 	
@@ -97,12 +102,12 @@ public class Order {
 		this.qId = qId;
 	}
 
-	public int gettId() {
-		return tId;
+	public int getTakerId() {
+		return takerId;
 	}
 
-	public void settId(int tId) {
-		this.tId = tId;
+	public void setTakerId(int takerId) {
+		this.takerId = takerId;
 	}
 
 	public OrderList getoL() {
@@ -120,7 +125,12 @@ public class Order {
 	public void setoL(OrderList oL) {
 		this.oL = oL;
 	}
-	
-	
-	
+
+    public Map<Integer, List<Integer>> getInvoicesQtyByGiverId() {
+        return invoicesQtyByGiverId;
+    }
+
+    public void setInvoicesQtyByGiverId(Map<Integer, List<Integer>> invoicesQtyByGiverId) {
+        this.invoicesQtyByGiverId = invoicesQtyByGiverId;
+    }
 }

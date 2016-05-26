@@ -1,10 +1,10 @@
 package com.fein91.core.model;
 
+import org.springframework.util.CollectionUtils;
+
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
 
@@ -69,25 +69,27 @@ public class OrderBook {
 		ArrayList<Trade> trades = new ArrayList<Trade>();
 		String side = quote.getSide();
 		int qtyRemaining = quote.getQuantity();
-		if (side =="bid") {
+		if (side == "bid") {
 			this.lastOrderSign = 1;
-			while ((qtyRemaining > 0) && (this.asks.getnOrders() > 0)) {
-				OrderList ordersAtBest = this.asks.minPriceList();
+			Iterator<OrderList> orderListIterator = this.asks.getOLsSortedByPriceIterator();
+			while ((qtyRemaining > 0) && (orderListIterator.hasNext())) {
+				OrderList ordersAtBest = orderListIterator.next();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
-		}else if(side=="offer") {
+		} else if (side == "offer") {
 			this.lastOrderSign = -1;
-			while ((qtyRemaining > 0) && (this.bids.getnOrders() > 0)) {
-				OrderList ordersAtBest = this.bids.maxPriceList();
+            Iterator<OrderList> orderListIterator = this.bids.getOLsInverseSortedByPriceIterator();
+			while ((qtyRemaining > 0) && (orderListIterator.hasNext())) {
+				OrderList ordersAtBest = orderListIterator.next();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
-		}else {
+		} else {
 			throw new IllegalArgumentException("order neither market nor limit: " + 
 				    						    side);
 		}
-		OrderReport report = new OrderReport(trades, false);
+		OrderReport report = new OrderReport(trades, false, qtyRemaining);
 		return  report;
 	}
 	
@@ -101,12 +103,17 @@ public class OrderBook {
 		double price = quote.getPrice();
 		if (side=="bid") {
 			this.lastOrderSign = 1;
-			while ((this.asks.getnOrders() > 0) && 
-					(qtyRemaining > 0) && 
-					(price >= asks.minPrice())) {
-				OrderList ordersAtBest = asks.minPriceList();
-				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-												quote, verbose);
+			Iterator<Map.Entry<Double, OrderList>> priceTreeIter = this.asks.getPriceTreeIterator();
+			while ((priceTreeIter.hasNext()) &&
+					(qtyRemaining > 0)) {
+				Map.Entry<Double, OrderList> priceTreeEntry = priceTreeIter.next();
+				double minPrice = priceTreeEntry.getKey();
+				if (price >= minPrice) {
+					OrderList ordersAtBest = priceTreeEntry.getValue();
+					qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
+							quote, verbose);
+				}
+
 			}
 			// If volume remains, add order to book
 			if (qtyRemaining > 0) {
@@ -120,12 +127,16 @@ public class OrderBook {
 			}
 		} else if (side=="offer") {
 			this.lastOrderSign = -1;
-			while ((this.bids.getnOrders() > 0) && 
-					(qtyRemaining > 0) && 
-					(price <= bids.maxPrice())) {
-				OrderList ordersAtBest = bids.maxPriceList();
-				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-												quote, verbose);
+			Iterator<Map.Entry<Double, OrderList>> inversePriceTreeIter = this.bids.getPriceTreeInverseIterator();
+			while ((inversePriceTreeIter.hasNext()) &&
+					(qtyRemaining > 0)) {
+				Map.Entry<Double, OrderList> priceTreeEntry = inversePriceTreeIter.next();
+				double maxPrice = priceTreeEntry.getKey();
+				if (price <= maxPrice) {
+					OrderList ordersAtBest = priceTreeEntry.getValue();
+					qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
+							quote, verbose);
+				}
 			}
 			// If volume remains, add to book
 			if (qtyRemaining > 0) {
@@ -141,7 +152,7 @@ public class OrderBook {
 			throw new IllegalArgumentException("order neither market nor limit: " + 
 				    						    side);
 		}
-		OrderReport report = new OrderReport(trades, orderInBook);
+		OrderReport report = new OrderReport(trades, orderInBook, qtyRemaining);
 		if (orderInBook) {
 			report.setOrder(quote);
 		}
@@ -154,39 +165,79 @@ public class OrderBook {
 								boolean verbose) {
 		String side = quote.getSide();
 		int buyer, seller;
-		int takerId = quote.gettId();
+		int takerId = quote.getTakerId();
 		long time = quote.getTimestamp();
-		while ((orders.getLength()>0) && (qtyRemaining>0)) {
+        Iterator<Order> iter = orders.iterator();
+		while ((orders.getLength()>0) && (qtyRemaining>0) && iter.hasNext()) {
 			int qtyTraded = 0;
-			Order headOrder = orders.getHeadOrder();
-			if (qtyRemaining < headOrder.getQuantity()) {
-				qtyTraded = qtyRemaining;
-				if (side=="offer") {
-					this.bids.updateOrderQty(headOrder.getQuantity()-qtyRemaining, 
-											 headOrder.getqId());
-				} else {
-					this.asks.updateOrderQty(headOrder.getQuantity()-qtyRemaining, 
-											 headOrder.getqId());
-				}
-				qtyRemaining = 0;
-			} else {
-				qtyTraded = headOrder.getQuantity();
-				if (side=="offer") {
-					this.bids.removeOrderByID(headOrder.getqId());
-				} else {
-					this.asks.removeOrderByID(headOrder.getqId());
-				}
-				qtyRemaining -= qtyTraded;
+			Order headOrder = iter.next();
+
+			List<Integer> invoices = headOrder.getInvoicesQtyByGiverId().get(takerId);
+			if (CollectionUtils.isEmpty(invoices)) {
+				continue;
 			}
-			if (side=="offer") {
-				buyer = headOrder.gettId();
+
+			int localOrderQty = Math.min(headOrder.getQuantity(), invoices.iterator().next());
+
+			if (localOrderQty < headOrder.getQuantity()) {
+				if (qtyRemaining <= localOrderQty) {
+					//обновляем значением ASK - qtyRem
+					qtyTraded = qtyRemaining;
+					if (side == "offer") {
+						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+												 headOrder.getqId());
+					} else {
+						this.asks.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+												 headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
+				} else {
+					//обновляем значением ASK - localASK
+					qtyTraded = localOrderQty;
+					if (side == "offer") {
+						this.bids.updateOrderQty(headOrder.getQuantity() - localOrderQty,
+								headOrder.getqId());
+					} else {
+						this.asks.updateOrderQty(headOrder.getQuantity() - localOrderQty,
+								headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
+				}
+			} else if (localOrderQty == headOrder.getQuantity()) {
+				if (localOrderQty <= qtyRemaining) {
+					//поглощаем
+					qtyTraded = localOrderQty;
+					if (side == "offer") {
+						this.bids.removeOrderByID(headOrder.getqId());
+					} else {
+						this.asks.removeOrderByID(headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
+				} else {
+					//обновляем значением ASK - qtyRem
+					qtyTraded = qtyRemaining;
+					if (side == "offer") {
+						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+								headOrder.getqId());
+					} else {
+						this.asks.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+								headOrder.getqId());
+					}
+					qtyRemaining -= qtyTraded;
+				}
+			} else {
+				throw new IllegalStateException("Shouldn't be here");
+			}
+
+			if (side == "offer") {
+				buyer = headOrder.getTakerId();
 				seller = takerId;
 			} else {
 				buyer = takerId;
-				seller = headOrder.gettId();
+				seller = headOrder.getTakerId();
 			}
 			Trade trade = new Trade(time, headOrder.getPrice(), qtyTraded, 
-									headOrder.gettId(),takerId, buyer, seller, 
+									headOrder.getTakerId(),takerId, buyer, seller,
 									headOrder.getqId());
 			trades.add(trade);
 			this.tape.add(trade);

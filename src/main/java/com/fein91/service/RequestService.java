@@ -9,9 +9,7 @@ import java.math.BigInteger;
  * Created by olta1014 on 23.05.2016.
  */
 @Service
-public class OrdersService {
+public class RequestService {
 
-    public void calculate(BigInteger counterpartyId, BigDecimal amount) {
 
-    }
 }
