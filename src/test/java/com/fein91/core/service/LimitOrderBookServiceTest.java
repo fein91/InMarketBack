@@ -161,6 +161,15 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(100, result.getSatisfiedDemand());
     }
 
+    /*
+    *     b1  b2  b3
+    * s1 100 100 800
+    *    ASK
+    * b3 500 31
+    * b2 100 30
+    * b1 600 29
+    * s1 market order == 450
+    * */
     @Test
     @Transactional
     @Rollback(true)
@@ -200,9 +209,21 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(trade3.getQty(), 250);
 
         Assert.assertEquals(450, result.getSatisfiedDemand());
+        Assert.assertEquals(0, BigDecimal.valueOf(30.3).compareTo(result.getApr()));
     }
 
 
+    /*
+    *     b1
+    * s1 550
+    * s2  0
+    * s3 200
+    *       BID
+    * s3 28 550
+    * s2 27  0
+    * s1 26 200
+    * b1 market order == 250
+    * */
     @Test
     @Transactional
     @Rollback(true)
@@ -230,6 +251,7 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(trade1.getQty(), 250);
 
         Assert.assertEquals(250, result.getSatisfiedDemand());
+        Assert.assertEquals(0, BigDecimal.valueOf(28).compareTo(result.getApr()));
     }
 
     @Test
