@@ -74,15 +74,17 @@ public class OrderBook {
 		int qtyRemaining = quote.getQuantity();
 		if (side == "bid") {
 			this.lastOrderSign = 1;
-			while ((qtyRemaining > 0) && (this.asks.getnOrders() > 0)) {
-				OrderList ordersAtBest = this.asks.minPriceList();
+			Iterator<OrderList> orderListIterator = this.asks.getOLsSortedByPriceIterator();
+			while ((qtyRemaining > 0) && (orderListIterator.hasNext())) {
+				OrderList ordersAtBest = orderListIterator.next();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
-		} else if(side == "offer") {
+		} else if (side == "offer") {
 			this.lastOrderSign = -1;
-			while ((qtyRemaining > 0) && (this.bids.getnOrders() > 0)) {
-				OrderList ordersAtBest = this.bids.maxPriceList();
+            Iterator<OrderList> orderListIterator = this.bids.getOLsInverseSortedByPriceIterator();
+			while ((qtyRemaining > 0) && (orderListIterator.hasNext())) {
+				OrderList ordersAtBest = orderListIterator.next();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
@@ -175,7 +177,7 @@ public class OrderBook {
 				if (qtyRemaining <= localOrderQty) {
 					//обновляем значением ASK - qtyRem
 					qtyTraded = qtyRemaining;
-					if (side=="offer") {
+					if (side == "offer") {
 						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
 												 headOrder.getqId());
 					} else {
@@ -186,7 +188,7 @@ public class OrderBook {
 				} else {
 					//обновляем значением ASK - localASK
 					qtyTraded = localOrderQty;
-					if (side=="offer") {
+					if (side == "offer") {
 						this.bids.updateOrderQty(headOrder.getQuantity() - localOrderQty,
 								headOrder.getqId());
 					} else {
@@ -199,7 +201,7 @@ public class OrderBook {
 				if (localOrderQty <= qtyRemaining) {
 					//поглощаем
 					qtyTraded = localOrderQty;
-					if (side=="offer") {
+					if (side == "offer") {
 						this.bids.removeOrderByID(headOrder.getqId());
 					} else {
 						this.asks.removeOrderByID(headOrder.getqId());
@@ -208,7 +210,7 @@ public class OrderBook {
 				} else {
 					//обновляем значением ASK - qtyRem
 					qtyTraded = qtyRemaining;
-					if (side=="offer") {
+					if (side == "offer") {
 						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
 								headOrder.getqId());
 					} else {
@@ -221,7 +223,7 @@ public class OrderBook {
 				throw new IllegalStateException("Shouldn't be here");
 			}
 
-			if (side=="offer") {
+			if (side == "offer") {
 				buyer = headOrder.getTakerId();
 				seller = takerId;
 			} else {

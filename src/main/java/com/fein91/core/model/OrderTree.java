@@ -1,8 +1,6 @@
 package com.fein91.core.model;
 
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.HashMap;
+import java.util.*;
 
 public class OrderTree {
 	TreeMap<Double, OrderList> priceTree = new TreeMap<Double, OrderList>();
@@ -102,8 +100,8 @@ public class OrderTree {
 			insertOrder(orderUpdate);
 		} else {
 			// The quantity has changed
-			order.updateQty(orderUpdate.getQuantity(), 
-					orderUpdate.getTimestamp());
+			order.updateQty(orderUpdate.getQuantity(),
+                    orderUpdate.getTimestamp());
 		}
 		this.volume += (order.getQuantity() - originalVol);
 	}
@@ -177,6 +175,13 @@ public class OrderTree {
 	public Integer getDepth() {
 		return depth;
 	}
-	
+
+    public Iterator<OrderList> getOLsSortedByPriceIterator() {
+        return new ArrayList<>(priceTree.values()).iterator();
+    }
+
+    public Iterator<OrderList> getOLsInverseSortedByPriceIterator() {
+        return new ArrayList<>(priceTree.descendingMap().values()).iterator();
+    }
 }
 

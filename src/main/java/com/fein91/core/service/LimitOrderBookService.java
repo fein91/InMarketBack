@@ -1,5 +1,6 @@
 package com.fein91.core.service;
 
+import com.fein91.core.model.MarketOrderResult;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.RequestRepository;
 import com.fein91.model.Counterparty;
@@ -20,7 +21,7 @@ public class LimitOrderBookService {
     @Autowired
     RequestRepository requestRepository;
 
-    public void addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty to, int quantity) {
+    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty to, int quantity) {
         List<Invoice> invoices = invoiceRepository.findByCounterPartyTo(to);
 
         if (invoices.isEmpty()) {
@@ -34,10 +35,10 @@ public class LimitOrderBookService {
             map.put(from.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addAskMarketOrder(to.getId(), map, quantity);
+        return lob.addAskMarketOrder(to.getId(), map, quantity);
     }
 
-    public void addBidMarketOrder(LimitOrderBookDecorator lob, Counterparty from, int quantity) {
+    public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, Counterparty from, int quantity) {
         List<Invoice> invoices = invoiceRepository.findByCounterPartyFrom(from);
 
         if (invoices.isEmpty()) {
@@ -51,7 +52,7 @@ public class LimitOrderBookService {
             map.put(to.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addBidMarketOrder(from.getId(), map, quantity);
+        return lob.addBidMarketOrder(from.getId(), map, quantity);
     }
 
     public void addAskLimitOrder(LimitOrderBookDecorator lob, Counterparty to, int quantity, double price) {
