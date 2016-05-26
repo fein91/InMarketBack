@@ -2,6 +2,7 @@ package com.fein91.core.service;
 
 import com.fein91.InMarketApplication;
 import com.fein91.core.model.MarketOrderResult;
+import com.fein91.core.model.OrderType;
 import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
 import com.fein91.dao.RequestRepository;
@@ -40,7 +41,7 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback(true)
-    public void test1() throws Exception {
+    public void marketOrderTest1() throws Exception {
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
 
         Counterparty supplier = counterPartyService.addCounterParty(BigInteger.valueOf(1), "supplier");
@@ -81,7 +82,7 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback(true)
-    public void test2() throws Exception {
+    public void marketOrderTest2() throws Exception {
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
 
         Counterparty buyer = counterPartyService.addCounterParty(BigInteger.valueOf(1), "buyer");
@@ -133,7 +134,7 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback(true)
-    public void test3() throws Exception {
+    public void marketOrderTest3() throws Exception {
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
 
         Counterparty buyer1 = counterPartyService.addCounterParty(BigInteger.valueOf(1), "buyer1");
@@ -163,7 +164,7 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback(true)
-    public void test4() throws Exception {
+    public void marketOrderTest4() throws Exception {
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
 
         Counterparty supplier = counterPartyService.addCounterParty(BigInteger.valueOf(1), "supplier");
@@ -205,7 +206,7 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback(true)
-    public void test5() throws Exception {
+    public void marketOrderTest5() throws Exception {
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
 
         Counterparty buyer = counterPartyService.addCounterParty(BigInteger.valueOf(1), "buyer");
@@ -229,6 +230,64 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(trade1.getQty(), 250);
 
         Assert.assertEquals(250, result.getSatisfiedDemand());
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void limitOrderTest6() throws Exception {
+        LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
+
+        Counterparty buyer1 = counterPartyService.addCounterParty(BigInteger.valueOf(1), "buyer1");
+        Counterparty buyer2 = counterPartyService.addCounterParty(BigInteger.valueOf(4), "buyer2");
+        Counterparty supplier1 = counterPartyService.addCounterParty(BigInteger.valueOf(2), "supplier1");
+
+        invoiceService.addInvoice(BigInteger.valueOf(11), supplier1, buyer1, BigDecimal.valueOf(150));
+        invoiceService.addInvoice(BigInteger.valueOf(13), supplier1, buyer2, BigDecimal.valueOf(200));
+
+        limitOrderBookService.addAskLimitOrder(lobDecorator, buyer1, 100, 30d);
+        limitOrderBookService.addAskLimitOrder(lobDecorator, buyer2, 150, 28d);
+
+        double supplier1BidPrice = 29d;
+        limitOrderBookService.addBidLimitOrder(lobDecorator, supplier1, 200, supplier1BidPrice);
+
+        Trade trade1 = findTradeByBuyerAndSeller(lobDecorator.lob.getTape(), supplier1.getId().intValue(), buyer2.getId().intValue());
+        Assert.assertNotNull(trade1);
+        Assert.assertEquals(28d, trade1.getPrice(), 0d);
+        Assert.assertEquals(150, trade1.getQty());
+
+        Assert.assertEquals(50, lobDecorator.lob.getVolumeAtPrice(OrderType.BID.getCoreName(), 29d));
+        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderType.ASK.getCoreName(), 30d));
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void limitOrderTest7() throws Exception {
+        LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
+
+        Counterparty buyer1 = counterPartyService.addCounterParty(BigInteger.valueOf(1), "buyer1");
+        Counterparty buyer2 = counterPartyService.addCounterParty(BigInteger.valueOf(4), "buyer2");
+        Counterparty supplier1 = counterPartyService.addCounterParty(BigInteger.valueOf(2), "supplier1");
+
+        invoiceService.addInvoice(BigInteger.valueOf(11), supplier1, buyer1, BigDecimal.valueOf(150));
+        invoiceService.addInvoice(BigInteger.valueOf(13), supplier1, buyer2, BigDecimal.valueOf(100));
+
+        limitOrderBookService.addAskLimitOrder(lobDecorator, buyer1, 100, 30d);
+        limitOrderBookService.addAskLimitOrder(lobDecorator, buyer2, 150, 28d);
+
+        double supplier1BidPrice = 29d;
+        limitOrderBookService.addBidLimitOrder(lobDecorator, supplier1, 200, supplier1BidPrice);
+
+        Trade trade1 = findTradeByBuyerAndSeller(lobDecorator.lob.getTape(), supplier1.getId().intValue(), buyer2.getId().intValue());
+        Assert.assertNotNull(trade1);
+        Assert.assertEquals(28d, trade1.getPrice(), 0d);
+        Assert.assertEquals(100, trade1.getQty());
+
+        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderType.BID.getCoreName(), 29d));
+        Assert.assertEquals(50, lobDecorator.lob.getVolumeAtPrice(OrderType.ASK.getCoreName(), 28d));
+        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderType.ASK.getCoreName(), 30d));
+
     }
 
     private Trade findTradeByBuyerAndSeller(List<Trade> trades, int buyerID, int sellerId) {

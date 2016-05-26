@@ -4,10 +4,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
 
@@ -106,12 +103,17 @@ public class OrderBook {
 		double price = quote.getPrice();
 		if (side=="bid") {
 			this.lastOrderSign = 1;
-			while ((this.asks.getnOrders() > 0) && 
-					(qtyRemaining > 0) && 
-					(price >= asks.minPrice())) {
-				OrderList ordersAtBest = asks.minPriceList();
-				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-												quote, verbose);
+			Iterator<Map.Entry<Double, OrderList>> priceTreeIter = this.asks.getPriceTreeIterator();
+			while ((priceTreeIter.hasNext()) &&
+					(qtyRemaining > 0)) {
+				Map.Entry<Double, OrderList> priceTreeEntry = priceTreeIter.next();
+				double minPrice = priceTreeEntry.getKey();
+				if (price >= minPrice) {
+					OrderList ordersAtBest = priceTreeEntry.getValue();
+					qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
+							quote, verbose);
+				}
+
 			}
 			// If volume remains, add order to book
 			if (qtyRemaining > 0) {
@@ -125,12 +127,16 @@ public class OrderBook {
 			}
 		} else if (side=="offer") {
 			this.lastOrderSign = -1;
-			while ((this.bids.getnOrders() > 0) && 
-					(qtyRemaining > 0) && 
-					(price <= bids.maxPrice())) {
-				OrderList ordersAtBest = bids.maxPriceList();
-				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-												quote, verbose);
+			Iterator<Map.Entry<Double, OrderList>> inversePriceTreeIter = this.bids.getPriceTreeInverseIterator();
+			while ((inversePriceTreeIter.hasNext()) &&
+					(qtyRemaining > 0)) {
+				Map.Entry<Double, OrderList> priceTreeEntry = inversePriceTreeIter.next();
+				double maxPrice = priceTreeEntry.getKey();
+				if (price <= maxPrice) {
+					OrderList ordersAtBest = priceTreeEntry.getValue();
+					qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
+							quote, verbose);
+				}
 			}
 			// If volume remains, add to book
 			if (qtyRemaining > 0) {

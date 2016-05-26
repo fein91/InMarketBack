@@ -183,5 +183,13 @@ public class OrderTree {
     public Iterator<OrderList> getOLsInverseSortedByPriceIterator() {
         return new ArrayList<>(priceTree.descendingMap().values()).iterator();
     }
+
+	public Iterator<Map.Entry<Double, OrderList>> getPriceTreeIterator() {
+		return new ArrayList<>(priceTree.entrySet()).iterator();
+	}
+
+	public Iterator<Map.Entry<Double, OrderList>> getPriceTreeInverseIterator() {
+		return new ArrayList<>(priceTree.descendingMap().entrySet()).iterator();
+	}
 }
 
