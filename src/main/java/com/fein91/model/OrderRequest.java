@@ -1,6 +1,6 @@
 package com.fein91.model;
 
-import com.fein91.core.model.OrderType;
+import com.fein91.core.model.OrderSide;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by olta1014 on 23.05.2016.
  */
 @Entity
-public class Request {
+public class OrderRequest {
 
     @Id
     BigInteger id;
@@ -25,6 +25,8 @@ public class Request {
     BigDecimal quantity;
 
     Date date;
+
+    int orderSide;
 
     int orderType;
 
@@ -66,6 +68,14 @@ public class Request {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public OrderSide getOrderSide() {
+        return OrderSide.valueOf(orderSide);
+    }
+
+    public void setOrderSide(OrderSide orderSide) {
+        this.orderSide = orderSide.getId();
     }
 
     public OrderType getOrderType() {

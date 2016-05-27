@@ -1,6 +1,7 @@
 package com.fein91.core.service;
 
 import com.fein91.core.model.*;
+import com.fein91.model.OrderRequest;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -10,13 +11,16 @@ import java.util.Map;
 
 public class LimitOrderBookDecorator {
 
-    private final static double DEFAULT_TICK_SIZE = 0.01;
+    private final static double DEFAULT_TICK_SIZE = 0.1;
     private static final int APR_SCALE = 1;
 
     protected final OrderBook lob;
 
     public LimitOrderBookDecorator() {
         this.lob = new OrderBook(DEFAULT_TICK_SIZE);
+    }
+
+    public void addOrder(OrderRequest orderRequest) {
     }
 
     public void addAskLimitOrder(BigInteger counterPartyId,
@@ -29,7 +33,7 @@ public class LimitOrderBookDecorator {
             throw new IllegalArgumentException("ASK price can't be 0");
         }
 
-        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderType.ASK.getCoreName(), price);
+        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderSide.ASK.getCoreName(), price);
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         lob.processOrder(order, false);
@@ -46,7 +50,7 @@ public class LimitOrderBookDecorator {
             throw new IllegalArgumentException("ASK price can't be 0");
         }
 
-        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderType.BID.getCoreName(), price);
+        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderSide.BID.getCoreName(), price);
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         lob.processOrder(order, false);
@@ -61,7 +65,7 @@ public class LimitOrderBookDecorator {
         }
 
         long time = System.nanoTime();
-        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderType.ASK.getCoreName());
+        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderSide.ASK.getCoreName());
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         OrderReport orderReport = lob.processOrder(order, false);
@@ -70,11 +74,6 @@ public class LimitOrderBookDecorator {
         int satisfiedDemand = quantity - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(time, satisfiedDemand);
-
-        if (orderReport.getQtyRemaining() > 0) {
-            System.out.println("Unsatisfied demand was moved to ask limit order!!!");
-            //addAskLimitOrder(counterPartyId, orderReport.getQtyRemaining(), apr.doubleValue());
-        }
 
         return new MarketOrderResult(apr, satisfiedDemand);
     }
@@ -88,7 +87,7 @@ public class LimitOrderBookDecorator {
 
         long time = System.nanoTime();
 
-        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderType.BID.getCoreName());
+        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderSide.BID.getCoreName());
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         OrderReport orderReport = lob.processOrder(order, false);
@@ -97,11 +96,6 @@ public class LimitOrderBookDecorator {
         int satisfiedDemand = quantity - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(time, satisfiedDemand);
-
-        if (orderReport.getQtyRemaining() > 0) {
-            System.out.println("Unsatisfied demand was moved to bid limit order!!!");
-            //addBidLimitOrder(counterPartyId, orderReport.getQtyRemaining(), apr.doubleValue());
-        }
 
         return new MarketOrderResult(apr, satisfiedDemand);
     }

@@ -23,10 +23,10 @@ values (1, 'test');
 -- insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value)
 -- values (13, 2, 4, 50);
 --
--- insert into request(id, counterparty_fk, price, quantity, date, order_type)
+-- insert into orderRequest(id, counterparty_fk, price, quantity, date, order_type)
 -- values (111, 1, 32, 200, SYSDATE, 0);
--- insert into request(id, counterparty_fk, price, quantity, date, order_type)
+-- insert into orderRequest(id, counterparty_fk, price, quantity, date, order_type)
 -- values (112, 3, 31, 150, SYSDATE, 0);
--- insert into request(id, counterparty_fk, price, quantity, date, order_type)
+-- insert into orderRequest(id, counterparty_fk, price, quantity, date, order_type)
 -- values (113, 4, 30, 100, SYSDATE, 0);
 

@@ -1,11 +1,8 @@
 package com.fein91.core.service;
 
 import com.fein91.core.model.*;
-import junit.framework.Assert;
 import org.junit.Test;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Random;
 
 public class LimitOrderBookTest {
@@ -48,16 +45,16 @@ public class LimitOrderBookTest {
 //        Assert.assertEquals(expectedSatisfiedDemand, marketOrderResult.getSatisfiedDemand());
 //
 //        Assert.assertEquals(expectedApr.doubleValue(), lobService.lob.getBestOffer());
-//        Assert.assertEquals(demand - expectedSatisfiedDemand, lobService.lob.getVolumeAtPrice(OrderType.ASK.getCoreName(), expectedApr.doubleValue()));
+//        Assert.assertEquals(demand - expectedSatisfiedDemand, lobService.lob.getVolumeAtPrice(OrderSide.ASK.getCoreName(), expectedApr.doubleValue()));
 //    }
 
     @Test
     public void test3() throws Exception {
-        Order order1 = new Order(System.nanoTime(), true, 200, new Random(100000).nextInt(), OrderType.BID.getCoreName(), 25d);
-        Order order2 = new Order(System.nanoTime(), true, 400, new Random(100000).nextInt(), OrderType.BID.getCoreName(), 27.5d);
-        Order order3 = new Order(System.nanoTime(), true, 400, new Random(100000).nextInt(), OrderType.BID.getCoreName(), 30d);
+        Order order1 = new Order(System.nanoTime(), true, 200, new Random(100000).nextInt(), OrderSide.BID.getCoreName(), 25d);
+        Order order2 = new Order(System.nanoTime(), true, 400, new Random(100000).nextInt(), OrderSide.BID.getCoreName(), 27.5d);
+        Order order3 = new Order(System.nanoTime(), true, 400, new Random(100000).nextInt(), OrderSide.BID.getCoreName(), 30d);
 
-        Order order4 = new Order(System.nanoTime(), false, 1200, new Random(100000).nextInt(), OrderType.ASK.getCoreName());
+        Order order4 = new Order(System.nanoTime(), false, 1200, new Random(100000).nextInt(), OrderSide.ASK.getCoreName());
 
         OrderBook orderBook = new OrderBook(0.01d);
         orderBook.processOrder(order1, false);

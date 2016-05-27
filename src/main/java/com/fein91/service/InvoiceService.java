@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class InvoiceService {
@@ -17,11 +18,11 @@ public class InvoiceService {
     InvoiceRepository invoiceRepository;
 
     @Transactional
-    public Invoice addInvoice(BigInteger id, Counterparty from, Counterparty to, BigDecimal value) {
+    public Invoice addInvoice(BigInteger id, Counterparty source, Counterparty target, BigDecimal value) {
         Invoice invoice = new Invoice();
         invoice.setId(id);
-        invoice.setCounterPartyFrom(from);
-        invoice.setCounterPartyTo(to);
+        invoice.setSource(source);
+        invoice.setTarget(target);
         invoice.setValue(value);
 
         return invoiceRepository.save(invoice);

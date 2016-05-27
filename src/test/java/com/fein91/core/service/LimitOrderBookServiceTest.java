@@ -2,16 +2,12 @@ package com.fein91.core.service;
 
 import com.fein91.InMarketApplication;
 import com.fein91.core.model.MarketOrderResult;
-import com.fein91.core.model.OrderType;
+import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
-import com.fein91.dao.RequestRepository;
 import com.fein91.model.Counterparty;
-import com.fein91.model.Invoice;
-import com.fein91.model.Request;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.InvoiceService;
-import com.fein91.service.RequestService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +34,15 @@ public class LimitOrderBookServiceTest {
     @Autowired
     InvoiceService invoiceService;
 
+    /*
+    *     b1  b2  b3
+    * s1 100 200  50
+    *    ASK
+    * b3 100 29
+    * b2 150 28
+    * b1 200 27
+    * s1 BID market order == 350
+    * */
     @Test
     @Transactional
     @Rollback(true)
@@ -77,6 +82,7 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(trade3.getQty(), 50);
 
         Assert.assertEquals(300, result.getSatisfiedDemand());
+        Assert.assertEquals(0, BigDecimal.valueOf(27.8).compareTo(result.getApr()));
     }
 
     @Test
@@ -278,8 +284,8 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(28d, trade1.getPrice(), 0d);
         Assert.assertEquals(150, trade1.getQty());
 
-        Assert.assertEquals(50, lobDecorator.lob.getVolumeAtPrice(OrderType.BID.getCoreName(), 29d));
-        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderType.ASK.getCoreName(), 30d));
+        Assert.assertEquals(50, lobDecorator.lob.getVolumeAtPrice(OrderSide.BID.getCoreName(), 29d));
+        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderSide.ASK.getCoreName(), 30d));
     }
 
     @Test
@@ -306,9 +312,9 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(28d, trade1.getPrice(), 0d);
         Assert.assertEquals(100, trade1.getQty());
 
-        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderType.BID.getCoreName(), 29d));
-        Assert.assertEquals(50, lobDecorator.lob.getVolumeAtPrice(OrderType.ASK.getCoreName(), 28d));
-        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderType.ASK.getCoreName(), 30d));
+        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderSide.BID.getCoreName(), 29d));
+        Assert.assertEquals(50, lobDecorator.lob.getVolumeAtPrice(OrderSide.ASK.getCoreName(), 28d));
+        Assert.assertEquals(100, lobDecorator.lob.getVolumeAtPrice(OrderSide.ASK.getCoreName(), 30d));
 
     }
 
