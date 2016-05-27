@@ -1,10 +1,12 @@
 package com.fein91.core.service;
 
 import com.fein91.core.model.MarketOrderResult;
+import com.fein91.core.model.OrderSide;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
 import com.fein91.model.Counterparty;
 import com.fein91.model.Invoice;
+import com.fein91.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +23,15 @@ public class LimitOrderBookService {
     @Autowired
     OrderRequestRepository orderRequestRepository;
 
-    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty to, int quantity) {
-        List<Invoice> invoices = invoiceRepository.findByTarget(to);
+    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        return addAskMarketOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
+    }
+
+    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity) {
+        List<Invoice> invoices = invoiceRepository.findByTarget(target);
 
         if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found to counterparty: " + to);
+            throw new IllegalArgumentException("No invoices were found target counterparty: " + target);
         }
 
         Map<Integer, List<Integer>> map = new HashMap<>();
@@ -35,7 +41,11 @@ public class LimitOrderBookService {
             map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        return lob.addAskMarketOrder(to.getId(), map, quantity);
+        return lob.addMarketOrder(target.getId(), OrderSide.ASK, map, quantity);
+    }
+
+    public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        return addBidMarketOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
     }
 
     public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity) {
@@ -52,7 +62,11 @@ public class LimitOrderBookService {
             map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        return lob.addBidMarketOrder(source.getId(), map, quantity);
+        return lob.addMarketOrder(source.getId(), OrderSide.BID, map, quantity);
+    }
+
+    public void addAskLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        addAskLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
     }
 
     public void addAskLimitOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity, double price) {
@@ -69,7 +83,11 @@ public class LimitOrderBookService {
             map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addAskLimitOrder(target.getId(), map, quantity, price);
+        lob.addLimitOrder(target.getId(), OrderSide.ASK, map, quantity, price);
+    }
+
+    public void addBidLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        addBidLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
     }
 
     public void addBidLimitOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity, double price) {
@@ -86,6 +104,6 @@ public class LimitOrderBookService {
             map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addBidLimitOrder(source.getId(), map, quantity, price);
+        lob.addLimitOrder(source.getId(), OrderSide.BID, map, quantity, price);
     }
 }

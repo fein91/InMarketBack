@@ -10,12 +10,12 @@ public class LimitOrderBookTest {
 //    @Test
 //    public void test1() throws Exception {
 //        LimitOrderBookDecorator lobService = new LimitOrderBookDecorator();
-//        lobService.addAskLimitOrder(50, 30d);
-//        lobService.addAskLimitOrder(100, 29d);
-//        lobService.addAskLimitOrder(200, 28d);
-//        lobService.addAskLimitOrder(150, 27d);
-//        lobService.addAskLimitOrder(250, 26d);
-//        lobService.addAskLimitOrder(50, 25d);
+//        lobService.addLimitOrder(50, 30d);
+//        lobService.addLimitOrder(100, 29d);
+//        lobService.addLimitOrder(200, 28d);
+//        lobService.addLimitOrder(150, 27d);
+//        lobService.addLimitOrder(250, 26d);
+//        lobService.addLimitOrder(50, 25d);
 //
 //        MarketOrderResult marketOrderResult = lobService.addBidMarketOrder(400);
 //        BigDecimal apr = marketOrderResult.getApr();
@@ -36,7 +36,7 @@ public class LimitOrderBookTest {
 //        lobService.addBidLimitOrder(400, 30d);
 //
 //        int demand = 1100;
-//        MarketOrderResult marketOrderResult = lobService.addAskMarketOrder(demand);
+//        MarketOrderResult marketOrderResult = lobService.addMarketOrder(demand);
 //        BigDecimal apr = marketOrderResult.getApr();
 //        BigDecimal expectedApr = BigDecimal.valueOf(28);
 //        Assert.assertEquals("Expected APR: [" + expectedApr + "], actual APR: [" + apr + "]", 0, expectedApr.compareTo(apr));
@@ -77,12 +77,12 @@ public class LimitOrderBookTest {
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testZeroAskMarketOrderThrowsException() throws Exception {
 //        LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
-//        lobDecorator.addAskMarketOrder(0);
+//        lobDecorator.addMarketOrder(0);
 //    }
 //
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testZeroBidLimitOrderThrowsException() throws Exception {
 //        LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
-//        lobDecorator.addAskLimitOrder(100, 0);
+//        lobDecorator.addLimitOrder(100, 0);
 //    }
 }
