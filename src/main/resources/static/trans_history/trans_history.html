@@ -1,0 +1,52 @@
+<div class="row page-content" ng-controller="TransHistoryCtrl as transactionHistory"> 
+  <uib-tabset active="activeJustified" justified="false" type="pills">
+    <uib-tab index="0" heading="Мои покупатели">   
+        <div class="table-responsive">
+          <table ng-table="transactionHistory.tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
+            <tr ng-repeat="record in $data">
+              <td data-title="'Название компании'" filter="{ 'company_name': 'text'}" sortable="'company_name'">
+                                  {{record.company_name}}</td>
+              <td data-title="'# Платежа'" filter="{ 'invoice_id': 'number'}" sortable="'invoice_id'">
+                                  {{record.invoice_id}}</td>
+              <td data-title="'Сумма'" filter="{ 'sum': 'number'}" sortable="'sum'">
+                                  {{record.sum}}</td>
+              <td data-title="'Дисконт % г'" filter="{ 'discount_percent': 'number'}" sortable="'discount_percent'">
+                                  {{record.discount_percent}}</td>
+              <td data-title="'APR'" filter="{ 'apr': 'number'}" sortable="'apr'">
+                                  {{record.apr}}</td>
+              <td data-title="'Размер предоплаты'" filter="{ 'prepay_amount': 'number'}" sortable="'prepay_amount'">
+                                  {{record.prepay_amount}}</td>
+              <td data-title="'% предоплаты'" sortable="'prepay_percent'">
+                                  {{record.prepay_percent}}</td>                     
+              <td data-title="'Статус'" sortable="'status'">
+                                  {{record.status}}</td>    
+            </tr>
+          </table>
+        </div>
+    </uib-tab>
+    <uib-tab index="1" heading="Мои поставщики">   
+       <div class="table-responsive">
+          <table ng-table="transactionHistory.tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
+            <tr ng-repeat="record in $data">
+              <td data-title="'Название компании'" filter="{ 'company_name': 'text'}" sortable="'company_name'">
+                                  {{record.company_name}}</td>
+              <td data-title="'# Платежа'" filter="{ 'invoice_id': 'number'}" sortable="'invoice_id'">
+                                  {{record.invoice_id}}</td>
+              <td data-title="'Сумма'" filter="{ 'sum': 'number'}" sortable="'sum'">
+                                  {{record.sum}}</td>
+              <td data-title="'Дисконт % г'" filter="{ 'discount_percent': 'number'}" sortable="'discount_percent'">
+                                  {{record.discount_percent}}</td>
+              <td data-title="'APR'" filter="{ 'apr': 'number'}" sortable="'apr'">
+                                  {{record.apr}}</td>
+              <td data-title="'Размер предоплаты'" filter="{ 'prepay_amount': 'number'}" sortable="'prepay_amount'">
+                                  {{record.prepay_amount}}</td>
+              <td data-title="'% предоплаты'" sortable="'prepay_percent'">
+                                  {{record.prepay_percent}}</td>                     
+              <td data-title="'Статус'" sortable="'status'">
+                                  {{record.status}}</td>    
+            </tr>
+          </table>
+        </div>  
+    </uib-tab>
+  </uib-tabset>  
+</div>

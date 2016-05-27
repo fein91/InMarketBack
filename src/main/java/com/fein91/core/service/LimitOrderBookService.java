@@ -1,10 +1,12 @@
 package com.fein91.core.service;
 
 import com.fein91.core.model.MarketOrderResult;
+import com.fein91.core.model.OrderSide;
 import com.fein91.dao.InvoiceRepository;
-import com.fein91.dao.RequestRepository;
+import com.fein91.dao.OrderRequestRepository;
 import com.fein91.model.Counterparty;
 import com.fein91.model.Invoice;
+import com.fein91.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,90 +21,89 @@ public class LimitOrderBookService {
     @Autowired
     InvoiceRepository invoiceRepository;
     @Autowired
-    RequestRepository requestRepository;
+    OrderRequestRepository orderRequestRepository;
 
-    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty to, int quantity) {
-        List<Invoice> invoices = invoiceRepository.findByCounterPartyTo(to);
+    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        return addAskMarketOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
+    }
+
+    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity) {
+        List<Invoice> invoices = invoiceRepository.findByTarget(target);
 
         if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found to counterparty: " + to);
+            throw new IllegalArgumentException("No invoices were found target counterparty: " + target);
         }
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
         for (Invoice invoice : invoices) {
-            Counterparty from = invoice.getCounterPartyFrom();
-            map.put(from.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+            Counterparty source = invoice.getSource();
+            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        return lob.addAskMarketOrder(to.getId(), map, quantity);
+        return lob.addMarketOrder(target.getId(), OrderSide.ASK, map, quantity);
     }
 
-    public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, Counterparty from, int quantity) {
-        List<Invoice> invoices = invoiceRepository.findByCounterPartyFrom(from);
+    public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        return addBidMarketOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
+    }
+
+    public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity) {
+        List<Invoice> invoices = invoiceRepository.findBySource(source);
 
         if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found from counterparty: " + from);
+            throw new IllegalArgumentException("No invoices were found source counterparty: " + source);
         }
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
         for (Invoice invoice : invoices) {
-            Counterparty to = invoice.getCounterPartyTo();
-            map.put(to.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+            Counterparty target = invoice.getTarget();
+            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        return lob.addBidMarketOrder(from.getId(), map, quantity);
+        return lob.addMarketOrder(source.getId(), OrderSide.BID, map, quantity);
     }
 
-    public void addAskLimitOrder(LimitOrderBookDecorator lob, Counterparty to, int quantity, double price) {
-        List<Invoice> invoices = invoiceRepository.findByCounterPartyTo(to);
+    public void addAskLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        addAskLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
+    }
+
+    public void addAskLimitOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity, double price) {
+        List<Invoice> invoices = invoiceRepository.findByTarget(target);
 
         if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found to counterparty: " + to);
+            throw new IllegalArgumentException("No invoices were found target counterparty: " + target);
         }
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
         for (Invoice invoice : invoices) {
-            Counterparty from = invoice.getCounterPartyFrom();
-            map.put(from.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+            Counterparty source = invoice.getSource();
+            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addAskLimitOrder(to.getId(), map, quantity, price);
+        lob.addLimitOrder(target.getId(), OrderSide.ASK, map, quantity, price);
     }
 
-    public void addBidLimitOrder(LimitOrderBookDecorator lob, Counterparty from, int quantity, double price) {
-        List<Invoice> invoices = invoiceRepository.findByCounterPartyFrom(from);
+    public void addBidLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        addBidLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
+    }
+
+    public void addBidLimitOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity, double price) {
+        List<Invoice> invoices = invoiceRepository.findBySource(source);
 
         if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found from counterparty: " + from);
+            throw new IllegalArgumentException("No invoices were found source counterparty: " + source);
         }
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
         for (Invoice invoice : invoices) {
-            Counterparty to = invoice.getCounterPartyTo();
-            map.put(to.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+            Counterparty target = invoice.getTarget();
+            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addBidLimitOrder(from.getId(), map, quantity, price);
+        lob.addLimitOrder(source.getId(), OrderSide.BID, map, quantity, price);
     }
-
-
-//    public MarketOrderResult calculateSupplierApr(LimitOrderBookDecorator lob, Counterparty supplier, int quantity) {
-//        List<Invoice> supplierInvoices = invoiceRepository.findByCounterPartyFrom(supplier);
-//
-//        for (Invoice invoice : supplierInvoices) {
-//            Counterparty buyer = invoice.getCounterPartyTo();
-//            //TODO find by counterparty and order type == ASK
-//            List<Request> buyerOrders = orderRepository.findByCounterparty(buyer);
-//
-//            for (Request order : buyerOrders) {
-//                BigDecimal localOrderValue = order.getQuantity().min(invoice.getValue());
-//                lob.addAskLimitOrder(localOrderValue.intValue(), order.getPrice().doubleValue());
-//            }
-//        }
-//        return lob.addBidMarketOrder(quantity);
-//    }
 }

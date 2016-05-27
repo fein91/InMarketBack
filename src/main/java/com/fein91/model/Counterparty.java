@@ -14,12 +14,6 @@ public class Counterparty {
     private BigInteger id;
     private String name;
 
-    @OneToMany(mappedBy="counterPartyFrom")
-    private List<Invoice> invoicesFrom;
-
-    @OneToMany(mappedBy="counterPartyTo")
-    private List<Invoice> invoicesTo;
-
     public BigInteger getId() {
         return id;
     }
@@ -36,19 +30,4 @@ public class Counterparty {
         this.name = name;
     }
 
-    public List<Invoice> getInvoicesFrom() {
-        return invoicesFrom;
-    }
-
-    public void setInvoicesFrom(List<Invoice> invoicesFrom) {
-        this.invoicesFrom = invoicesFrom;
-    }
-
-    public List<Invoice> getInvoicesTo() {
-        return invoicesTo;
-    }
-
-    public void setInvoicesTo(List<Invoice> invoicesTo) {
-        this.invoicesTo = invoicesTo;
-    }
 }

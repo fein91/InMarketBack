@@ -13,13 +13,13 @@ public class Invoice {
     @Id
     BigInteger id;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="counterparty_from_fk")
-    Counterparty counterPartyFrom;
+    Counterparty source;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="counterparty_to_fk")
-    Counterparty counterPartyTo;
+    Counterparty target;
 
     BigDecimal value;
 
@@ -31,20 +31,20 @@ public class Invoice {
         this.id = id;
     }
 
-    public Counterparty getCounterPartyFrom() {
-        return counterPartyFrom;
+    public Counterparty getSource() {
+        return source;
     }
 
-    public void setCounterPartyFrom(Counterparty counterPartyFrom) {
-        this.counterPartyFrom = counterPartyFrom;
+    public void setSource(Counterparty source) {
+        this.source = source;
     }
 
-    public Counterparty getCounterPartyTo() {
-        return counterPartyTo;
+    public Counterparty getTarget() {
+        return target;
     }
 
-    public void setCounterPartyTo(Counterparty counterPartyTo) {
-        this.counterPartyTo = counterPartyTo;
+    public void setTarget(Counterparty target) {
+        this.target = target;
     }
 
     public BigDecimal getValue() {

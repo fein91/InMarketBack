@@ -1,6 +1,8 @@
 package com.fein91.core.service;
 
 import com.fein91.core.model.*;
+import com.fein91.model.OrderRequest;
+import com.fein91.model.OrderType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -10,7 +12,7 @@ import java.util.Map;
 
 public class LimitOrderBookDecorator {
 
-    private final static double DEFAULT_TICK_SIZE = 0.01;
+    private final static double DEFAULT_TICK_SIZE = 0.1;
     private static final int APR_SCALE = 1;
 
     protected final OrderBook lob;
@@ -19,49 +21,51 @@ public class LimitOrderBookDecorator {
         this.lob = new OrderBook(DEFAULT_TICK_SIZE);
     }
 
-    public void addAskLimitOrder(BigInteger counterPartyId,
-                                 Map<Integer, List<Integer>> invoicesQtyByGiverId,
-                                 int quantity,
-                                 double price) {
+    public void addOrder(OrderRequest orderRequest, Map<Integer, List<Integer>> invoicesQtyByGiverId) {
+        if (OrderType.LIMIT == orderRequest.getOrderType()) {
+            addLimitOrder(orderRequest.getCounterparty().getId(),
+                    orderRequest.getOrderSide(),
+                    invoicesQtyByGiverId,
+                    orderRequest.getQuantity().intValue(),
+                    orderRequest.getPrice().doubleValue());
+        } else if (OrderType.MARKET == orderRequest.getOrderType()) {
+            addMarketOrder(orderRequest.getCounterparty().getId(),
+                    orderRequest.getOrderSide(),
+                    invoicesQtyByGiverId,
+                    orderRequest.getQuantity().intValue());
+        } else {
+            throw new IllegalArgumentException("Unknown orderRequest type: " + orderRequest);
+        }
+    }
+
+    public void addLimitOrder(BigInteger counterPartyId,
+                              OrderSide orderSide,
+                              Map<Integer, List<Integer>> invoicesQtyByGiverId,
+                              int quantity,
+                              double price) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("ASK quantity can't be 0");
+            throw new IllegalArgumentException("Quantity can't be 0");
         } else if (price <= 0) {
-            throw new IllegalArgumentException("ASK price can't be 0");
+            throw new IllegalArgumentException("Price can't be 0");
         }
 
-        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderType.ASK.getCoreName(), price);
+        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), orderSide.getCoreName(), price);
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         lob.processOrder(order, false);
         System.out.println(lob);
     }
 
-    public void addBidLimitOrder(BigInteger counterPartyId,
-                                 Map<Integer, List<Integer>> invoicesQtyByGiverId,
-                                 int quantity,
-                                 double price) {
+    public MarketOrderResult addMarketOrder(BigInteger counterPartyId,
+                                            OrderSide orderSide,
+                                            Map<Integer, List<Integer>> invoicesQtyByGiverId,
+                                            int quantity) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("ASK quantity can't be 0");
-        } else if (price <= 0) {
-            throw new IllegalArgumentException("ASK price can't be 0");
-        }
-
-        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), OrderType.BID.getCoreName(), price);
-        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
-
-        lob.processOrder(order, false);
-        System.out.println(lob);
-    }
-
-    public MarketOrderResult addAskMarketOrder(BigInteger counterPartyId,
-                                               Map<Integer, List<Integer>> invoicesQtyByGiverId,
-                                               int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("ASK quantity can't be 0");
+            throw new IllegalArgumentException("Quantity can't be 0");
         }
 
         long time = System.nanoTime();
-        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderType.ASK.getCoreName());
+        Order order = new Order(time, false, quantity, counterPartyId.intValue(), orderSide.getCoreName());
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         OrderReport orderReport = lob.processOrder(order, false);
@@ -70,38 +74,6 @@ public class LimitOrderBookDecorator {
         int satisfiedDemand = quantity - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(time, satisfiedDemand);
-
-        if (orderReport.getQtyRemaining() > 0) {
-            System.out.println("Unsatisfied demand was moved to ask limit order!!!");
-            //addAskLimitOrder(counterPartyId, orderReport.getQtyRemaining(), apr.doubleValue());
-        }
-
-        return new MarketOrderResult(apr, satisfiedDemand);
-    }
-
-    public MarketOrderResult addBidMarketOrder(BigInteger counterPartyId,
-                                               Map<Integer, List<Integer>> invoicesQtyByGiverId,
-                                               int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("BID quantity can't be 0");
-        }
-
-        long time = System.nanoTime();
-
-        Order order = new Order(time, false, quantity, counterPartyId.intValue(), OrderType.BID.getCoreName());
-        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
-
-        OrderReport orderReport = lob.processOrder(order, false);
-        System.out.println(lob);
-
-        int satisfiedDemand = quantity - orderReport.getQtyRemaining();
-
-        BigDecimal apr = calculateAPR(time, satisfiedDemand);
-
-        if (orderReport.getQtyRemaining() > 0) {
-            System.out.println("Unsatisfied demand was moved to bid limit order!!!");
-            //addBidLimitOrder(counterPartyId, orderReport.getQtyRemaining(), apr.doubleValue());
-        }
 
         return new MarketOrderResult(apr, satisfiedDemand);
     }

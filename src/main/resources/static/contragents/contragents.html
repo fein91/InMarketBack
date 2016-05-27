@@ -1,0 +1,41 @@
+<div class="row page-content" ng-controller="ContragentsCtrl as contragents">
+  <button type="button" class="btn btn-default import-btn pull-right" ng-click="contragents.init()">Импорт</button>  
+  <uib-tabset active="activeJustified" justified="false" type="pills">
+    <uib-tab index="0" heading="Мои покупатели">   
+        <div class="table-responsive">
+          <table ng-table="contragents.tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
+            <tr ng-repeat="invoice in $data">
+              <td>
+                <input type="checkbox" /></td>
+              <td data-title="'Название компании'" filter="{ 'company_name': 'text'}" sortable="'company_name'">
+                                  {{invoice.company_name}}</td>
+              <td data-title="'# Платежа'" filter="{ 'invoice_id': 'number'}" sortable="'invoice_id'">
+                                  {{invoice.invoice_id}}</td>
+              <td data-title="'Сумма'" filter="{ 'sum': 'number'}" sortable="'sum'">
+                                  {{invoice.sum}}</td>
+              <td data-title="'% предоплаты'" sortable="'prepay_percent'">
+                                  {{invoice.prepay_percent}}</td>                     
+            </tr>
+          </table>
+        </div>
+    </uib-tab>
+    <uib-tab index="1" heading="Мои поставщики">   
+       <div class="table-responsive">
+          <table ng-table="contragents.tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
+            <tr ng-repeat="invoice in $data">
+              <td>
+                <input type="checkbox" /></td>
+              <td data-title="'Название компании'" filter="{ 'company_name': 'text'}" sortable="'company_name'">
+                                  {{invoice.company_name}}</td>
+              <td data-title="'# Платежа'" filter="{ 'invoice_id': 'number'}" sortable="'invoice_id'">
+                                  {{invoice.invoice_id}}</td>
+              <td data-title="'Сумма'" filter="{ 'sum': 'number'}" sortable="'sum'">
+                                  {{invoice.sum}}</td>
+              <td data-title="'% предоплаты'" sortable="'prepay_percent'">
+                                  {{invoice.prepay_percent}}</td>                     
+            </tr>
+          </table>
+        </div>  
+    </uib-tab>
+  </uib-tabset>  
+</div>
