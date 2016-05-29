@@ -30,28 +30,25 @@
     	<uib-tab index="1" heading="Рыночная заявка">
 	  	  	<div class="panel panel-default">
 	  			<div class="panel-body">
-	  				<form>
+	  				<form ng-controller="MarketBidCtrl">
 	  					<div class="form-group form-inline">
 	  						<label>Введите желаемую для заказа сумму предоплаты: </label>
-	  						<input type="number" class="form-control" placeholder="Сумма">	  					
+	  						<input ng-blur="submitBidMarketOrder()" type="number" class="form-control" ng-model="bidQty" placeholder="Сумма" required>
 	  					</div>	  					
 	  					<div>
-	    					<p>В данный момент вы можете авансировать эту сумму под APR=</p>
+	    					<p>В данный момент вы можете авансировать эту сумму под APR={{bidApr}}</p>
 	    				</div>
-		    			<div class="alert alert-info alert-dismissable">
+		    			<div class="alert alert-info alert-dismissable" ng-hide="demandSatisfied">
 	                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-	                           В данный момент ваши поставщики готовы принять предоплаты только на сумму= грн.
-	                    </div>
-	                    <div class="alert alert-info alert-dismissable">
-	                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-	                           Остаток ( грн) будет размещен по APR=
+	                           В данный момент ваши поставщики готовы принять предоплаты только на сумму={{satisfiedBidQty}} грн.
+	                           Остаток ({{bidQty - satisfiedBidQty}} грн) будет размещен по APR={{bidApr}}
 	                    </div>  
-	                    <div class="alert alert-warning alert-dismissable">
+	                    <div class="alert alert-warning alert-dismissable" ng-show="noCounterparties">
 	                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 	                           К сожалению, в данный момент нет контрагентов, желающих получить предоплаты. Предлагаем воспользоваться отложенным исполнением по последней рыночной цене APR=
 	                    </div>                  
 	                    <button type="submit" class="btn btn-default">Подтвердить</button>
-	                    <button type="reset" class="btn btn-default">Сбросить</button>
+	                    <button type="reset" class="btn btn-default" ng-click="reset()">Сбросить</button>
 	  				</form>	    			
 	  			</div>
 			</div>    		    			    	
@@ -59,17 +56,17 @@
     	<uib-tab index="2" heading="Отложенная заявка">
     		<div class="panel panel-default">
 	  			<div class="panel-body">
-	  				<form>
+	  				<form ng-controller="LimitBidCtrl">
 	  					<div class="form-group form-inline">
 	  						<label>Введите желаемый APR: </label>
-	  						<input type="number" class="form-control" placeholder="Процент">
+	  						<input ng-blur="submitLimitBidOrder()" ng-model="bidApr" type="number" class="form-control" placeholder="Процент" required>
 	  					</div>	
 	  					<div class="form-group form-inline">
 	  						<label>Введите желаемую сумму для получения предоплаты: </label>
-	  						<input type="number" class="form-control" placeholder="Сумма">
+	  						<input ng-blur="submitLimitBidOrder()" ng-model="bidQty" type="number" class="form-control" placeholder="Сумма" required>
 	  					</div>  					
 	  					<div>
-	    					<p>По заданному APR к моментальному исполнению подлежит сумма .</p>
+	    					<p>По заданному APR к моментальному исполнению подлежит сумма {{satisfiedBidQty}} грн.</p>
 	    				</div>
 	    				<div class="row">
 	    					<div class="col-xs-4">

@@ -1,6 +1,6 @@
 package com.fein91.core.service;
 
-import com.fein91.core.model.MarketOrderResult;
+import com.fein91.core.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
@@ -23,11 +23,11 @@ public class LimitOrderBookService {
     @Autowired
     OrderRequestRepository orderRequestRepository;
 
-    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+    public OrderResult addAskMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
         return addAskMarketOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
     }
 
-    public MarketOrderResult addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity) {
+    public OrderResult addAskMarketOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity) {
         List<Invoice> invoices = invoiceRepository.findByTarget(target);
 
         if (invoices.isEmpty()) {
@@ -44,11 +44,11 @@ public class LimitOrderBookService {
         return lob.addMarketOrder(target.getId(), OrderSide.ASK, map, quantity);
     }
 
-    public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+    public OrderResult addBidMarketOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
         return addBidMarketOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
     }
 
-    public MarketOrderResult addBidMarketOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity) {
+    public OrderResult addBidMarketOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity) {
         List<Invoice> invoices = invoiceRepository.findBySource(source);
 
         if (invoices.isEmpty()) {
@@ -65,11 +65,11 @@ public class LimitOrderBookService {
         return lob.addMarketOrder(source.getId(), OrderSide.BID, map, quantity);
     }
 
-    public void addAskLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
-        addAskLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
+    public OrderResult addAskLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        return addAskLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
     }
 
-    public void addAskLimitOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity, double price) {
+    public OrderResult addAskLimitOrder(LimitOrderBookDecorator lob, Counterparty target, int quantity, double price) {
         List<Invoice> invoices = invoiceRepository.findByTarget(target);
 
         if (invoices.isEmpty()) {
@@ -83,14 +83,14 @@ public class LimitOrderBookService {
             map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addLimitOrder(target.getId(), OrderSide.ASK, map, quantity, price);
+        return lob.addLimitOrder(target.getId(), OrderSide.ASK, map, quantity, price);
     }
 
-    public void addBidLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
-        addBidLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
+    public OrderResult addBidLimitOrder(LimitOrderBookDecorator lob, OrderRequest orderRequest) {
+        return addBidLimitOrder(lob, orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
     }
 
-    public void addBidLimitOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity, double price) {
+    public OrderResult addBidLimitOrder(LimitOrderBookDecorator lob, Counterparty source, int quantity, double price) {
         List<Invoice> invoices = invoiceRepository.findBySource(source);
 
         if (invoices.isEmpty()) {
@@ -104,6 +104,6 @@ public class LimitOrderBookService {
             map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
         }
 
-        lob.addLimitOrder(source.getId(), OrderSide.BID, map, quantity, price);
+        return lob.addLimitOrder(source.getId(), OrderSide.BID, map, quantity, price);
     }
 }

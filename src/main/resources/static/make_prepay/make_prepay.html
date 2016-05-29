@@ -30,10 +30,10 @@
     	<uib-tab index="1" heading="Рыночная заявка">
 	  	  	<div class="panel panel-default">
 	  			<div class="panel-body">
-	  				<form>
+	  				<form ng-controller="AskMarketCtrl">
 	  					<div class="form-group form-inline">
 	  						<label>Осуществить предоплату на сумму: </label>
-	  						<input type="number" class="form-control" placeholder="Сумма">	  					
+	  						<input ng-blur="submitMarketAskOrder()" ng-model="askQty" type="number" class="form-control" placeholder="Сумма">
 	  					</div>	  					
 	  					<div>
 	    					<p>В данный момент вы можете получить предоплату на эту сумму со следующими параметрами:</br> 
@@ -42,15 +42,12 @@
 	    					общая сумму скидок будет составлять=
 	    					</p>
 	    				</div>
-		    			<div class="alert alert-info alert-dismissable">
+		    			<div ng-hide="demandSatisfied" class="alert alert-info alert-dismissable">
 	                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 	                           В данный момент ваши покупатели готовы сделать предоплату только на сумму= грн.
-	                    </div>
-	                    <div class="alert alert-info alert-dismissable">
-	                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-	                           Остаток ( грн) будет размещен по APR=
-	                    </div>  
-	                    <div class="alert alert-warning alert-dismissable">
+							   Остаток ( грн) будет размещен по APR=
+						</div>
+	                    <div ng-show="noCounterparties" class="alert alert-warning alert-dismissable">
 	                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 	                           К сожалению, в данный момент нет контрагентов, желающих делать предоплаты. Предлагаем воспользоваться отложенным исполнением по последней рыночной цене APR=
 	                    </div>                  

@@ -12,9 +12,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
 	console.log('ContragentsCtrl inited');
 
 	var self = this;
+    self.counterpartyId = 1;
 
     self.init = function() {
-        return invoicesService.getAll()
+        return invoicesService.getBySourceId(self.counterpartyId)
             .then(function successCallback(response){
                 self.tableParams = new NgTableParams({}, {
                     //filterOptions: { filterFn: priceRangeFilter },

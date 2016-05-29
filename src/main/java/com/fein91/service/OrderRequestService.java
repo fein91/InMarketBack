@@ -1,5 +1,6 @@
 package com.fein91.service;
 
+import com.fein91.core.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.service.LimitOrderBookDecorator;
 import com.fein91.core.service.LimitOrderBookService;
@@ -35,7 +36,7 @@ public class OrderRequestService {
     }
 
     @Transactional
-    public void processOrderRequest(OrderRequest orderRequest) {
+    public OrderResult processOrderRequest(OrderRequest orderRequest) {
         List<Invoice> invoices = invoiceRepository.findInvoicesBySourceId(orderRequest.getCounterparty().getId());
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
         for (Invoice invoice : invoices) {
@@ -43,7 +44,7 @@ public class OrderRequestService {
             addAllTargetOrdersToLOB(lobDecorator, target);
         }
 
-        addOrderRequest(lobDecorator, orderRequest);
+        return addOrderRequest(lobDecorator, orderRequest);
     }
 
     public void addAllTargetOrdersToLOB(LimitOrderBookDecorator lobDecorator, Counterparty counterparty) {
@@ -54,20 +55,21 @@ public class OrderRequestService {
         }
     }
 
-    private void addOrderRequest(LimitOrderBookDecorator lobDecorator, OrderRequest orderRequest) {
+    private OrderResult addOrderRequest(LimitOrderBookDecorator lobDecorator, OrderRequest orderRequest) {
         if (OrderType.MARKET == orderRequest.getOrderType()) {
             if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                lobService.addAskMarketOrder(lobDecorator, orderRequest);
+                return lobService.addAskMarketOrder(lobDecorator, orderRequest);
             } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                lobService.addBidMarketOrder(lobDecorator, orderRequest);
+                return lobService.addBidMarketOrder(lobDecorator, orderRequest);
             }
         } else if (OrderType.LIMIT == orderRequest.getOrderType()) {
             if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                lobService.addAskLimitOrder(lobDecorator, orderRequest);
+                return lobService.addAskLimitOrder(lobDecorator, orderRequest);
             } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                lobService.addBidLimitOrder(lobDecorator, orderRequest);
+                return lobService.addBidLimitOrder(lobDecorator, orderRequest);
             }
         }
+        throw new IllegalStateException("Couldn't reach here");
     }
 
 }

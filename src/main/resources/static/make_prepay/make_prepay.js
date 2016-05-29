@@ -6,6 +6,44 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'chart.js'])
   });
 }])
 
+.controller('AskMarketCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
+		console.log('AskMarketCtrl inited');
+
+		$scope.askQty = '';
+		$scope.askApr = '';
+		$scope.demandSatisfied = true;
+		$scope.noCounterparties = false;
+
+		$scope.submitMarketAskOrder = function() {
+			var orderRequest = {
+				"id" : 11,
+				"quantity" : $scope.askQty,
+				"orderSide" : 0,
+				"orderType" : 1,
+				"counterparty" : {
+					"id" : 1,
+					"name" : "supplyer"
+				}
+			};
+
+			orderRequestsService.process(orderRequest)
+				.then(function successCallback(response){
+					var orderResult = response.data;
+					console.log('order result: ' + JSON.stringify(orderResult));
+					$scope.askApr = orderResult.apr;
+					$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+					if ($scope.askQty > $scope.satisfiedBidQty) {
+						$scope.demandSatisfied = false;
+					}
+
+				}, function errorCallback(response) {
+					console.log('got ' + response.status + ' error');
+					$scope.noCounterparties = true;
+				});
+		}
+	}])
+
+
 .controller('MakePrepayHistoryChartCtrl', ['$scope', function($scope) {
 	console.log('MakePrepayHistoryChartCtrl inited');
 

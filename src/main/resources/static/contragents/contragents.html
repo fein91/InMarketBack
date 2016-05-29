@@ -7,14 +7,14 @@
             <tr ng-repeat="invoice in $data">
               <td>
                 <input type="checkbox" /></td>
-              <td data-title="'Название компании'" filter="{ 'company_name': 'text'}" sortable="'company_name'">
-                                  {{invoice.company_name}}</td>
+              <td data-title="'Название компании'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
+                                  {{invoice.target.name}}</td>
               <td data-title="'# Платежа'" filter="{ 'invoice_id': 'number'}" sortable="'invoice_id'">
                                   {{invoice.invoice_id}}</td>
-              <td data-title="'Сумма'" filter="{ 'sum': 'number'}" sortable="'sum'">
-                                  {{invoice.sum}}</td>
-              <td data-title="'% предоплаты'" sortable="'prepay_percent'">
-                                  {{invoice.prepay_percent}}</td>                     
+              <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                                  {{invoice.value}}</td>
+              <td data-title="'% предоплаты'" sortable="'prepaidPercent'">
+                                  {{invoice.prepaidPercent}}</td>
             </tr>
           </table>
         </div>
@@ -22,18 +22,18 @@
     <uib-tab index="1" heading="Мои поставщики">   
        <div class="table-responsive">
           <table ng-table="contragents.tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
-            <tr ng-repeat="invoice in $data">
-              <td>
-                <input type="checkbox" /></td>
-              <td data-title="'Название компании'" filter="{ 'company_name': 'text'}" sortable="'company_name'">
-                                  {{invoice.company_name}}</td>
-              <td data-title="'# Платежа'" filter="{ 'invoice_id': 'number'}" sortable="'invoice_id'">
-                                  {{invoice.invoice_id}}</td>
-              <td data-title="'Сумма'" filter="{ 'sum': 'number'}" sortable="'sum'">
-                                  {{invoice.sum}}</td>
-              <td data-title="'% предоплаты'" sortable="'prepay_percent'">
-                                  {{invoice.prepay_percent}}</td>                     
-            </tr>
+              <tr ng-repeat="invoice in $data">
+                  <td>
+                      <input type="checkbox" /></td>
+                  <td data-title="'Название компании'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
+                      {{invoice.target.name}}</td>
+                  <td data-title="'# Платежа'" filter="{ 'invoice_id': 'number'}" sortable="'invoice_id'">
+                      {{invoice.invoice_id}}</td>
+                  <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                      {{invoice.value}}</td>
+                  <td data-title="'% предоплаты'" sortable="'prepaidPercent'">
+                      {{invoice.prepaidPercent}}</td>
+              </tr>
           </table>
         </div>  
     </uib-tab>

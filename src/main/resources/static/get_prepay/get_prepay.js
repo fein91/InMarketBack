@@ -7,10 +7,86 @@ angular.module('inmarket.get_prepay', ['ngRoute'])
   });
 }])
 
+.controller('MarketBidCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
+		console.log('MarketBidCtrl inited');
+
+		$scope.bidQty = '';
+		$scope.bidApr = '';
+		$scope.demandSatisfied = true;
+		$scope.noCounterparties = false;
+
+		$scope.submitBidMarketOrder = function() {
+			var orderRequest = {
+				"id" : 11,
+				"quantity" : $scope.bidQty,
+				"orderSide" : 1,
+				"orderType" : 1,
+				"counterparty" : {
+					"id" : 1,
+					"name" : "supplyer"
+				}
+			};
+
+			orderRequestsService.process(orderRequest)
+				.then(function successCallback(response){
+						var orderResult = response.data;
+						console.log('order result: ' + JSON.stringify(orderResult));
+						$scope.bidApr = orderResult.apr;
+						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+						if ($scope.bidQty > $scope.satisfiedBidQty) {
+							$scope.demandSatisfied = false;
+						}
+
+					}, function errorCallback(response) {
+						console.log('got ' + response.status + ' error');
+					});
+		}
+
+		$scope.reset = function() {
+			$scope.bidQty = '';
+			$scope.bidApr = '';
+			$scope.demandSatisfied = true;
+			$scope.noCounterparties = false;
+		}
+}])
+
+.controller('LimitBidCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
+		console.log('LimitBidCtrl inited');
+		$scope.bidQty = '';
+		$scope.bidApr = '';
+
+		$scope.submitLimitBidOrder = function() {
+			if ($scope.bidQty && $scope.bidApr) {
+				var orderRequest = {
+					"id" : 11,
+					"price" : $scope.bidApr,
+					"quantity" : $scope.bidQty,
+					"orderSide" : 1,
+					"orderType" : 0,
+					"counterparty" : {
+						"id" : 1,
+						"name" : "supplyer"
+					}
+				};
+
+				orderRequestsService.process(orderRequest)
+					.then(function successCallback(response){
+						var orderResult = response.data;
+						console.log('order result: ' + JSON.stringify(orderResult));
+						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+
+					}, function errorCallback(response) {
+						console.log('got ' + response.status + ' error');
+					});
+			}
+
+		}
+
+	}])
+
 
 .controller('GetPrepayCtrl', ['$scope', function($scope) {
 	console.log('GetPrepayCtrl inited');
-
 
 	$scope.maxPrice = 700;
 	$scope.minPrice = 300;

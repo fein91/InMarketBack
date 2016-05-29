@@ -16,16 +16,16 @@ values (3, 'buyer2');
 INSERT INTO counterparty
 values (4, 'buyer3');
 
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value)
-values             (11,  1,     2,      200);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value)
-values             (12,   1,    3,      150);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value)
-values             (13,   1,    4,      100);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (11,  1,     2,      200, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (12,   1,    3,      150, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (13,   1,    4,      100, 0);
 
 -- 0 ASK 1 BID 0 LIMIT 1 MARKET
 insert into order_request(id, counterparty_fk, price, quantity, date, order_type, order_side)
-values                  (111, 1,              32,    200,     SYSDATE, 0,         0);
+values                  (111, 2,              32,    200,     SYSDATE, 0,         0);
 insert into order_request(id, counterparty_fk, price, quantity, date, order_type, order_side)
 values                  (112, 3,              31,    150,     SYSDATE, 0,         0);
 insert into order_request(id, counterparty_fk, price, quantity, date, order_type, order_side)

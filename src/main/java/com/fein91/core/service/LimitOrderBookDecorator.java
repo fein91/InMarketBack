@@ -21,24 +21,24 @@ public class LimitOrderBookDecorator {
         this.lob = new OrderBook(DEFAULT_TICK_SIZE);
     }
 
-    public void addOrder(OrderRequest orderRequest, Map<Integer, List<Integer>> invoicesQtyByGiverId) {
+    public OrderResult addOrder(OrderRequest orderRequest, Map<Integer, List<Integer>> invoicesQtyByGiverId) {
         if (OrderType.LIMIT == orderRequest.getOrderType()) {
-            addLimitOrder(orderRequest.getCounterparty().getId(),
-                    orderRequest.getOrderSide(),
-                    invoicesQtyByGiverId,
-                    orderRequest.getQuantity().intValue(),
-                    orderRequest.getPrice().doubleValue());
+            return addLimitOrder(orderRequest.getCounterparty().getId(),
+                        orderRequest.getOrderSide(),
+                        invoicesQtyByGiverId,
+                        orderRequest.getQuantity().intValue(),
+                        orderRequest.getPrice().doubleValue());
         } else if (OrderType.MARKET == orderRequest.getOrderType()) {
-            addMarketOrder(orderRequest.getCounterparty().getId(),
-                    orderRequest.getOrderSide(),
-                    invoicesQtyByGiverId,
-                    orderRequest.getQuantity().intValue());
+            return addMarketOrder(orderRequest.getCounterparty().getId(),
+                        orderRequest.getOrderSide(),
+                        invoicesQtyByGiverId,
+                        orderRequest.getQuantity().intValue());
         } else {
             throw new IllegalArgumentException("Unknown orderRequest type: " + orderRequest);
         }
     }
 
-    public void addLimitOrder(BigInteger counterPartyId,
+    public OrderResult addLimitOrder(BigInteger counterPartyId,
                               OrderSide orderSide,
                               Map<Integer, List<Integer>> invoicesQtyByGiverId,
                               int quantity,
@@ -49,14 +49,21 @@ public class LimitOrderBookDecorator {
             throw new IllegalArgumentException("Price can't be 0");
         }
 
-        Order order = new Order(System.nanoTime(), true, quantity, counterPartyId.intValue(), orderSide.getCoreName(), price);
+        long time = System.nanoTime();
+        Order order = new Order(time, true, quantity, counterPartyId.intValue(), orderSide.getCoreName(), price);
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
-        lob.processOrder(order, false);
+        OrderReport orderReport = lob.processOrder(order, false);
         System.out.println(lob);
+
+        int satisfiedDemand = quantity - orderReport.getQtyRemaining();
+
+        BigDecimal apr = calculateAPR(time, satisfiedDemand);
+
+        return new OrderResult(apr, satisfiedDemand);
     }
 
-    public MarketOrderResult addMarketOrder(BigInteger counterPartyId,
+    public OrderResult addMarketOrder(BigInteger counterPartyId,
                                             OrderSide orderSide,
                                             Map<Integer, List<Integer>> invoicesQtyByGiverId,
                                             int quantity) {
@@ -75,7 +82,7 @@ public class LimitOrderBookDecorator {
 
         BigDecimal apr = calculateAPR(time, satisfiedDemand);
 
-        return new MarketOrderResult(apr, satisfiedDemand);
+        return new OrderResult(apr, satisfiedDemand);
     }
 
     protected BigDecimal calculateAPR(long time, int satisfiedDemand) {
