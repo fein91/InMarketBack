@@ -1,6 +1,6 @@
 package com.fein91.rest;
 
-import com.fein91.core.model.OrderResult;
+import com.fein91.model.OrderResult;
 import com.fein91.model.OrderRequest;
 import com.fein91.service.OrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;

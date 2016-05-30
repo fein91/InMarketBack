@@ -52,7 +52,7 @@
       </div>
       <div class="container-fluid proposal-bar">		     
         <div class="navbar-header" ng-controller="ProposalCtrl">
-          <p class="proposal-bar-text ng-cloak">Вам могут предоплатить покупатели: {{to_pay}}; Вы можете предоплатить своим поставщикам: {{to_get}}</p>
+          <p class="proposal-bar-text ng-cloak">Вам могут предоплатить покупатели: {{asks_sum}}; Вы можете предоплатить своим поставщикам: {{invoices_sum}}; Поставщикам срочно нужно {{bids_sum}}</p>
         </div>  
       </div>
     </nav>
@@ -61,9 +61,9 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar" ng-controller="HeaderController">
-            <li ng-class="{ active: isActive('/contragents')}"><a href="#">Мои контрагенты <span class="sr-only">(current)</span></a></li>
+            <li ng-class="{ active: isActive('/contragents')}"><a href="#">Мои контракты <span class="sr-only">(current)</span></a></li>
             <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a></li>
-            <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить платеж</a></li>
+            <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить предоплату</a></li>
             <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История транзакций</a></li>
             <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
           </ul>

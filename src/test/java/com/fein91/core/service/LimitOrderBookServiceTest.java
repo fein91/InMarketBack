@@ -1,7 +1,7 @@
 package com.fein91.core.service;
 
 import com.fein91.InMarketApplication;
-import com.fein91.core.model.OrderResult;
+import com.fein91.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;

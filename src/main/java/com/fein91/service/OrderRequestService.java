@@ -1,6 +1,6 @@
 package com.fein91.service;
 
-import com.fein91.core.model.OrderResult;
+import com.fein91.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.service.LimitOrderBookDecorator;
 import com.fein91.core.service.LimitOrderBookService;
@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,22 +38,46 @@ public class OrderRequestService {
 
     @Transactional
     public OrderResult processOrderRequest(OrderRequest orderRequest) {
-        List<Invoice> invoices = invoiceRepository.findInvoicesBySourceId(orderRequest.getCounterparty().getId());
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
-        for (Invoice invoice : invoices) {
-            Counterparty target = invoice.getTarget();
-            addAllTargetOrdersToLOB(lobDecorator, target);
+        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
+            addOrderRequest(lobDecorator, limitOrderRequest);
         }
 
         return addOrderRequest(lobDecorator, orderRequest);
     }
 
-    public void addAllTargetOrdersToLOB(LimitOrderBookDecorator lobDecorator, Counterparty counterparty) {
-        List<OrderRequest> orderRequests = orderRequestRepository.findByCounterparty(counterparty);
+    @Transactional
+    public List<OrderRequest> findLimitOrderRequestsToTrade(BigInteger counterpartyId, OrderSide orderSide) {
+        List<Invoice> invoices = OrderSide.BID == orderSide
+                ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
+                : invoiceRepository.findInvoicesByTargetId(counterpartyId);
 
-        for (OrderRequest orderRequest : orderRequests) {
-            addOrderRequest(lobDecorator, orderRequest);
+        List<OrderRequest> orderRequests = new ArrayList<>();
+        for (Invoice invoice : invoices) {
+            Counterparty giver = OrderSide.BID == orderSide
+                    ? invoice.getTarget()
+                    : invoice.getSource();
+             orderRequests.addAll(orderRequestRepository.findByCounterparty(giver));
         }
+        return orderRequests;
+    }
+
+    @Transactional
+    public BigDecimal findLimitOrderRequestsToTradeSum(BigInteger counterpartyId, OrderSide orderSide) {
+        List<Invoice> invoices = OrderSide.BID == orderSide
+                ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
+                : invoiceRepository.findInvoicesByTargetId(counterpartyId);
+
+        BigDecimal result = BigDecimal.ZERO;
+        for (Invoice invoice : invoices) {
+            Counterparty giver = OrderSide.BID == orderSide
+                    ? invoice.getTarget()
+                    : invoice.getSource();
+            result = result.add(orderRequestRepository.findByCounterparty(giver).stream()
+                    .map(OrderRequest :: getQuantity)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+        }
+        return result;
     }
 
     private OrderResult addOrderRequest(LimitOrderBookDecorator lobDecorator, OrderRequest orderRequest) {

@@ -1,4 +1,4 @@
-package com.fein91.core.model;
+package com.fein91.model;
 
 import java.math.BigDecimal;
 
