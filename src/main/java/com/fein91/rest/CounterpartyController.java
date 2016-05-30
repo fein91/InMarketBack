@@ -23,8 +23,8 @@ public class CounterpartyController {
         return invoiceRepository.findInvoicesBySourceId(sourceId);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{sourceId}/invoicesByTarget")
-    public List<Invoice> getByTargetId(@PathVariable BigInteger sourceId) {
-        return invoiceRepository.findInvoicesBySourceId(sourceId);
+    @RequestMapping(method = RequestMethod.GET, value = "/{targetId}/invoicesByTarget")
+    public List<Invoice> getByTargetId(@PathVariable BigInteger targetId) {
+        return invoiceRepository.findInvoicesByTargetId(targetId);
     }
 }

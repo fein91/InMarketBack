@@ -17,12 +17,12 @@ angular.module('inmarket.get_prepay', ['ngRoute'])
 
 		$scope.submitBidMarketOrder = function() {
 			var orderRequest = {
-				"id" : 11,
+				"id" : 123456789,
 				"quantity" : $scope.bidQty,
 				"orderSide" : 1,
 				"orderType" : 1,
 				"counterparty" : {
-					"id" : 1,
+					"id" : 11,
 					"name" : "supplyer"
 				}
 			};
@@ -58,13 +58,13 @@ angular.module('inmarket.get_prepay', ['ngRoute'])
 		$scope.submitLimitBidOrder = function() {
 			if ($scope.bidQty && $scope.bidApr) {
 				var orderRequest = {
-					"id" : 11,
+					"id" : 123456789,
 					"price" : $scope.bidApr,
 					"quantity" : $scope.bidQty,
 					"orderSide" : 1,
 					"orderType" : 0,
 					"counterparty" : {
-						"id" : 1,
+						"id" : 11,
 						"name" : "supplyer"
 					}
 				};

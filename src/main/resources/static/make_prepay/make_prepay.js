@@ -16,13 +16,13 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'chart.js'])
 
 		$scope.submitMarketAskOrder = function() {
 			var orderRequest = {
-				"id" : 11,
+				"id" : 123456789,
 				"quantity" : $scope.askQty,
 				"orderSide" : 0,
 				"orderType" : 1,
 				"counterparty" : {
-					"id" : 1,
-					"name" : "supplyer"
+					"id" : 11,
+					"name" : "test"
 				}
 			};
 
