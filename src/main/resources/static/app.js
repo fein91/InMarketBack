@@ -13,7 +13,8 @@ angular.module('inmarket', [
   'inmarket.trans_history',
   'inmarket.invoicesService',
   'inmarket.transHistoryService',
-  'inmarket.orderRequestsService'
+  'inmarket.orderRequestsService',
+  'inmarket.invoices'
 ])
 
 .config(['$routeProvider', function($routeProvider) {
