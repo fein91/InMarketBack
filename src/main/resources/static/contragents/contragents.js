@@ -7,7 +7,7 @@ angular.module('inmarket.contragents', ['ngRoute'])
 }])
 
 
-.controller('MyBuyersCtrl', ['$scope', 'invoicesService', 'NgTableParams', 'invoices', function($scope, invoicesService, NgTableParams, invoices) {
+.controller('MyBuyersCtrl', ['$scope', '$rootScope', 'invoicesService', 'NgTableParams', 'invoices', function($scope, $rootScope, invoicesService, NgTableParams, invoices) {
 	console.log('MyBuyersCtrl inited');
 
 	var self = this;
@@ -41,6 +41,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
             if ((unchecked == 0) || (checked == 0)) {
                 $scope.checkboxes.checked = (checked == total);
             }
+
+            // firing an event downwards
+            $rootScope.$broadcast('buyerProposalToChangeEvent', $scope.checkboxes.invoices);
+
         }, true);
 
     self.init = function() {
@@ -52,6 +56,11 @@ angular.module('inmarket.contragents', ['ngRoute'])
                     });
                     invoices.addAllBuyerInvoices(response.data);
                     $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
+
+
+                    angular.forEach(response.data, function(item) {
+                        $scope.checkboxes.invoices[item.id] = true;
+                    });
 
                     console.log('init invoices from db');
                 }, function errorCallback(response) {
