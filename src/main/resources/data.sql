@@ -41,6 +41,29 @@ values             (1116,   23,    11,      250, 0);
 insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
 values             (1117,   24,    11,      100, 0);
 
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1118,   21,    11,      300, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1119,   22,    11,      400, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1120,   23,    11,      250, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1121,   24,    11,      100, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1122,   21,    11,      300, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1123,   22,    11,      400, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1124,   24,    11,      100, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1125,   21,    11,      300, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1126,   22,    11,      400, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1127,   23,    11,      250, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_percent)
+values             (1128,   24,    11,      100, 0);
+
 -- 0 ASK 1 BID 0 LIMIT 1 MARKET
 insert into order_request(id, counterparty_fk, price, quantity, date, order_type, order_side)
 values                  (111, 21,              15,    200,     SYSDATE, 0,         1);

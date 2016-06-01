@@ -3,6 +3,8 @@ angular.module('inmarket.invoices', []).factory('invoices', function(){
 
     invoices.buyerInvoices = [];
     invoices.supplierInvoices = [];
+    invoices.buyerInvoicesCheckboxes = { 'checked': false, invoices: {} };
+    invoices.supplierInvoicesCheckboxes = { 'checked': false, invoices: {} };
 
     invoices.addBuyerInvoice = function(invoice){
         invoices.buyerInvoices.push(invoice);

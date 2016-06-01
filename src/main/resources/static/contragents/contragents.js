@@ -2,7 +2,7 @@ angular.module('inmarket.contragents', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/contragents', {
-    templateUrl: 'contragents/contragents.html',
+    templateUrl: 'contragents/contragents.html'
   });
 }])
 
@@ -15,19 +15,18 @@ angular.module('inmarket.contragents', ['ngRoute'])
         
         self.buyerInvoices = invoices.buyerInvoices;
         
-        $scope.checkboxes = { 'checked': false, invoices: {} };
         $scope.currentInvoicesPage = '';
 
-        // watch for check all checkbox
-        $scope.$watch('checkboxes.checked', function(value) {
-            console.log(JSON.stringify(value) + 'checkboxes.checked');
+        $scope.checkAll = function() {
+            var isChecked = $scope.checkboxes.checked;
+            console.log('check all ' + isChecked);
 
             angular.forEach(self.buyerInvoices, function(item) {
                 if (angular.isDefined(item.id)) {
-                    $scope.checkboxes.invoices[item.id] = value;
+                    $scope.checkboxes.invoices[item.id] = isChecked;
                 }
             });
-        });
+        };
 
         // watch for data checkboxes
         $scope.$watch('checkboxes.invoices', function(values) {
@@ -48,37 +47,23 @@ angular.module('inmarket.contragents', ['ngRoute'])
         if (invoices.buyerInvoices.length == 0 ) {
             invoicesService.getBySourceId(self.counterpartyId)
                 .then(function successCallback(response){
-                    $scope.tableParams = new NgTableParams({
-                        page: 1,            // show first page
-                        count: 10           // count per page
-                    }, {
-                        total: response.data.length, // length of data
-                        getData: function($defer, params) {
-                            // use build-in angular filter
-                            invoices.addAllBuyerInvoices(response.data);
-
-                            params.total(self.buyerInvoices.length); // set total for recalc pagination
-                            $defer.resolve($scope.currentInvoicesPage = self.buyerInvoices.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                        }
+                    $scope.tableParams = new NgTableParams({}, {
+                        dataset: response.data
                     });
+                    invoices.addAllBuyerInvoices(response.data);
+                    $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
 
                     console.log('init invoices from db');
                 }, function errorCallback(response) {
                     console.log('got ' + response.status + ' error');
                 });
         } else {
-            $scope.tableParams = new NgTableParams({
-                page: 1,            // show first page
-                count: 10           // count per page
-            }, {
-                total: self.buyerInvoices.length, // length of data
-                getData: function($defer, params) {
-                    // use build-in angular filter
-                    params.total(self.buyerInvoices.length); // set total for recalc pagination
-                    $defer.resolve($scope.currentInvoicesPage = self.buyerInvoices.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                }
+            $scope.tableParams = new NgTableParams({}, {
+                dataset: invoices.buyerInvoices
             });
+            $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
         }
+        $scope.checkboxes = invoices.buyerInvoicesCheckboxes;
     };
 
     self.init();
@@ -91,19 +76,18 @@ angular.module('inmarket.contragents', ['ngRoute'])
         self.counterpartyId = 11;
         self.supplierInvoices = invoices.supplierInvoices;
 
-        $scope.checkboxes = { 'checked': false, invoices: {} };
         $scope.currentInvoicesPage = '';
 
-        // watch for check all checkbox
-        $scope.$watch('checkboxes.checked', function(value) {
-            console.log(JSON.stringify(value) + 'checkboxes.checked');
+        $scope.checkAll = function() {
+            var isChecked = $scope.checkboxes.checked;
+            console.log('check all ' + isChecked);
 
-            angular.forEach(self.supplierInvoices, function(item) {
-                if (angular.isDefined(item.id)) {
-                    $scope.checkboxes.invoices[item.id] = value;
-                }
-            });
-        });
+                angular.forEach(self.supplierInvoices, function(item) {
+                    if (angular.isDefined(item.id)) {
+                        $scope.checkboxes.invoices[item.id] = isChecked;
+                    }
+                });
+        };
 
         // watch for data checkboxes
         $scope.$watch('checkboxes.invoices', function(values) {
@@ -156,6 +140,8 @@ angular.module('inmarket.contragents', ['ngRoute'])
                     }
                 });
             }
+            $scope.checkboxes = invoices.supplierInvoicesCheckboxes;
+
         };
 
         self.init();
