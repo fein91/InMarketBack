@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface OrderRequestRepository extends CrudRepository<OrderRequest, BigInteger> {
 
-    List<OrderRequest> findByCounterparty(Counterparty counterparty);
+    List<OrderRequest> findByCounterpartyAndOrderSide(Counterparty counterparty, int orderSide);
 }

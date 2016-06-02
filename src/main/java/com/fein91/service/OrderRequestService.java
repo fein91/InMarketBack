@@ -32,8 +32,8 @@ public class OrderRequestService {
     @Autowired
     LimitOrderBookService lobService;
 
-    public OrderRequest addOrderRequest(BigInteger id) {
-        return orderRequestRepository.save(new OrderRequest());
+    public OrderRequest addOrderRequest(OrderRequest orderRequest) {
+        return orderRequestRepository.save(orderRequest);
     }
 
     @Transactional
@@ -57,7 +57,7 @@ public class OrderRequestService {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
                     : invoice.getSource();
-             orderRequests.addAll(orderRequestRepository.findByCounterparty(giver));
+             orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.getId()));
         }
         return orderRequests;
     }
@@ -73,7 +73,7 @@ public class OrderRequestService {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
                     : invoice.getSource();
-            result = result.add(orderRequestRepository.findByCounterparty(giver).stream()
+            result = result.add(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.getId()).stream()
                     .map(OrderRequest :: getQuantity)
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
