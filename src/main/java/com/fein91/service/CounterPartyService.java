@@ -31,6 +31,6 @@ public class CounterPartyService {
         BigDecimal asksSum = orderRequestService.findLimitOrderRequestsToTradeSum(counterpartyId, OrderSide.ASK);
         BigDecimal bidsSum = orderRequestService.findLimitOrderRequestsToTradeSum(counterpartyId, OrderSide.BID);
 
-        return new ProposalInfo(asksSum, bidsSum, BigDecimal.ZERO);
+        return new ProposalInfo(asksSum, bidsSum);
     }
 }

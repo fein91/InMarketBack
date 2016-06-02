@@ -6,12 +6,10 @@ public class ProposalInfo {
 
     private final BigDecimal asksSum;
     private final BigDecimal bidsSum;
-    private final BigDecimal invoicesSum;
 
-    public ProposalInfo(BigDecimal asksSum, BigDecimal bidsSum, BigDecimal invoicesSum) {
+    public ProposalInfo(BigDecimal asksSum, BigDecimal bidsSum) {
         this.asksSum = asksSum;
         this.bidsSum = bidsSum;
-        this.invoicesSum = invoicesSum;
     }
 
     public BigDecimal getAsksSum() {
@@ -22,7 +20,4 @@ public class ProposalInfo {
         return bidsSum;
     }
 
-    public BigDecimal getInvoicesSum() {
-        return invoicesSum;
-    }
 }

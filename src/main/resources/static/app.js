@@ -14,6 +14,7 @@ angular.module('inmarket', [
   'inmarket.invoicesService',
   'inmarket.transHistoryService',
   'inmarket.orderRequestsService',
+  'inmarket.counterpartyService',
   'inmarket.invoices'
 ])
 
