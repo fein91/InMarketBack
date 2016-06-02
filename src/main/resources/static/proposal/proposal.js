@@ -10,19 +10,37 @@ angular.module('inmarket.proposal', ['ngRoute'])
 		$scope.asks_sum = 0;
 		$scope.bids_sum = 0;
 
-        $scope.invoices = invoices.buyerInvoices;
-
 		// listen for the event in the relevant $scope
 		$rootScope.$on('buyerProposalToChangeEvent', function (event, data) {
-			recalculateBuyerProposal(data);
+            console.log('buyerProposalToChangeEvent catched');
+
+            recalculateBuyerProposal(data);
 		});
 
 		$rootScope.$on('supplierProposalToChangeEvent', function (event, data) {
-			console.log(data); // 'Data to send'
+            console.log('supplierProposalToChangeEvent catched');
+
+			recalculateSupplierProposal(data);
 		});
 
 		recalculateBuyerProposal = function(data) {
-			buyer_invoices_sum
-		}
+            var sum = 0;
+            angular.forEach(invoices.buyerInvoices, function(item) {
+                if (data[item.id]) {
+                    sum = sum + item.value;
+                }
+            });
+            $scope.buyer_invoices_sum = sum;
+		};
+
+        recalculateSupplierProposal = function(data) {
+            var sum = 0;
+            angular.forEach(invoices.supplierInvoices, function(item) {
+                if (data[item.id]) {
+                    sum = sum + item.value;
+                }
+            });
+            $scope.supplier_invoices_sum = sum;
+        };
 
 }]);

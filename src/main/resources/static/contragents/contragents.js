@@ -78,7 +78,7 @@ angular.module('inmarket.contragents', ['ngRoute'])
     self.init();
 }])
 
-.controller('MySuppliersCtrl', ['$scope', 'invoicesService', 'NgTableParams', 'invoices', function($scope, invoicesService, NgTableParams, invoices) {
+.controller('MySuppliersCtrl', ['$scope', '$rootScope', 'invoicesService', 'NgTableParams', 'invoices', function($scope, $rootScope, invoicesService, NgTableParams, invoices) {
         console.log('MySuppliersCtrl inited');
 
         var self = this;
@@ -111,24 +111,25 @@ angular.module('inmarket.contragents', ['ngRoute'])
             if ((unchecked == 0) || (checked == 0)) {
                 $scope.checkboxes.checked = (checked == total);
             }
+
+            // firing an event downwards
+            $rootScope.$broadcast('supplierProposalToChangeEvent', $scope.checkboxes.invoices);
         }, true);
 
         self.init = function() {
             if (invoices.supplierInvoices.length == 0) {
                 invoicesService.getByTargetId(self.counterpartyId)
                     .then(function successCallback(response){
-                        $scope.tableParams = new NgTableParams({
-                            page: 1,            // show first page
-                            count: 10           // count per page
-                        }, {
-                            total: response.data.length, // length of data
-                            getData: function($defer, params) {
-                                // use build-in angular filter
-                                invoices.addAllSupplierInvoices(response.data);
+                        $scope.tableParams = new NgTableParams({}, {
+                            dataset: response.data
+                        });
 
-                                params.total(self.supplierInvoices.length); // set total for recalc pagination
-                                $defer.resolve($scope.currentInvoicesPage = self.supplierInvoices.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                            }
+                        invoices.addAllSupplierInvoices(response.data);
+                        $scope.currentInvoicesPage = self.supplierInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
+
+
+                        angular.forEach(response.data, function(item) {
+                            $scope.checkboxes.invoices[item.id] = true;
                         });
 
                         console.log('init invoices from db');
@@ -136,18 +137,11 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         console.log('got ' + response.status + ' error');
                     });
             } else {
-                $scope.tableParams = new NgTableParams({
-                    page: 1,            // show first page
-                    count: 10           // count per page
-                }, {
-                    total: self.supplierInvoices.length, // length of data
-                    getData: function($defer, params) {
-                        // use build-in angular filter
-
-                        params.total(self.supplierInvoices.length); // set total for recalc pagination
-                        $defer.resolve($scope.currentInvoicesPage = self.supplierInvoices.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                    }
+                $scope.tableParams = new NgTableParams({}, {
+                    dataset: invoices.supplierInvoices
                 });
+
+                $scope.currentInvoicesPage = self.supplierInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
             }
             $scope.checkboxes = invoices.supplierInvoicesCheckboxes;
 
