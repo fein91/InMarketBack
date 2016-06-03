@@ -32,6 +32,10 @@ public class OrderRequestService {
     @Autowired
     LimitOrderBookService lobService;
 
+    public List<OrderRequest> getByCounterpartyId(BigInteger counterpartyId) {
+        return orderRequestRepository.findByCounterpartyId(counterpartyId);
+    }
+
     public OrderRequest addOrderRequest(OrderRequest orderRequest) {
         return orderRequestRepository.save(orderRequest);
     }
