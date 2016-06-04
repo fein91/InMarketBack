@@ -51,9 +51,12 @@
         </div>                   
       </div>
       <div class="container-fluid proposal-bar">		     
-        <div class="navbar-header" ng-controller="ProposalCtrl">
-          <p class="proposal-bar-text ng-cloak">Вам могут предоплатить покупатели: {{to_pay}}; Вы можете предоплатить своим поставщикам: {{to_get}}</p>
-        </div>  
+        <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
+            <div class="col-lg-3">Можно предоплатить поставщикам: {{supplier_invoices_sum}};</div>
+            <div class="col-lg-3">Можно запросить у покупателей: {{buyer_invoices_sum}};</div>
+            <div class="col-lg-3">Доступно к предоплате от покупателей: {{asks_sum}};</div>
+            <div class="col-lg-3">Поставщикам срочно нужно: {{bids_sum}}</div>
+        </div>
       </div>
     </nav>
 
@@ -61,15 +64,16 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar" ng-controller="HeaderController">
-            <li ng-class="{ active: isActive('/contragents')}"><a href="#">Мои контрагенты <span class="sr-only">(current)</span></a></li>
+            <li ng-class="{ active: isActive('/contragents')}"><a href="#">Мои контракты <span class="sr-only">(current)</span></a></li>
             <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a></li>
-            <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить платеж</a></li>
+            <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить предоплату</a></li>
             <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История транзакций</a></li>
             <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <div ng-view></div>        
+          <div ng-view></div>
+        </div>
       </div>
     </div>
 
@@ -86,11 +90,14 @@
 	  <script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>	
     <script src="app.js"></script>
     <script src="components/ng-table.js"></script>
+    <script src="proposal/invoices.js"></script>
     <script src="proposal/proposal.js"></script>
     <script src="contragents/contragents.js"></script>
     <script src="contragents/invoices_service.js"></script>
+    <script src="contragents/counterparty_service.js"></script>
     <script src="make_prepay/make_prepay.js"></script>
     <script src="get_prepay/get_prepay.js"></script>
+    <script src="get_prepay/orderRequests_service.js"></script>
     <script src="trans_history/trans_history.js"></script>
     <script src="trans_history/trans_history_service.js"></script>
   </body>

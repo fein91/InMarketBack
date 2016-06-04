@@ -1,5 +1,6 @@
 package com.fein91.service;
 
+import com.fein91.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.service.LimitOrderBookDecorator;
 import com.fein91.core.service.LimitOrderBookService;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,44 +32,73 @@ public class OrderRequestService {
     @Autowired
     LimitOrderBookService lobService;
 
-    public OrderRequest addOrderRequest(BigInteger id) {
-        return orderRequestRepository.save(new OrderRequest());
+    public List<OrderRequest> getByCounterpartyId(BigInteger counterpartyId) {
+        return orderRequestRepository.findByCounterpartyId(counterpartyId);
+    }
+
+    public OrderRequest addOrderRequest(OrderRequest orderRequest) {
+        return orderRequestRepository.save(orderRequest);
     }
 
     @Transactional
-    public void processOrderRequest(OrderRequest orderRequest) {
-        List<Invoice> invoices = invoiceRepository.findInvoicesBySourceId(orderRequest.getCounterparty().getId());
+    public OrderResult processOrderRequest(OrderRequest orderRequest) {
         LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
+        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
+            addOrderRequest(lobDecorator, limitOrderRequest);
+        }
+
+        return addOrderRequest(lobDecorator, orderRequest);
+    }
+
+    @Transactional
+    public List<OrderRequest> findLimitOrderRequestsToTrade(BigInteger counterpartyId, OrderSide orderSide) {
+        List<Invoice> invoices = OrderSide.BID == orderSide
+                ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
+                : invoiceRepository.findInvoicesByTargetId(counterpartyId);
+
+        List<OrderRequest> orderRequests = new ArrayList<>();
         for (Invoice invoice : invoices) {
-            Counterparty target = invoice.getTarget();
-            addAllTargetOrdersToLOB(lobDecorator, target);
+            Counterparty giver = OrderSide.BID == orderSide
+                    ? invoice.getTarget()
+                    : invoice.getSource();
+             orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.getId()));
         }
-
-        addOrderRequest(lobDecorator, orderRequest);
+        return orderRequests;
     }
 
-    public void addAllTargetOrdersToLOB(LimitOrderBookDecorator lobDecorator, Counterparty counterparty) {
-        List<OrderRequest> orderRequests = orderRequestRepository.findByCounterparty(counterparty);
+    @Transactional
+    public BigDecimal findLimitOrderRequestsToTradeSum(BigInteger counterpartyId, OrderSide orderSide) {
+        List<Invoice> invoices = OrderSide.BID == orderSide
+                ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
+                : invoiceRepository.findInvoicesByTargetId(counterpartyId);
 
-        for (OrderRequest orderRequest : orderRequests) {
-            addOrderRequest(lobDecorator, orderRequest);
+        BigDecimal result = BigDecimal.ZERO;
+        for (Invoice invoice : invoices) {
+            Counterparty giver = OrderSide.BID == orderSide
+                    ? invoice.getTarget()
+                    : invoice.getSource();
+            result = result.add(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.getId()).stream()
+                    .map(OrderRequest :: getQuantity)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
+        return result;
     }
 
-    private void addOrderRequest(LimitOrderBookDecorator lobDecorator, OrderRequest orderRequest) {
+    private OrderResult addOrderRequest(LimitOrderBookDecorator lobDecorator, OrderRequest orderRequest) {
         if (OrderType.MARKET == orderRequest.getOrderType()) {
             if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                lobService.addAskMarketOrder(lobDecorator, orderRequest);
+                return lobService.addAskMarketOrder(lobDecorator, orderRequest);
             } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                lobService.addBidMarketOrder(lobDecorator, orderRequest);
+                return lobService.addBidMarketOrder(lobDecorator, orderRequest);
             }
         } else if (OrderType.LIMIT == orderRequest.getOrderType()) {
             if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                lobService.addAskLimitOrder(lobDecorator, orderRequest);
+                return lobService.addAskLimitOrder(lobDecorator, orderRequest);
             } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                lobService.addBidLimitOrder(lobDecorator, orderRequest);
+                return lobService.addBidLimitOrder(lobDecorator, orderRequest);
             }
         }
+        throw new IllegalStateException("Couldn't reach here");
     }
 
 }

@@ -12,7 +12,10 @@ angular.module('inmarket', [
   'inmarket.make_prepay',
   'inmarket.trans_history',
   'inmarket.invoicesService',
-  'inmarket.transHistoryService'
+  'inmarket.transHistoryService',
+  'inmarket.orderRequestsService',
+  'inmarket.counterpartyService',
+  'inmarket.invoices'
 ])
 
 .config(['$routeProvider', function($routeProvider) {

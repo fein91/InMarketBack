@@ -1,7 +1,7 @@
 package com.fein91.core.service;
 
 import com.fein91.InMarketApplication;
-import com.fein91.core.model.MarketOrderResult;
+import com.fein91.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
@@ -66,7 +66,7 @@ public class LimitOrderBookServiceTest {
         double buyer3AskPrice = 29d;
         limitOrderBookService.addAskLimitOrder(lobDecorator, buyer3, 100, buyer3AskPrice);
 
-        MarketOrderResult result = limitOrderBookService.addBidMarketOrder(lobDecorator, supplier, 350);
+        OrderResult result = limitOrderBookService.addBidMarketOrder(lobDecorator, supplier, 350);
 
         Trade trade1 = findTradeByBuyerAndSeller(lobDecorator.lob.getTape(), supplier.getId().intValue(), buyer1.getId().intValue());
         Assert.assertNotNull(trade1);
@@ -112,7 +112,7 @@ public class LimitOrderBookServiceTest {
         double supplier4AskPrice = 31d;
         limitOrderBookService.addBidLimitOrder(lobDecorator, supplier4, 100, supplier4AskPrice);
 
-        MarketOrderResult result = limitOrderBookService.addAskMarketOrder(lobDecorator, buyer, 350);
+        OrderResult result = limitOrderBookService.addAskMarketOrder(lobDecorator, buyer, 350);
 
         Trade trade1 = findTradeByBuyerAndSeller(lobDecorator.lob.getTape(), supplier1.getId().intValue(), buyer.getId().intValue());
         Assert.assertNotNull(trade1);
@@ -157,7 +157,7 @@ public class LimitOrderBookServiceTest {
         double supplier5AskPrice = 32d;
         limitOrderBookService.addBidLimitOrder(lobDecorator, supplier5, 400, supplier5AskPrice);
 
-        MarketOrderResult result = limitOrderBookService.addAskMarketOrder(lobDecorator, buyer1, 350);
+        OrderResult result = limitOrderBookService.addAskMarketOrder(lobDecorator, buyer1, 350);
 
         Trade trade1 = findTradeByBuyerAndSeller(lobDecorator.lob.getTape(), supplier1.getId().intValue(), buyer1.getId().intValue());
         Assert.assertNotNull(trade1);
@@ -199,7 +199,7 @@ public class LimitOrderBookServiceTest {
         double buyer3AskPrice = 31d;
         limitOrderBookService.addAskLimitOrder(lobDecorator, buyer3, 500, buyer3AskPrice);
 
-        MarketOrderResult result = limitOrderBookService.addBidMarketOrder(lobDecorator, supplier, 450);
+        OrderResult result = limitOrderBookService.addBidMarketOrder(lobDecorator, supplier, 450);
 
         Trade trade1 = findTradeByBuyerAndSeller(lobDecorator.lob.getTape(), supplier.getId().intValue(), buyer1.getId().intValue());
         Assert.assertNotNull(trade1);
@@ -249,7 +249,7 @@ public class LimitOrderBookServiceTest {
         double supplier3AskPrice = 26d;
         limitOrderBookService.addBidLimitOrder(lobDecorator, supplier3, 200, supplier3AskPrice);
 
-        MarketOrderResult result = limitOrderBookService.addAskMarketOrder(lobDecorator, buyer, 250);
+        OrderResult result = limitOrderBookService.addAskMarketOrder(lobDecorator, buyer, 250);
 
         Trade trade1 = findTradeByBuyerAndSeller(lobDecorator.lob.getTape(), supplier1.getId().intValue(), buyer.getId().intValue());
         Assert.assertNotNull(trade1);
