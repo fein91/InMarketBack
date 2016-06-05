@@ -1,8 +1,5 @@
 package com.fein91.core.model;
 
-/**
- * Created by fein on 5/23/2016.
- */
 public enum OrderSide {
     ASK("offer", 0),
     BID("bid", 1);
@@ -30,5 +27,13 @@ public enum OrderSide {
             }
         }
         throw new IllegalArgumentException("Unknown order side id: " + id);
+    }
+
+    public OrderSide oppositeSide() {
+        if (this == OrderSide.BID) {
+            return OrderSide.ASK;
+        } else {
+            return OrderSide.BID;
+        }
     }
 }

@@ -1,10 +1,13 @@
 package com.fein91;
 
+import com.fein91.core.model.OrderBook;
+import com.fein91.core.service.OrderBookBuilder;
 import com.fein91.model.Counterparty;
 import com.fein91.model.Invoice;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.InvoiceService;
 import com.fein91.service.OrderRequestService;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +32,19 @@ public class InMarketApplicationTests {
     InvoiceService invoiceService;
     @Autowired
     OrderRequestService orderRequestService;
+    @Autowired
+    OrderBookBuilder orderBookBuilder;
 
 
     @Test
     @Transactional
     public void test() {
-        Counterparty supplier = counterPartyService.addCounterParty(SUPPLIER_ID, "supplier");
-        Counterparty buyer = counterPartyService.addCounterParty(BUYER_ID, "buyer");
+        OrderBook orderBook = orderBookBuilder.getInstance();
 
-        Invoice invoice = invoiceService.addInvoice(BigInteger.valueOf(111), supplier, buyer, BigDecimal.valueOf(1000));
+        OrderBook orderBook1 = orderBookBuilder.getInstance();
+        Assert.assertNotSame(orderBook, orderBook1);
+        Assert.assertNotNull(orderBook.orderRequestService);
 
-        //orderRequestService.processBidMarketOrderRequest(supplier.getId());
     }
 
 }

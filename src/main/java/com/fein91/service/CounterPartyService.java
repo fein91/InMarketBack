@@ -27,6 +27,7 @@ public class CounterPartyService {
         return counterpartyRepository.save(counterparty);
     }
 
+    @Deprecated
     public ProposalInfo calculateProposalInfo(BigInteger counterpartyId) {
         BigDecimal asksSum = orderRequestService.findLimitOrderRequestsToTradeSum(counterpartyId, OrderSide.ASK);
         BigDecimal bidsSum = orderRequestService.findLimitOrderRequestsToTradeSum(counterpartyId, OrderSide.BID);

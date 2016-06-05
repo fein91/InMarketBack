@@ -71,10 +71,5 @@ public class CounterpartyServiceTest {
                         .quantity(BigDecimal.valueOf(50))
                         .build());
 
-        ProposalInfo proposalInfo = counterPartyService.calculateProposalInfo(buyer.getId());
-        Assert.assertNotNull(proposalInfo.getBidsSum());
-        Assert.assertEquals(BigDecimal.ZERO, proposalInfo.getAsksSum());
-        Assert.assertEquals(BigDecimal.valueOf(100), proposalInfo.getBidsSum());
-
     }
 }

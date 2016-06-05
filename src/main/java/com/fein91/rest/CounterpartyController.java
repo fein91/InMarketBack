@@ -36,6 +36,7 @@ public class CounterpartyController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/calculateProposals")
+    @Deprecated
     public ProposalInfo calculateProposals(@PathVariable BigInteger counterpartyId) {
         return counterPartyService.calculateProposalInfo(counterpartyId);
     }

@@ -19,7 +19,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 			var orderRequest = {
 				"id" : 123456789,
 				"quantity" : $scope.bidQty,
-				"orderSide" : 1,
+				"orderSide" : 0,
 				"orderType" : 1,
 				"counterparty" : {
 					"id" : 11,
@@ -61,7 +61,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 					"id" : 123456789,
 					"price" : $scope.bidApr,
 					"quantity" : $scope.bidQty,
-					"orderSide" : 1,
+					"orderSide" : 0,
 					"orderType" : 0,
 					"counterparty" : {
 						"id" : 11,

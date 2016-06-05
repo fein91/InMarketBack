@@ -51,6 +51,10 @@ public class OrderRequestBuilder {
     }
 
     public OrderRequest build() {
+        if (orderType == OrderType.LIMIT && price == null) {
+            throw new IllegalStateException("Can't build limit order without price");
+        }
+
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.setId(id);
         orderRequest.setCounterparty(counterparty);

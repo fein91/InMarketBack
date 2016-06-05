@@ -1,5 +1,8 @@
 package com.fein91.core.model;
 
+import com.fein91.service.OrderRequestService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.StringWriter;
@@ -8,7 +11,11 @@ import java.util.*;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
 
+@Component
 public class OrderBook {
+
+	public OrderRequestService orderRequestService;
+
 	private List<Trade> tape = new ArrayList<Trade>();
 	private OrderTree bids = new OrderTree();
 	private OrderTree asks = new OrderTree();
@@ -16,7 +23,10 @@ public class OrderBook {
 	private long time;
 	private int nextQuoteID;
 	private int lastOrderSign;
-	
+
+	public OrderBook() {
+	}
+
 	public OrderBook(double tickSize) {
 		this.tickSize = tickSize;
 		this.reset();
@@ -183,23 +193,29 @@ public class OrderBook {
 				if (qtyRemaining <= localOrderQty) {
 					//обновляем значением ASK - qtyRem
 					qtyTraded = qtyRemaining;
+					int newQty = headOrder.getQuantity() - qtyRemaining;
 					if (side == "offer") {
-						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+						this.bids.updateOrderQty(newQty,
 												 headOrder.getqId());
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					} else {
-						this.asks.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+						this.asks.updateOrderQty(newQty,
 												 headOrder.getqId());
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				} else {
 					//обновляем значением ASK - localASK
 					qtyTraded = localOrderQty;
+					int newQty = headOrder.getQuantity() - localOrderQty;
 					if (side == "offer") {
-						this.bids.updateOrderQty(headOrder.getQuantity() - localOrderQty,
+						this.bids.updateOrderQty(newQty,
 								headOrder.getqId());
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					} else {
-						this.asks.updateOrderQty(headOrder.getQuantity() - localOrderQty,
+						this.asks.updateOrderQty(newQty,
 								headOrder.getqId());
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				}
@@ -209,19 +225,24 @@ public class OrderBook {
 					qtyTraded = localOrderQty;
 					if (side == "offer") {
 						this.bids.removeOrderByID(headOrder.getqId());
+						orderRequestService.removeOrderRequest(headOrder.getId());
 					} else {
 						this.asks.removeOrderByID(headOrder.getqId());
+						orderRequestService.removeOrderRequest(headOrder.getId());
 					}
 					qtyRemaining -= qtyTraded;
 				} else {
 					//обновляем значением ASK - qtyRem
 					qtyTraded = qtyRemaining;
+					int newQty = headOrder.getQuantity() - qtyRemaining;
 					if (side == "offer") {
-						this.bids.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+						this.bids.updateOrderQty(newQty,
 								headOrder.getqId());
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					} else {
-						this.asks.updateOrderQty(headOrder.getQuantity() - qtyRemaining,
+						this.asks.updateOrderQty(newQty,
 								headOrder.getqId());
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				}
@@ -237,7 +258,7 @@ public class OrderBook {
 				seller = headOrder.getTakerId();
 			}
 			Trade trade = new Trade(time, headOrder.getPrice(), qtyTraded, 
-									headOrder.getTakerId(),takerId, buyer, seller,
+									headOrder.getTakerId(), takerId, buyer, seller,
 									headOrder.getqId());
 			trades.add(trade);
 			this.tape.add(trade);
@@ -366,4 +387,7 @@ public class OrderBook {
 		return tape;
 	}
 
+	public void setOrderRequestService(OrderRequestService orderRequestService) {
+		this.orderRequestService = orderRequestService;
+	}
 }

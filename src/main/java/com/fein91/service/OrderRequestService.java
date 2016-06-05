@@ -1,8 +1,9 @@
 package com.fein91.service;
 
+import com.fein91.core.model.OrderBook;
+import com.fein91.core.service.OrderBookBuilder;
 import com.fein91.model.OrderResult;
 import com.fein91.core.model.OrderSide;
-import com.fein91.core.service.LimitOrderBookDecorator;
 import com.fein91.core.service.LimitOrderBookService;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by olta1014 on 23.05.2016.
@@ -25,12 +27,16 @@ import java.util.List;
 @Service
 public class OrderRequestService {
 
+    private final static Logger LOGGER = Logger.getLogger(OrderRequestService.class.getName());
+
     @Autowired
     OrderRequestRepository orderRequestRepository;
     @Autowired
     InvoiceRepository invoiceRepository;
     @Autowired
     LimitOrderBookService lobService;
+    @Autowired
+    OrderBookBuilder orderBookBuilder;
 
     public List<OrderRequest> getByCounterpartyId(BigInteger counterpartyId) {
         return orderRequestRepository.findByCounterpartyId(counterpartyId);
@@ -42,12 +48,14 @@ public class OrderRequestService {
 
     @Transactional
     public OrderResult processOrderRequest(OrderRequest orderRequest) {
-        LimitOrderBookDecorator lobDecorator = new LimitOrderBookDecorator();
+        orderRequestRepository.save(orderRequest);
+
+        OrderBook lob = orderBookBuilder.getInstance();
         for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
-            addOrderRequest(lobDecorator, limitOrderRequest);
+            addOrderRequest(lob, limitOrderRequest);
         }
 
-        return addOrderRequest(lobDecorator, orderRequest);
+        return addOrderRequest(lob, orderRequest);
     }
 
     @Transactional
@@ -61,12 +69,13 @@ public class OrderRequestService {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
                     : invoice.getSource();
-             orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.getId()));
+             orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
         }
         return orderRequests;
     }
 
     @Transactional
+    @Deprecated
     public BigDecimal findLimitOrderRequestsToTradeSum(BigInteger counterpartyId, OrderSide orderSide) {
         List<Invoice> invoices = OrderSide.BID == orderSide
                 ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
@@ -84,18 +93,32 @@ public class OrderRequestService {
         return result;
     }
 
-    private OrderResult addOrderRequest(LimitOrderBookDecorator lobDecorator, OrderRequest orderRequest) {
+    @Transactional
+    public void removeOrderRequest(BigInteger orderId) {
+        orderRequestRepository.delete(orderId);
+        LOGGER.info("Order request was removed: " + orderId);
+    }
+
+    @Transactional
+    public OrderRequest updateOrderRequest(BigInteger orderId, BigDecimal qty) {
+        OrderRequest orderRequest = orderRequestRepository.findOne(orderId);
+        orderRequest.setQuantity(qty);
+
+        return orderRequestRepository.save(orderRequest);
+    }
+
+    private OrderResult addOrderRequest(OrderBook lob, OrderRequest orderRequest) {
         if (OrderType.MARKET == orderRequest.getOrderType()) {
             if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                return lobService.addAskMarketOrder(lobDecorator, orderRequest);
+                return lobService.addAskMarketOrder(lob, orderRequest);
             } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                return lobService.addBidMarketOrder(lobDecorator, orderRequest);
+                return lobService.addBidMarketOrder(lob, orderRequest);
             }
         } else if (OrderType.LIMIT == orderRequest.getOrderType()) {
             if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                return lobService.addAskLimitOrder(lobDecorator, orderRequest);
+                return lobService.addAskLimitOrder(lob, orderRequest);
             } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                return lobService.addBidLimitOrder(lobDecorator, orderRequest);
+                return lobService.addBidLimitOrder(lob, orderRequest);
             }
         }
         throw new IllegalStateException("Couldn't reach here");

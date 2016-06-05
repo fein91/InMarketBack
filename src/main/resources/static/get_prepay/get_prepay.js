@@ -18,7 +18,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 			var orderRequest = {
 				"id" : 123456789,
 				"quantity" : $scope.askQty,
-				"orderSide" : 0,
+				"orderSide" : 1,
 				"orderType" : 1,
 				"counterparty" : {
 					"id" : 11,

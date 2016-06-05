@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Order {
+	private final BigInteger id;
 	private long timestamp;
 	private boolean limit;
 	private int quantity;
@@ -18,13 +19,14 @@ public class Order {
 	private OrderList oL;
     private Map<Integer, List<Integer>> invoicesQtyByGiverId;
 	
-	public Order(long time, boolean limit, int quantity, int takerId, String side) {
-		this(time, limit, quantity, takerId, side, null);
+	public Order(BigInteger id, long time, boolean limit, int quantity, int takerId, String side) {
+		this(id, time, limit, quantity, takerId, side, null);
 	}	
 	
-	public Order(long time, boolean limit, int quantity,
+	public Order(BigInteger id, long time, boolean limit, int quantity,
 				int takerId, String side, Double price) {
-		
+
+		this.id = id;
 		this.timestamp = time;
 		this.limit = limit;
 		this.side = side;
@@ -133,4 +135,8 @@ public class Order {
     public void setInvoicesQtyByGiverId(Map<Integer, List<Integer>> invoicesQtyByGiverId) {
         this.invoicesQtyByGiverId = invoicesQtyByGiverId;
     }
+
+	public BigInteger getId() {
+		return id;
+	}
 }
