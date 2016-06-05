@@ -260,6 +260,14 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(0, BigDecimal.valueOf(28).compareTo(result.getApr()));
     }
 
+    /*
+       *     b1  b2
+       * s1 150 200
+       *    ASK
+       * b1 100  30
+       * b2 150  28
+       * s1 bid limit order qty = 200 price = 29
+       * */
     @Test
     @Transactional
     @Rollback(true)
