@@ -3,16 +3,12 @@ package com.fein91.core.service;
 import com.fein91.InMarketApplication;
 import com.fein91.OrderRequestBuilder;
 import com.fein91.core.model.OrderSide;
-import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
 import com.fein91.model.Counterparty;
-import com.fein91.model.OrderResult;
 import com.fein91.model.OrderType;
-import com.fein91.model.ProposalInfo;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.InvoiceService;
 import com.fein91.service.OrderRequestService;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +44,10 @@ public class CounterpartyServiceTest {
         Counterparty supplier3 = counterPartyService.addCounterParty(BigInteger.valueOf(4), "supplier3");
         Counterparty supplier4 = counterPartyService.addCounterParty(BigInteger.valueOf(6), "supplier4");
 
-        invoiceService.addInvoice(BigInteger.valueOf(11), supplier1, buyer, BigDecimal.valueOf(100));
-        invoiceService.addInvoice(BigInteger.valueOf(12), supplier2, buyer, BigDecimal.valueOf(200));
-        invoiceService.addInvoice(BigInteger.valueOf(13), supplier3, buyer, BigDecimal.valueOf(50));
-        invoiceService.addInvoice(BigInteger.valueOf(14), supplier4, buyer, BigDecimal.valueOf(50));
+        invoiceService.addInvoice(BigInteger.valueOf(11), supplier1, buyer, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceService.addInvoice(BigInteger.valueOf(12), supplier2, buyer, BigDecimal.valueOf(200), BigDecimal.ZERO);
+        invoiceService.addInvoice(BigInteger.valueOf(13), supplier3, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
+        invoiceService.addInvoice(BigInteger.valueOf(14), supplier4, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
 
         orderRequestService.addOrderRequest(
                 new OrderRequestBuilder(BigInteger.valueOf(111), supplier2)

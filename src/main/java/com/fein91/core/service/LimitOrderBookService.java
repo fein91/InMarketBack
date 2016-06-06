@@ -9,6 +9,7 @@ import com.fein91.model.Invoice;
 import com.fein91.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -83,10 +84,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty source = invoice.getSource();
-            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty source = invoice.getSource();
+//            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addLimitOrder(lob, orderId, target.getId(), OrderSide.ASK, map, quantity, price);
     }
@@ -135,8 +136,9 @@ public class LimitOrderBookService {
         int satisfiedDemand = quantity - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
+        //updateInvoices(lob);
 
-        return new OrderResult(apr, satisfiedDemand);
+        return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
     }
 
     public OrderResult addMarketOrder(OrderBook lob,
@@ -160,7 +162,7 @@ public class LimitOrderBookService {
 
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
 
-        return new OrderResult(apr, satisfiedDemand);
+        return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
     }
 
     protected BigDecimal calculateAPR(OrderBook lob, long time, int satisfiedDemand) {
@@ -172,5 +174,25 @@ public class LimitOrderBookService {
         }
 
         return apr.setScale(APR_SCALE, RoundingMode.HALF_UP);
+    }
+
+    protected void updateInvoices(OrderBook lob) {
+        for (Trade trade : lob.getTape()) {
+            List<Invoice> invoices = invoiceRepository.findBySourceAndTarget(BigInteger.valueOf(trade.getBuyer()), BigInteger.valueOf(trade.getSeller()));
+
+            if (CollectionUtils.isEmpty(invoices)) {
+                throw new IllegalStateException("Invoices can't be null");
+            }
+
+            BigDecimal remainingQty = BigDecimal.valueOf(trade.getQty());
+            while (BigDecimal.ZERO.compareTo(remainingQty) < 0) {
+                for (Invoice invoice : invoices) {
+                    if (invoice.getValue().compareTo(remainingQty) > 0) {
+                        invoice.setPrepaidValue(invoice.getPrepaidValue().add(invoice.getValue().subtract(remainingQty)));
+
+                    }
+                }
+            }
+        }
     }
 }

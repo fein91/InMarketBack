@@ -23,7 +23,7 @@ public class Invoice {
 
     BigDecimal value;
 
-    Integer prepaidPercent;
+    BigDecimal prepaidValue;
 
     public BigInteger getId() {
         return id;
@@ -57,11 +57,11 @@ public class Invoice {
         this.value = value;
     }
 
-    public Integer getPrepaidPercent() {
-        return prepaidPercent;
+    public BigDecimal getPrepaidValue() {
+        return prepaidValue;
     }
 
-    public void setPrepaidPercent(Integer prepaidPercent) {
-        this.prepaidPercent = prepaidPercent;
+    public void setPrepaidValue(BigDecimal prepaidValue) {
+        this.prepaidValue = prepaidValue;
     }
 }

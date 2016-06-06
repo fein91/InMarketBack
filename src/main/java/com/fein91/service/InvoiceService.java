@@ -18,13 +18,27 @@ public class InvoiceService {
     InvoiceRepository invoiceRepository;
 
     @Transactional
-    public Invoice addInvoice(BigInteger id, Counterparty source, Counterparty target, BigDecimal value) {
+    public Invoice addInvoice(BigInteger id, Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
         Invoice invoice = new Invoice();
         invoice.setId(id);
         invoice.setSource(source);
         invoice.setTarget(target);
         invoice.setValue(value);
+        invoice.setPrepaidValue(prepaidValue);
 
         return invoiceRepository.save(invoice);
+    }
+
+    public Invoice updateInvoice(Invoice invoice, BigDecimal prepaidValue) {
+        invoice.setPrepaidValue(invoice.getPrepaidValue().add(prepaidValue));
+        return invoiceRepository.save(invoice);
+    }
+
+    public List<Invoice> findBySourceAndTarget(BigInteger sourceId, BigInteger targetId) {
+        return invoiceRepository.findBySourceAndTarget(sourceId, targetId);
+    }
+
+    public Invoice getById(BigInteger invoiceId) {
+        return invoiceRepository.findOne(invoiceId);
     }
 }

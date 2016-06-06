@@ -1,5 +1,7 @@
 package com.fein91.core.model;
 
+import com.fein91.model.Invoice;
+import com.fein91.service.InvoiceService;
 import com.fein91.service.OrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -7,6 +9,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
@@ -14,7 +17,8 @@ import java.util.*;
 @Component
 public class OrderBook {
 
-	public OrderRequestService orderRequestService;
+	private OrderRequestService orderRequestService;
+	private InvoiceService invoiceService;
 
 	private List<Trade> tape = new ArrayList<Trade>();
 	private OrderTree bids = new OrderTree();
@@ -182,17 +186,23 @@ public class OrderBook {
 			int qtyTraded = 0;
 			Order headOrder = iter.next();
 
-			List<Integer> invoices = headOrder.getInvoicesQtyByGiverId().get(takerId);
+			List<Invoice> invoices = side == "offer"
+					? invoiceService.findBySourceAndTarget(BigInteger.valueOf(headOrder.getTakerId()), BigInteger.valueOf(takerId))
+					: invoiceService.findBySourceAndTarget(BigInteger.valueOf(takerId), BigInteger.valueOf(headOrder.getTakerId()));
 			if (CollectionUtils.isEmpty(invoices)) {
 				continue;
 			}
 
-			int localOrderQty = Math.min(headOrder.getQuantity(), invoices.iterator().next());
+			Invoice currentInvoice = invoices.iterator().next();
+			int unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue()).intValue();
+			int localOrderQty = Math.min(headOrder.getQuantity(), unpaidInvoiceValue);
 
 			if (localOrderQty < headOrder.getQuantity()) {
 				if (qtyRemaining <= localOrderQty) {
 					//обновляем значением ASK - qtyRem
 					qtyTraded = qtyRemaining;
+					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
 					int newQty = headOrder.getQuantity() - qtyRemaining;
 					if (side == "offer") {
 						this.bids.updateOrderQty(newQty,
@@ -207,6 +217,8 @@ public class OrderBook {
 				} else {
 					//обновляем значением ASK - localASK
 					qtyTraded = localOrderQty;
+					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
 					int newQty = headOrder.getQuantity() - localOrderQty;
 					if (side == "offer") {
 						this.bids.updateOrderQty(newQty,
@@ -223,6 +235,8 @@ public class OrderBook {
 				if (localOrderQty <= qtyRemaining) {
 					//поглощаем
 					qtyTraded = localOrderQty;
+					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
 					if (side == "offer") {
 						this.bids.removeOrderByID(headOrder.getqId());
 						orderRequestService.removeOrderRequest(headOrder.getId());
@@ -234,6 +248,8 @@ public class OrderBook {
 				} else {
 					//обновляем значением ASK - qtyRem
 					qtyTraded = qtyRemaining;
+					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
 					int newQty = headOrder.getQuantity() - qtyRemaining;
 					if (side == "offer") {
 						this.bids.updateOrderQty(newQty,
@@ -389,5 +405,9 @@ public class OrderBook {
 
 	public void setOrderRequestService(OrderRequestService orderRequestService) {
 		this.orderRequestService = orderRequestService;
+	}
+
+	public void setInvoiceService(InvoiceService invoiceService) {
+		this.invoiceService = invoiceService;
 	}
 }

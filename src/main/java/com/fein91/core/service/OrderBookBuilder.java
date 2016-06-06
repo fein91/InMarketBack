@@ -1,6 +1,7 @@
 package com.fein91.core.service;
 
 import com.fein91.core.model.OrderBook;
+import com.fein91.service.InvoiceService;
 import com.fein91.service.OrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,12 +15,15 @@ public class OrderBookBuilder {
 
     @Autowired
     OrderRequestService orderRequestService;
+    @Autowired
+    InvoiceService invoiceService;
 
     @Bean
     @Scope("prototype")
     public OrderBook getInstance() {
         OrderBook orderBook = new OrderBook(DEFAULT_TICK_SIZE);
         orderBook.setOrderRequestService(orderRequestService);
+        orderBook.setInvoiceService(invoiceService);
         return orderBook;
     }
 }

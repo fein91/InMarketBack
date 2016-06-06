@@ -43,7 +43,6 @@ public class InMarketApplicationTests {
 
         OrderBook orderBook1 = orderBookBuilder.getInstance();
         Assert.assertNotSame(orderBook, orderBook1);
-        Assert.assertNotNull(orderBook.orderRequestService);
 
     }
 

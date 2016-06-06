@@ -25,5 +25,9 @@ public interface InvoiceRepository extends CrudRepository<Invoice, BigInteger> {
     @Query("SELECT i FROM Invoice i where i.target.id = :counterPartyId")
     List<Invoice> findInvoicesByTargetId(@Param("counterPartyId") BigInteger counterPartyId);
 
-    Invoice findBySourceAndTarget(Counterparty source, Counterparty target);
+    List<Invoice> findBySourceAndTarget(Counterparty source, Counterparty target);
+
+    @Query("SELECT i FROM Invoice i where i.target.id = :targetId and i.source.id = :sourceId")
+    List<Invoice> findBySourceAndTarget(@Param("sourceId") BigInteger sourceId, @Param("targetId") BigInteger targetId);
+
 }

@@ -17,6 +17,7 @@ public class Order {
 	private Order nextOrder;
 	private Order prevOrder;
 	private OrderList oL;
+	@Deprecated
     private Map<Integer, List<Integer>> invoicesQtyByGiverId;
 	
 	public Order(BigInteger id, long time, boolean limit, int quantity, int takerId, String side) {
@@ -128,10 +129,12 @@ public class Order {
 		this.oL = oL;
 	}
 
+	@Deprecated
     public Map<Integer, List<Integer>> getInvoicesQtyByGiverId() {
         return invoicesQtyByGiverId;
     }
 
+	@Deprecated
     public void setInvoicesQtyByGiverId(Map<Integer, List<Integer>> invoicesQtyByGiverId) {
         this.invoicesQtyByGiverId = invoicesQtyByGiverId;
     }
