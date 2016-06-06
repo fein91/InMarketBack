@@ -4,8 +4,11 @@ import com.fein91.dao.InvoiceRepository;
 import com.fein91.model.Invoice;
 import com.fein91.model.ProposalInfo;
 import com.fein91.service.CounterPartyService;
+import com.fein91.service.CounterPartyServiceImpl;
 import com.fein91.service.OrderRequestService;
+import com.fein91.service.OrderRequestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,9 +24,11 @@ public class CounterpartyController {
     @Autowired
     InvoiceRepository invoiceRepository;
     @Autowired
-    OrderRequestService orderRequestService;
+    @Qualifier("OrderRequestServiceImpl")
+    OrderRequestService orderRequestServiceImpl;
     @Autowired
-    CounterPartyService counterPartyService;
+    @Qualifier("CounterPartyServiceImpl")
+    CounterPartyService counterPartyServiceImpl;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{sourceId}/invoicesBySource")
     public List<Invoice> getBySourceId(@PathVariable BigInteger sourceId) {
@@ -33,11 +38,5 @@ public class CounterpartyController {
     @RequestMapping(method = RequestMethod.GET, value = "/{targetId}/invoicesByTarget")
     public List<Invoice> getByTargetId(@PathVariable BigInteger targetId) {
         return invoiceRepository.findInvoicesByTargetId(targetId);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/calculateProposals")
-    @Deprecated
-    public ProposalInfo calculateProposals(@PathVariable BigInteger counterpartyId) {
-        return counterPartyService.calculateProposalInfo(counterpartyId);
     }
 }

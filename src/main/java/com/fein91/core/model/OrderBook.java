@@ -2,8 +2,9 @@ package com.fein91.core.model;
 
 import com.fein91.model.Invoice;
 import com.fein91.service.InvoiceService;
+import com.fein91.service.InvoiceServiceImpl;
 import com.fein91.service.OrderRequestService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fein91.service.OrderRequestServiceImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 

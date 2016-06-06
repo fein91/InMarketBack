@@ -153,7 +153,6 @@ public class LimitOrderBookService {
 
         long time = System.nanoTime();
         Order order = new Order(orderId, time, false, quantity, counterPartyId.intValue(), orderSide.getCoreName());
-        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         OrderReport orderReport = lob.processOrder(order, false);
         System.out.println(lob);
@@ -174,25 +173,5 @@ public class LimitOrderBookService {
         }
 
         return apr.setScale(APR_SCALE, RoundingMode.HALF_UP);
-    }
-
-    protected void updateInvoices(OrderBook lob) {
-        for (Trade trade : lob.getTape()) {
-            List<Invoice> invoices = invoiceRepository.findBySourceAndTarget(BigInteger.valueOf(trade.getBuyer()), BigInteger.valueOf(trade.getSeller()));
-
-            if (CollectionUtils.isEmpty(invoices)) {
-                throw new IllegalStateException("Invoices can't be null");
-            }
-
-            BigDecimal remainingQty = BigDecimal.valueOf(trade.getQty());
-            while (BigDecimal.ZERO.compareTo(remainingQty) < 0) {
-                for (Invoice invoice : invoices) {
-                    if (invoice.getValue().compareTo(remainingQty) > 0) {
-                        invoice.setPrepaidValue(invoice.getPrepaidValue().add(invoice.getValue().subtract(remainingQty)));
-
-                    }
-                }
-            }
-        }
     }
 }

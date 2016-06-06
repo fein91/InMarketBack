@@ -7,13 +7,40 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 		});
 	}])
 
-	.controller('MarketBidCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
+	.controller('MarketBidCtrl', ['$scope', '$rootScope', 'orderRequestsService', 'invoices', function($scope, $rootScope, orderRequestsService, invoices) {
 		console.log('MarketBidCtrl inited');
 
 		$scope.bidQty = '';
 		$scope.bidApr = '';
 		$scope.demandSatisfied = true;
 		$scope.noCounterparties = false;
+
+		$scope.calculateBidMarketOrder = function() {
+			var orderRequest = {
+				"id" : 123456789,
+				"quantity" : $scope.bidQty,
+				"orderSide" : 0,
+				"orderType" : 1,
+				"counterparty" : {
+					"id" : 11,
+					"name" : "supplyer"
+				}
+			};
+
+			orderRequestsService.calculate(orderRequest)
+				.then(function successCallback(response){
+					var orderResult = response.data;
+					console.log('order result: ' + JSON.stringify(orderResult));
+					$scope.bidApr = orderResult.apr;
+					$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+					if ($scope.bidQty > $scope.satisfiedBidQty) {
+						$scope.demandSatisfied = false;
+					}
+
+				}, function errorCallback(response) {
+					console.log('got ' + response.status + ' error');
+				});
+		}
 
 		$scope.submitBidMarketOrder = function() {
 			var orderRequest = {
@@ -37,6 +64,9 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 						$scope.demandSatisfied = false;
 					}
 
+					$rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
+					$rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
+
 				}, function errorCallback(response) {
 					console.log('got ' + response.status + ' error');
 				});
@@ -54,6 +84,32 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 		console.log('LimitBidCtrl inited');
 		$scope.bidQty = '';
 		$scope.bidApr = '';
+
+		$scope.calculateLimitBidOrder = function() {
+			if ($scope.bidQty && $scope.bidApr) {
+				var orderRequest = {
+					"id" : 123456789,
+					"price" : $scope.bidApr,
+					"quantity" : $scope.bidQty,
+					"orderSide" : 0,
+					"orderType" : 0,
+					"counterparty" : {
+						"id" : 11,
+						"name" : "supplyer"
+					}
+				};
+
+				orderRequestsService.calculate(orderRequest)
+					.then(function successCallback(response){
+						var orderResult = response.data;
+						console.log('order result: ' + JSON.stringify(orderResult));
+						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+
+					}, function errorCallback(response) {
+						console.log('got ' + response.status + ' error');
+					});
+			}
+		}
 
 		$scope.submitLimitBidOrder = function() {
 			if ($scope.bidQty && $scope.bidApr) {
@@ -79,7 +135,6 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 						console.log('got ' + response.status + ' error');
 					});
 			}
-
 		}
 
 	}])

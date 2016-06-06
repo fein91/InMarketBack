@@ -2,11 +2,9 @@ package com.fein91;
 
 import com.fein91.core.model.OrderBook;
 import com.fein91.core.service.OrderBookBuilder;
-import com.fein91.model.Counterparty;
-import com.fein91.model.Invoice;
-import com.fein91.service.CounterPartyService;
-import com.fein91.service.InvoiceService;
-import com.fein91.service.OrderRequestService;
+import com.fein91.service.CounterPartyServiceImpl;
+import com.fein91.service.InvoiceServiceImpl;
+import com.fein91.service.OrderRequestServiceImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,11 +24,11 @@ public class InMarketApplicationTests {
     public static final BigInteger SUPPLIER_ID = BigInteger.valueOf(2);
     public static final BigInteger BUYER_ID = BigInteger.valueOf(1);
     @Autowired
-    CounterPartyService counterPartyService;
+    CounterPartyServiceImpl counterPartyServiceImpl;
     @Autowired
-    InvoiceService invoiceService;
+    InvoiceServiceImpl invoiceServiceImpl;
     @Autowired
-    OrderRequestService orderRequestService;
+    OrderRequestServiceImpl orderRequestServiceImpl;
     @Autowired
     OrderBookBuilder orderBookBuilder;
 

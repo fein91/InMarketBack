@@ -30,10 +30,10 @@
 		<uib-tab index="1" heading="Рыночная заявка">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<form ng-controller="AskMarketCtrl">
+					<form ng-controller="AskMarketCtrl" ng-submit="submitMarketAskOrder()">
 						<div class="form-group form-inline">
 							<label>Заказать предоплаты на сумму: </label>
-							<input ng-blur="submitMarketAskOrder()" ng-model="askQty" type="number" class="form-control" placeholder="Сумма">
+							<input ng-blur="calculateMarketAskOrder()" ng-model="askQty" type="number" class="form-control" placeholder="Сумма">
 						</div>
 						<div>
 							<p>В данный момент вы можете получить предоплату на эту сумму со следующими параметрами:</br>
@@ -58,9 +58,9 @@
 			</div>
 		</uib-tab>
 		<uib-tab index="2" heading="Отложенная заявка">
-			<div class="panel panel-default" ng-controller="GetPrepayPendingOrderCtrl as gpPendingOrder">
+			<div class="panel panel-default">
 				<div class="panel-body">
-					<form>
+					<form ng-controller="AskLimitCtrl" ng-submit="">
 						<div class="form-group form-inline">
 							<label>Введите желаемый APR: </label>
 							<input type="number" class="form-control" placeholder="Процент">
@@ -79,7 +79,7 @@
 								</canvas>
 							</div>
 						</div>
-						<button type="submit" class="btn btn-default" ng-click="gpPendingOrder.submit()">Подтвердить</button>
+						<button type="submit" class="btn btn-default">Подтвердить</button>
 						<button type="reset" class="btn btn-default">Сбросить</button>
 					</form>
 				</div>
