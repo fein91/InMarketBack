@@ -64,4 +64,15 @@ public class Invoice {
     public void setPrepaidValue(BigDecimal prepaidValue) {
         this.prepaidValue = prepaidValue;
     }
+
+    @Override
+    public String toString() {
+        return "Invoice{" +
+                "id=" + id +
+                ", source=" + source +
+                ", target=" + target +
+                ", value=" + value +
+                ", prepaidValue=" + prepaidValue +
+                '}';
+    }
 }

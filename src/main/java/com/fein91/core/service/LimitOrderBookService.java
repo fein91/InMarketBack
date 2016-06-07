@@ -42,10 +42,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty source = invoice.getSource();
-            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty source = invoice.getSource();
+//            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addMarketOrder(lob, orderId, target.getId(), OrderSide.ASK, map, quantity);
     }
@@ -63,10 +63,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty target = invoice.getTarget();
-            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty target = invoice.getTarget();
+//            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addMarketOrder(lob, orderId, source.getId(), OrderSide.BID, map, quantity);
     }
@@ -105,10 +105,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty target = invoice.getTarget();
-            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty target = invoice.getTarget();
+//            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addLimitOrder(lob, orderId, source.getId(), OrderSide.BID, map, quantity, price);
     }

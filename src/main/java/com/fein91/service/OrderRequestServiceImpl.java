@@ -86,25 +86,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         return orderRequests;
     }
 
-    @Transactional
-    @Deprecated
-    public BigDecimal findLimitOrderRequestsToTradeSum(BigInteger counterpartyId, OrderSide orderSide) {
-        List<Invoice> invoices = OrderSide.BID == orderSide
-                ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
-                : invoiceRepository.findInvoicesByTargetId(counterpartyId);
-
-        BigDecimal result = BigDecimal.ZERO;
-        for (Invoice invoice : invoices) {
-            Counterparty giver = OrderSide.BID == orderSide
-                    ? invoice.getTarget()
-                    : invoice.getSource();
-            result = result.add(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.getId()).stream()
-                    .map(OrderRequest :: getQuantity)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
-        }
-        return result;
-    }
-
     @Override
     @Transactional
     public void removeOrderRequest(BigInteger orderId) {
@@ -118,6 +99,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         OrderRequest orderRequest = orderRequestRepository.findOne(orderId);
         orderRequest.setQuantity(qty);
 
+        LOGGER.info(orderRequest + " quantity was updated to: " + qty);
         return orderRequestRepository.save(orderRequest);
     }
 

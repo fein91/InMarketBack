@@ -9,13 +9,12 @@ import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
 import com.fein91.model.Counterparty;
 import com.fein91.model.OrderType;
-import com.fein91.service.CounterPartyServiceImpl;
-import com.fein91.service.InvoiceServiceImpl;
-import com.fein91.service.OrderRequestServiceImpl;
+import com.fein91.service.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,15 +31,18 @@ public class LimitOrderBookServiceTest {
     @Autowired
     LimitOrderBookService limitOrderBookService;
     @Autowired
-    CounterPartyServiceImpl counterPartyServiceImpl;
+    @Qualifier("CounterPartyServiceImpl")
+    CounterPartyService counterPartyServiceImpl;
     @Autowired
     CounterpartyRepository counterpartyRepository;
     @Autowired
-    InvoiceServiceImpl invoiceServiceImpl;
+    @Qualifier("InvoiceServiceImpl")
+    InvoiceService invoiceServiceImpl;
     @Autowired
     OrderBookBuilder orderBookBuilder;
     @Autowired
-    OrderRequestServiceImpl orderRequestServiceImpl;
+    @Qualifier("OrderRequestServiceImpl")
+    OrderRequestService orderRequestServiceImpl;
 
     /*
     *     b1  b2  b3

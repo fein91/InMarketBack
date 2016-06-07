@@ -10,9 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service("InvoiceServiceImpl")
 public class InvoiceServiceImpl implements InvoiceService {
+
+    private final static Logger LOGGER = Logger.getLogger(InvoiceServiceImpl.class.getName());
 
     @Autowired
     InvoiceRepository invoiceRepository;
@@ -33,6 +36,8 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public Invoice updateInvoice(Invoice invoice, BigDecimal prepaidValue) {
         invoice.setPrepaidValue(invoice.getPrepaidValue().add(prepaidValue));
+
+        LOGGER.info(invoice + " prepaid value was updated to: " + prepaidValue);
         return invoiceRepository.save(invoice);
     }
 
