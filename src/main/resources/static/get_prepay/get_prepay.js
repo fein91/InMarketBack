@@ -6,13 +6,41 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 		});
 	}])
 
-	.controller('AskMarketCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
+	.controller('AskMarketCtrl', ['$scope', '$rootScope', 'orderRequestsService', 'invoices', function($scope, $rootScope, orderRequestsService, invoices) {
 		console.log('AskMarketCtrl inited');
 
 		$scope.askQty = '';
 		$scope.askApr = '';
 		$scope.demandSatisfied = true;
 		$scope.noCounterparties = false;
+
+		$scope.calculateMarketAskOrder = function() {
+			var orderRequest = {
+				"id" : 123456789,
+				"quantity" : $scope.askQty,
+				"orderSide" : 1,
+				"orderType" : 1,
+				"counterparty" : {
+					"id" : 11,
+					"name" : "test"
+				}
+			};
+
+			orderRequestsService.calculate(orderRequest)
+				.then(function successCallback(response){
+					var orderResult = response.data;
+					console.log('order result: ' + JSON.stringify(orderResult));
+					$scope.askApr = orderResult.apr;
+					$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+					if ($scope.askQty > $scope.satisfiedBidQty) {
+						$scope.demandSatisfied = false;
+					}
+
+				}, function errorCallback(response) {
+					console.log('got ' + response.status + ' error');
+					$scope.noCounterparties = true;
+				});
+		}
 
 		$scope.submitMarketAskOrder = function() {
 			var orderRequest = {
@@ -36,11 +64,15 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 						$scope.demandSatisfied = false;
 					}
 
+					$rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
+					$rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
+
 				}, function errorCallback(response) {
 					console.log('got ' + response.status + ' error');
 					$scope.noCounterparties = true;
 				});
 		}
+
 	}])
 
 
@@ -86,8 +118,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 
 	}])
 
-	.controller('GetPrepayPendingOrderCtrl', ['$scope', function($scope) {
-		console.log('GetPrepayPendingOrderCtrl inited');
+	.controller('AskLimitCtrl', ['$scope', function($scope) {
+		console.log('AskLimitCtrl inited');
 
 		self = this;
 

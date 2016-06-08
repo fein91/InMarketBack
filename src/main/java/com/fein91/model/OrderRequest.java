@@ -85,4 +85,17 @@ public class OrderRequest {
     public void setOrderType(OrderType orderType) {
         this.orderType = orderType.getId();
     }
+
+    @Override
+    public String toString() {
+        return "OrderRequest{" +
+                "id=" + id +
+                ", counterparty=" + counterparty +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", date=" + date +
+                ", orderSide=" + orderSide +
+                ", orderType=" + orderType +
+                '}';
+    }
 }

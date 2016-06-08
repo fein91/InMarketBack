@@ -9,6 +9,7 @@ import com.fein91.model.Invoice;
 import com.fein91.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -41,10 +42,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty source = invoice.getSource();
-            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty source = invoice.getSource();
+//            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addMarketOrder(lob, orderId, target.getId(), OrderSide.ASK, map, quantity);
     }
@@ -62,10 +63,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty target = invoice.getTarget();
-            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty target = invoice.getTarget();
+//            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addMarketOrder(lob, orderId, source.getId(), OrderSide.BID, map, quantity);
     }
@@ -83,10 +84,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty source = invoice.getSource();
-            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty source = invoice.getSource();
+//            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addLimitOrder(lob, orderId, target.getId(), OrderSide.ASK, map, quantity, price);
     }
@@ -104,10 +105,10 @@ public class LimitOrderBookService {
 
         Map<Integer, List<Integer>> map = new HashMap<>();
 
-        for (Invoice invoice : invoices) {
-            Counterparty target = invoice.getTarget();
-            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-        }
+//        for (Invoice invoice : invoices) {
+//            Counterparty target = invoice.getTarget();
+//            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
+//        }
 
         return addLimitOrder(lob, orderId, source.getId(), OrderSide.BID, map, quantity, price);
     }
@@ -135,8 +136,9 @@ public class LimitOrderBookService {
         int satisfiedDemand = quantity - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
+        //updateInvoices(lob);
 
-        return new OrderResult(apr, satisfiedDemand);
+        return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
     }
 
     public OrderResult addMarketOrder(OrderBook lob,
@@ -151,7 +153,6 @@ public class LimitOrderBookService {
 
         long time = System.nanoTime();
         Order order = new Order(orderId, time, false, quantity, counterPartyId.intValue(), orderSide.getCoreName());
-        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         OrderReport orderReport = lob.processOrder(order, false);
         System.out.println(lob);
@@ -160,7 +161,7 @@ public class LimitOrderBookService {
 
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
 
-        return new OrderResult(apr, satisfiedDemand);
+        return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
     }
 
     protected BigDecimal calculateAPR(OrderBook lob, long time, int satisfiedDemand) {
