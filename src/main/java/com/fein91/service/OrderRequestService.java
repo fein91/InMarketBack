@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface OrderRequestService {
-    List<OrderRequest> getByCounterpartyId(BigInteger counterpartyId);
+    List<OrderRequest> getByCounterpartyId(Long counterpartyId);
 
     OrderRequest addOrderRequest(OrderRequest orderRequest);
 
@@ -21,11 +21,11 @@ public interface OrderRequestService {
     OrderResult calculateOrderRequest(OrderRequest orderRequest);
 
     @Transactional
-    List<OrderRequest> findLimitOrderRequestsToTrade(BigInteger counterpartyId, OrderSide orderSide);
+    List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide);
 
     @Transactional
-    void removeOrderRequest(BigInteger orderId);
+    void removeOrderRequest(Long orderId);
 
     @Transactional
-    OrderRequest updateOrderRequest(BigInteger orderId, BigDecimal qty);
+    OrderRequest updateOrderRequest(Long orderId, BigDecimal qty);
 }

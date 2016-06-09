@@ -2,14 +2,16 @@ package com.fein91.core.service;
 
 import com.fein91.InMarketApplication;
 import com.fein91.OrderRequestBuilder;
-import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
 import com.fein91.model.Counterparty;
+import com.fein91.model.OrderRequest;
+import com.fein91.model.OrderResult;
 import com.fein91.model.OrderType;
-import com.fein91.service.*;
+import com.fein91.service.CounterPartyService;
+import com.fein91.service.InvoiceService;
+import com.fein91.service.OrderRequestService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +23,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,8 +32,7 @@ public class LimitOrderBookServiceTest {
     @Autowired
     LimitOrderBookService limitOrderBookService;
     @Autowired
-    @Qualifier("CounterPartyServiceImpl")
-    CounterPartyService counterPartyServiceImpl;
+    CounterPartyService counterPartyService;
     @Autowired
     CounterpartyRepository counterpartyRepository;
     @Autowired
@@ -57,18 +57,18 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void marketOrderTest1() throws Exception {
-        Counterparty supplier = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(1), "supplier");
-        Counterparty buyer1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(2), "buyer1");
-        Counterparty buyer2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(3), "buyer2");
-        Counterparty buyer3 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(4), "buyer3");
+        Counterparty supplier = counterPartyService.addCounterParty("supplier");
+        Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
+        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
+        Counterparty buyer3 = counterPartyService.addCounterParty("buyer3");
 
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(11), supplier, buyer1, BigDecimal.valueOf(100), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(12), supplier, buyer2, BigDecimal.valueOf(200), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(13), supplier, buyer3, BigDecimal.valueOf(50), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier, buyer1, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier, buyer2, BigDecimal.valueOf(200), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier, buyer3, BigDecimal.valueOf(50), BigDecimal.ZERO);
 
 
         double buyer1AskPrice = 27d;
-        OrderRequest askOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1235), buyer1)
+        OrderRequest askOrderRequest1 = new OrderRequestBuilder(buyer1)
                 .quantity(BigDecimal.valueOf(200))
                 .price(BigDecimal.valueOf(buyer1AskPrice))
                 .orderSide(OrderSide.ASK)
@@ -77,7 +77,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(askOrderRequest1);
 
         double buyer2AskPrice = 28d;
-        OrderRequest askOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1236), buyer2)
+        OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
                 .quantity(BigDecimal.valueOf(150))
                 .price(BigDecimal.valueOf(buyer2AskPrice))
                 .orderSide(OrderSide.ASK)
@@ -86,7 +86,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(askOrderRequest2);
 
         double buyer3AskPrice = 29d;
-        OrderRequest askOrderRequest3 = new OrderRequestBuilder(BigInteger.valueOf(1237), buyer3)
+        OrderRequest askOrderRequest3 = new OrderRequestBuilder(buyer3)
                 .quantity(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(buyer3AskPrice))
                 .orderSide(OrderSide.ASK)
@@ -94,7 +94,7 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(askOrderRequest3);
 
-        OrderRequest marketOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1234), supplier)
+        OrderRequest marketOrderRequest1 = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(350))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.MARKET)
@@ -122,20 +122,20 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void marketOrderTest2() throws Exception {
-        Counterparty buyer = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(1), "buyer");
-        Counterparty supplier1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(2), "supplier1");
-        Counterparty supplier2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(3), "supplier2");
-        Counterparty supplier3 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(4), "supplier3");
-        Counterparty supplier4 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(6), "supplier4");
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
+        Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
+        Counterparty supplier4 = counterPartyService.addCounterParty("supplier4");
 
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(11), supplier1, buyer, BigDecimal.valueOf(100), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(12), supplier2, buyer, BigDecimal.valueOf(200), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(13), supplier3, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(14), supplier4, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier2, buyer, BigDecimal.valueOf(200), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier3, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier4, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
 
 
         double supplier1AskPrice = 27d;
-        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1235), supplier1)
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(200))
                 .price(BigDecimal.valueOf(supplier1AskPrice))
                 .orderSide(OrderSide.BID)
@@ -144,7 +144,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
 
         double supplier2AskPrice = 28d;
-        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1236), supplier2)
+        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(150))
                 .price(BigDecimal.valueOf(supplier2AskPrice))
                 .orderSide(OrderSide.BID)
@@ -153,7 +153,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
 
         double supplier3AskPrice = 29d;
-        OrderRequest bidOrderRequest3 = new OrderRequestBuilder(BigInteger.valueOf(1237), supplier3)
+        OrderRequest bidOrderRequest3 = new OrderRequestBuilder(supplier3)
                 .quantity(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(supplier3AskPrice))
                 .orderSide(OrderSide.BID)
@@ -162,7 +162,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest3);
 
         double supplier4AskPrice = 31d;
-        OrderRequest bidOrderRequest4 = new OrderRequestBuilder(BigInteger.valueOf(1238), supplier4)
+        OrderRequest bidOrderRequest4 = new OrderRequestBuilder(supplier4)
                 .quantity(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(supplier4AskPrice))
                 .orderSide(OrderSide.BID)
@@ -170,7 +170,7 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest4);
 
-        OrderRequest askMarketOrderRequest = new OrderRequestBuilder(BigInteger.valueOf(1239), buyer)
+        OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.MARKET)
@@ -204,17 +204,17 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void marketOrderTest3() throws Exception {
-        Counterparty buyer1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(1), "buyer1");
-        Counterparty buyer2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(2), "buyer2");
+        Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
+        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
 
-        Counterparty supplier1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(3), "supplier1");
-        Counterparty supplier5 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(7), "supplier5");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        Counterparty supplier5 = counterPartyService.addCounterParty("supplier5");
 
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(11), supplier1, buyer1, BigDecimal.valueOf(100), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(14), supplier5, buyer2, BigDecimal.valueOf(150), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer1, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier5, buyer2, BigDecimal.valueOf(150), BigDecimal.ZERO);
 
         double supplier1AskPrice = 27d;
-        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1238), supplier1)
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(300))
                 .price(BigDecimal.valueOf(supplier1AskPrice))
                 .orderSide(OrderSide.BID)
@@ -223,7 +223,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
 
         double supplier5AskPrice = 32d;
-        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1239), supplier5)
+        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier5)
                 .quantity(BigDecimal.valueOf(400))
                 .price(BigDecimal.valueOf(supplier5AskPrice))
                 .orderSide(OrderSide.BID)
@@ -231,7 +231,7 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
 
-        OrderRequest askMarketOrderRequest = new OrderRequestBuilder(BigInteger.valueOf(1240), buyer1)
+        OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer1)
                 .quantity(BigDecimal.valueOf(350))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.MARKET)
@@ -259,18 +259,18 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void marketOrderTest4() throws Exception {
-        Counterparty supplier = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(1), "supplier");
-        Counterparty buyer1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(2), "buyer1");
-        Counterparty buyer2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(3), "buyer2");
-        Counterparty buyer3 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(4), "buyer3");
+        Counterparty supplier = counterPartyService.addCounterParty("supplier");
+        Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
+        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
+        Counterparty buyer3 = counterPartyService.addCounterParty("buyer3");
 
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(11), supplier, buyer1, BigDecimal.valueOf(100), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(12), supplier, buyer2, BigDecimal.valueOf(100), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(13), supplier, buyer3, BigDecimal.valueOf(800), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier, buyer1, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier, buyer2, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier, buyer3, BigDecimal.valueOf(800), BigDecimal.ZERO);
 
 
         double buyer1AskPrice = 29d;
-        OrderRequest askOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1238), buyer1)
+        OrderRequest askOrderRequest1 = new OrderRequestBuilder(buyer1)
                 .quantity(BigDecimal.valueOf(600))
                 .price(BigDecimal.valueOf(buyer1AskPrice))
                 .orderSide(OrderSide.ASK)
@@ -279,7 +279,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(askOrderRequest1);
 
         double buyer2AskPrice = 30d;
-        OrderRequest askOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1239), buyer2)
+        OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
                 .quantity(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(buyer2AskPrice))
                 .orderSide(OrderSide.ASK)
@@ -288,7 +288,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(askOrderRequest2);
 
         double buyer3AskPrice = 31d;
-        OrderRequest askOrderRequest3 = new OrderRequestBuilder(BigInteger.valueOf(1240), buyer3)
+        OrderRequest askOrderRequest3 = new OrderRequestBuilder(buyer3)
                 .quantity(BigDecimal.valueOf(500))
                 .price(BigDecimal.valueOf(buyer3AskPrice))
                 .orderSide(OrderSide.ASK)
@@ -296,7 +296,7 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(askOrderRequest3);
 
-        OrderRequest bidMarketOrderRequest = new OrderRequestBuilder(BigInteger.valueOf(1241), supplier)
+        OrderRequest bidMarketOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(450))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.MARKET)
@@ -336,16 +336,16 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void marketOrderTest5() throws Exception {
-        Counterparty buyer = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(1), "buyer");
-        Counterparty supplier1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(2), "supplier1");
-        Counterparty supplier2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(3), "supplier2");
-        Counterparty supplier3 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(4), "supplier3");
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
+        Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
 
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(11), supplier1, buyer, BigDecimal.valueOf(550), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(13), supplier3, buyer, BigDecimal.valueOf(200), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer, BigDecimal.valueOf(550), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier3, buyer, BigDecimal.valueOf(200), BigDecimal.ZERO);
 
         double supplier1AskPrice = 28d;
-        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1239), supplier1)
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(550))
                 .price(BigDecimal.valueOf(supplier1AskPrice))
                 .orderSide(OrderSide.BID)
@@ -354,7 +354,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
 
         double supplier3AskPrice = 26d;
-        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1240), supplier3)
+        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier3)
                 .quantity(BigDecimal.valueOf(200))
                 .price(BigDecimal.valueOf(supplier3AskPrice))
                 .orderSide(OrderSide.BID)
@@ -362,7 +362,7 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
 
-        OrderRequest askMarketOrderRequest = new OrderRequestBuilder(BigInteger.valueOf(1241), buyer)
+        OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(250))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.MARKET)
@@ -390,14 +390,14 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void limitOrderTest6() throws Exception {
-        Counterparty buyer1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(1), "buyer1");
-        Counterparty buyer2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(4), "buyer2");
-        Counterparty supplier1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(2), "supplier1");
+        Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
+        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
 
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(11), supplier1, buyer1, BigDecimal.valueOf(150), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(13), supplier1, buyer2, BigDecimal.valueOf(200), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer1, BigDecimal.valueOf(150), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer2, BigDecimal.valueOf(200), BigDecimal.ZERO);
 
-        OrderRequest askOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1240), buyer1)
+        OrderRequest askOrderRequest1 = new OrderRequestBuilder(buyer1)
                 .quantity(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(30d))
                 .orderSide(OrderSide.ASK)
@@ -405,7 +405,7 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(askOrderRequest1);
 
-        OrderRequest askOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1241), buyer2)
+        OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
                 .quantity(BigDecimal.valueOf(150))
                 .price(BigDecimal.valueOf(28d))
                 .orderSide(OrderSide.ASK)
@@ -414,7 +414,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(askOrderRequest2);
 
         double supplier1BidPrice = 29d;
-        OrderRequest bidOrderRequest = new OrderRequestBuilder(BigInteger.valueOf(1242), supplier1)
+        OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(200))
                 .price(BigDecimal.valueOf(supplier1BidPrice))
                 .orderSide(OrderSide.BID)
@@ -436,14 +436,14 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void limitOrderTest7() throws Exception {
-        Counterparty buyer1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(1), "buyer1");
-        Counterparty buyer2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(4), "buyer2");
-        Counterparty supplier1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(2), "supplier1");
+        Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
+        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
 
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(11), supplier1, buyer1, BigDecimal.valueOf(150), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(BigInteger.valueOf(13), supplier1, buyer2, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer1, BigDecimal.valueOf(150), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer2, BigDecimal.valueOf(100), BigDecimal.ZERO);
 
-        OrderRequest askOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1241), buyer1)
+        OrderRequest askOrderRequest1 = new OrderRequestBuilder(buyer1)
                 .quantity(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(30d))
                 .orderSide(OrderSide.ASK)
@@ -451,7 +451,7 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(askOrderRequest1);
 
-        OrderRequest askOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1242), buyer2)
+        OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
                 .quantity(BigDecimal.valueOf(150))
                 .price(BigDecimal.valueOf(28d))
                 .orderSide(OrderSide.ASK)
@@ -460,7 +460,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.addOrderRequest(askOrderRequest2);
 
         double supplier1BidPrice = 29d;
-        OrderRequest bidOrderRequest = new OrderRequestBuilder(BigInteger.valueOf(1243), supplier1)
+        OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(200))
                 .price(BigDecimal.valueOf(supplier1BidPrice))
                 .orderSide(OrderSide.BID)
@@ -493,10 +493,10 @@ public class LimitOrderBookServiceTest {
     @Transactional
     @Rollback(true)
     public void marketOrdersOneByOne() {
-        Counterparty buyer = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(123), "buyer");
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
 
-        Counterparty supplier1 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(124), "supplier1");
-        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1235), supplier1)
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(200))
                 .price(BigDecimal.valueOf(15))
                 .orderSide(OrderSide.BID)
@@ -504,8 +504,8 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
 
-        Counterparty supplier2 = counterPartyServiceImpl.addCounterParty(BigInteger.valueOf(125), "supplier2");
-        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1236), supplier2)
+        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
+        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(200))
                 .price(BigDecimal.valueOf(14))
                 .orderSide(OrderSide.BID)
@@ -513,12 +513,10 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
 
-        BigInteger invoice1Id = BigInteger.valueOf(11);
-        invoiceServiceImpl.addInvoice(invoice1Id, supplier1, buyer, BigDecimal.valueOf(100), BigDecimal.ZERO);
-        BigInteger invoice2Id = BigInteger.valueOf(12);
-        invoiceServiceImpl.addInvoice(invoice2Id, supplier2, buyer, BigDecimal.valueOf(150), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier1, buyer, BigDecimal.valueOf(100), BigDecimal.ZERO);
+        invoiceServiceImpl.addInvoice(supplier2, buyer, BigDecimal.valueOf(150), BigDecimal.ZERO);
 
-        OrderRequest marketOrderRequest1 = new OrderRequestBuilder(BigInteger.valueOf(1234), buyer)
+        OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(100))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.MARKET)
@@ -530,18 +528,8 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(100, trade1.getQty());
         Assert.assertEquals(15d, trade1.getPrice(), 0d);
 
-        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(invoiceServiceImpl.getById(invoice1Id).getPrepaidValue()));
-        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(invoiceServiceImpl.getById(invoice1Id).getPrepaidValue()));
-
-//        OrderRequest marketOrderRequest2 = new OrderRequestBuilder(BigInteger.valueOf(1233), buyer)
-//                .quantity(BigDecimal.valueOf(200))
-//                .orderSide(OrderSide.ASK)
-//                .orderType(OrderType.MARKET)
-//                .build();
-//        orderRequestService.processOrderRequest(marketOrderRequest2);
-
-
-
+//        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(invoiceServiceImpl.getById(invoice1Id).getPrepaidValue()));
+//        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(invoiceServiceImpl.getById(invoice1Id).getPrepaidValue()));
     }
 
     private Trade findTradeByBuyerAndSeller(List<Trade> trades, int buyerID, int sellerId) {

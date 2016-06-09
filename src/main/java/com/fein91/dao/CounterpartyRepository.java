@@ -8,8 +8,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 /**
- * Created by olta1014 on 23.05.2016.
+ * Counter party repository
  */
-public interface CounterpartyRepository extends CrudRepository<Counterparty, BigInteger> {
+public interface CounterpartyRepository extends CrudRepository<Counterparty, Long> {
 
 }

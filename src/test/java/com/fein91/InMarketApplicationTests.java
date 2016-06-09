@@ -2,9 +2,7 @@ package com.fein91;
 
 import com.fein91.core.model.OrderBook;
 import com.fein91.core.service.OrderBookBuilder;
-import com.fein91.service.CounterPartyServiceImpl;
-import com.fein91.service.InvoiceServiceImpl;
-import com.fein91.service.OrderRequestServiceImpl;
+import com.fein91.service.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,14 +22,7 @@ public class InMarketApplicationTests {
     public static final BigInteger SUPPLIER_ID = BigInteger.valueOf(2);
     public static final BigInteger BUYER_ID = BigInteger.valueOf(1);
     @Autowired
-    CounterPartyServiceImpl counterPartyServiceImpl;
-    @Autowired
-    InvoiceServiceImpl invoiceServiceImpl;
-    @Autowired
-    OrderRequestServiceImpl orderRequestServiceImpl;
-    @Autowired
     OrderBookBuilder orderBookBuilder;
-
 
     @Test
     @Transactional

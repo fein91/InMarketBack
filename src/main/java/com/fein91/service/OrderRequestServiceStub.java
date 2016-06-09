@@ -12,7 +12,7 @@ import java.util.List;
 @Service("OrderRequestServiceStub")
 public class OrderRequestServiceStub implements OrderRequestService {
     @Override
-    public List<OrderRequest> getByCounterpartyId(BigInteger counterpartyId) {
+    public List<OrderRequest> getByCounterpartyId(Long counterpartyId) {
         return null;
     }
 
@@ -32,17 +32,17 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public List<OrderRequest> findLimitOrderRequestsToTrade(BigInteger counterpartyId, OrderSide orderSide) {
+    public List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
         return null;
     }
 
     @Override
-    public void removeOrderRequest(BigInteger orderId) {
+    public void removeOrderRequest(Long orderId) {
 
     }
 
     @Override
-    public OrderRequest updateOrderRequest(BigInteger orderId, BigDecimal qty) {
+    public OrderRequest updateOrderRequest(Long orderId, BigDecimal qty) {
         return null;
     }
 }

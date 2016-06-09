@@ -30,7 +30,7 @@ public class OrderRequestController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<OrderRequest> getByCounterpartyId(@RequestParam("counterpartyId") BigInteger counterpartyId) {
+    public List<OrderRequest> getByCounterpartyId(@RequestParam("counterpartyId") Long counterpartyId) {
         return orderRequestServiceImpl.getByCounterpartyId(counterpartyId);
     }
 

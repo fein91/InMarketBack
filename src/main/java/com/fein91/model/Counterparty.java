@@ -1,8 +1,8 @@
 package com.fein91.model;
 
-import javax.persistence.*;
-import java.math.BigInteger;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * Created by olta1014 on 23.05.2016.
@@ -11,14 +11,27 @@ import java.util.List;
 public class Counterparty {
 
     @Id
-    private BigInteger id;
+    @GeneratedValue
+    private Long id;
     private String name;
 
-    public BigInteger getId() {
+    public Counterparty() {
+        //for JPA
+    }
+
+    private Counterparty(String name) {
+        this.name = name;
+    }
+
+    public static Counterparty of(String name) {
+        return new Counterparty(name);
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
