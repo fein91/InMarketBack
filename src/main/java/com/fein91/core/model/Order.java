@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Order {
+	//TODO: do we really need BigInteger id?
 	private final BigInteger id;
 	private long timestamp;
 	private boolean limit;
@@ -13,19 +14,19 @@ public class Order {
 	private String side;
 	private double price;
 	private int qId;
-	private int takerId;
+	private long takerId;
 	private Order nextOrder;
 	private Order prevOrder;
 	private OrderList oL;
 	@Deprecated
     private Map<Integer, List<Integer>> invoicesQtyByGiverId;
 	
-	public Order(BigInteger id, long time, boolean limit, int quantity, int takerId, String side) {
+	public Order(BigInteger id, long time, boolean limit, int quantity, long takerId, String side) {
 		this(id, time, limit, quantity, takerId, side, null);
 	}	
 	
 	public Order(BigInteger id, long time, boolean limit, int quantity,
-				int takerId, String side, Double price) {
+				long takerId, String side, Double price) {
 
 		this.id = id;
 		this.timestamp = time;
@@ -52,7 +53,7 @@ public class Order {
         return Integer.toString(quantity) + "\t@\t" + Double.toString(price) + 
         		"\tt=" + Long.toString(timestamp) +
         		"\tqId=" + Integer.toString(qId) +
-        		"\ttakerId=" + Integer.toString(takerId);
+        		"\ttakerId=" + Long.toString(takerId);
     }
 
 	
@@ -105,11 +106,11 @@ public class Order {
 		this.qId = qId;
 	}
 
-	public int getTakerId() {
+	public long getTakerId() {
 		return takerId;
 	}
 
-	public void setTakerId(int takerId) {
+	public void setTakerId(long takerId) {
 		this.takerId = takerId;
 	}
 

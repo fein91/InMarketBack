@@ -1,22 +1,17 @@
 package com.fein91.service;
 
 import com.fein91.core.model.OrderBook;
-import com.fein91.core.service.OrderBookBuilder;
-import com.fein91.model.OrderResult;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.service.LimitOrderBookService;
+import com.fein91.core.service.OrderBookBuilder;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
-import com.fein91.model.Counterparty;
-import com.fein91.model.Invoice;
-import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderType;
+import com.fein91.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,7 +31,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     OrderBookBuilder orderBookBuilder;
 
     @Override
-    public List<OrderRequest> getByCounterpartyId(BigInteger counterpartyId) {
+    public List<OrderRequest> getByCounterpartyId(Long counterpartyId) {
         return orderRequestRepository.findByCounterpartyId(counterpartyId);
     }
 
@@ -71,7 +66,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public List<OrderRequest> findLimitOrderRequestsToTrade(BigInteger counterpartyId, OrderSide orderSide) {
+    public List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
         List<Invoice> invoices = OrderSide.BID == orderSide
                 ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
                 : invoiceRepository.findInvoicesByTargetId(counterpartyId);
@@ -81,21 +76,21 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
                     : invoice.getSource();
-             orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
+            orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
         }
         return orderRequests;
     }
 
     @Override
     @Transactional
-    public void removeOrderRequest(BigInteger orderId) {
+    public void removeOrderRequest(Long orderId) {
         orderRequestRepository.delete(orderId);
         LOGGER.info("Order request was removed: " + orderId);
     }
 
     @Override
     @Transactional
-    public OrderRequest updateOrderRequest(BigInteger orderId, BigDecimal qty) {
+    public OrderRequest updateOrderRequest(Long orderId, BigDecimal qty) {
         OrderRequest orderRequest = orderRequestRepository.findOne(orderId);
         orderRequest.setQuantity(qty);
 

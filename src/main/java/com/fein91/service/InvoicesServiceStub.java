@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 @Service("InvoicesServiceStub")
@@ -18,7 +17,7 @@ public class InvoicesServiceStub implements InvoiceService {
     InvoiceRepository invoiceRepository;
 
     @Override
-    public Invoice addInvoice(BigInteger id, Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
+    public Invoice addInvoice(Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
         return null;
     }
 
@@ -28,12 +27,12 @@ public class InvoicesServiceStub implements InvoiceService {
     }
 
     @Override
-    public List<Invoice> findBySourceAndTarget(BigInteger sourceId, BigInteger targetId) {
+    public List<Invoice> findBySourceAndTarget(Long sourceId, Long targetId) {
         return invoiceRepository.findBySourceAndTarget(sourceId, targetId);
     }
 
     @Override
-    public Invoice getById(BigInteger invoiceId) {
+    public Invoice getById(Long invoiceId) {
         return null;
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,9 +21,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional
-    public Invoice addInvoice(BigInteger id, Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
+    public Invoice addInvoice(Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
         Invoice invoice = new Invoice();
-        invoice.setId(id);
         invoice.setSource(source);
         invoice.setTarget(target);
         invoice.setValue(value);
@@ -42,12 +40,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public List<Invoice> findBySourceAndTarget(BigInteger sourceId, BigInteger targetId) {
+    public List<Invoice> findBySourceAndTarget(Long sourceId, Long targetId) {
         return invoiceRepository.findBySourceAndTarget(sourceId, targetId);
     }
 
     @Override
-    public Invoice getById(BigInteger invoiceId) {
+    public Invoice getById(Long invoiceId) {
         return invoiceRepository.findOne(invoiceId);
     }
 }

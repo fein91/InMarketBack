@@ -33,7 +33,7 @@ public class LimitOrderBookService {
         return addAskMarketOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
     }
 
-    public OrderResult addAskMarketOrder(OrderBook lob, BigInteger orderId, Counterparty target, int quantity) {
+    public OrderResult addAskMarketOrder(OrderBook lob, Long orderId, Counterparty target, int quantity) {
         List<Invoice> invoices = invoiceRepository.findByTarget(target);
 
         if (invoices.isEmpty()) {
@@ -54,7 +54,7 @@ public class LimitOrderBookService {
         return addBidMarketOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
     }
 
-    public OrderResult addBidMarketOrder(OrderBook lob, BigInteger orderId, Counterparty source, int quantity) {
+    public OrderResult addBidMarketOrder(OrderBook lob, Long orderId, Counterparty source, int quantity) {
         List<Invoice> invoices = invoiceRepository.findBySource(source);
 
         if (invoices.isEmpty()) {
@@ -75,7 +75,7 @@ public class LimitOrderBookService {
         return addAskLimitOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
     }
 
-    public OrderResult addAskLimitOrder(OrderBook lob, BigInteger orderId, Counterparty target, int quantity, double price) {
+    public OrderResult addAskLimitOrder(OrderBook lob, Long orderId, Counterparty target, int quantity, double price) {
         List<Invoice> invoices = invoiceRepository.findByTarget(target);
 
         if (invoices.isEmpty()) {
@@ -96,7 +96,7 @@ public class LimitOrderBookService {
         return addBidLimitOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
     }
 
-    public OrderResult addBidLimitOrder(OrderBook lob, BigInteger orderId, Counterparty source, int quantity, double price) {
+    public OrderResult addBidLimitOrder(OrderBook lob, Long orderId, Counterparty source, int quantity, double price) {
         List<Invoice> invoices = invoiceRepository.findBySource(source);
 
         if (invoices.isEmpty()) {
@@ -114,8 +114,8 @@ public class LimitOrderBookService {
     }
 
     public OrderResult addLimitOrder(OrderBook lob,
-                                     BigInteger orderId,
-                                     BigInteger counterPartyId,
+                                     Long orderId,
+                                     Long counterPartyId,
                                      OrderSide orderSide,
                                      Map<Integer, List<Integer>> invoicesQtyByGiverId,
                                      int quantity,
@@ -127,7 +127,7 @@ public class LimitOrderBookService {
         }
 
         long time = System.nanoTime();
-        Order order = new Order(orderId, time, true, quantity, counterPartyId.intValue(), orderSide.getCoreName(), price);
+        Order order = new Order(BigInteger.valueOf(orderId), time, true, quantity, counterPartyId.intValue(), orderSide.getCoreName(), price);
         order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
 
         OrderReport orderReport = lob.processOrder(order, false);
@@ -142,8 +142,8 @@ public class LimitOrderBookService {
     }
 
     public OrderResult addMarketOrder(OrderBook lob,
-                                      BigInteger orderId,
-                                      BigInteger counterPartyId,
+                                      Long orderId,
+                                      Long counterPartyId,
                                       OrderSide orderSide,
                                       Map<Integer, List<Integer>> invoicesQtyByGiverId,
                                       int quantity) {
@@ -152,7 +152,7 @@ public class LimitOrderBookService {
         }
 
         long time = System.nanoTime();
-        Order order = new Order(orderId, time, false, quantity, counterPartyId.intValue(), orderSide.getCoreName());
+        Order order = new Order(BigInteger.valueOf(orderId), time, false, quantity, counterPartyId.intValue(), orderSide.getCoreName());
 
         OrderReport orderReport = lob.processOrder(order, false);
         System.out.println(lob);

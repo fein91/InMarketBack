@@ -31,12 +31,12 @@ public class CounterpartyController {
     CounterPartyService counterPartyServiceImpl;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{sourceId}/invoicesBySource")
-    public List<Invoice> getBySourceId(@PathVariable BigInteger sourceId) {
+    public List<Invoice> getBySourceId(@PathVariable Long sourceId) {
         return invoiceRepository.findInvoicesBySourceId(sourceId);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{targetId}/invoicesByTarget")
-    public List<Invoice> getByTargetId(@PathVariable BigInteger targetId) {
+    public List<Invoice> getByTargetId(@PathVariable Long targetId) {
         return invoiceRepository.findInvoicesByTargetId(targetId);
     }
 }

@@ -7,5 +7,5 @@ import java.math.BigInteger;
 
 public interface CounterPartyService {
     @Transactional
-    Counterparty addCounterParty(BigInteger id, String name);
+    Counterparty addCounterParty(String name);
 }

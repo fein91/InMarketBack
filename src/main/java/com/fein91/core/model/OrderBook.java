@@ -179,8 +179,8 @@ public class OrderBook {
 								int qtyRemaining, Order quote,
 								boolean verbose) {
 		String side = quote.getSide();
-		int buyer, seller;
-		int takerId = quote.getTakerId();
+		long buyer, seller;
+		long takerId = quote.getTakerId();
 		long time = quote.getTimestamp();
         Iterator<Order> iter = orders.iterator();
 		while ((orders.getLength()>0) && (qtyRemaining>0) && iter.hasNext()) {
@@ -188,8 +188,8 @@ public class OrderBook {
 			Order headOrder = iter.next();
 
 			List<Invoice> invoices = side == "offer"
-					? invoiceService.findBySourceAndTarget(BigInteger.valueOf(headOrder.getTakerId()), BigInteger.valueOf(takerId))
-					: invoiceService.findBySourceAndTarget(BigInteger.valueOf(takerId), BigInteger.valueOf(headOrder.getTakerId()));
+					? invoiceService.findBySourceAndTarget( headOrder.getTakerId(), takerId)
+					: invoiceService.findBySourceAndTarget(takerId, headOrder.getTakerId());
 			if (CollectionUtils.isEmpty(invoices)) {
 				continue;
 			}
@@ -208,11 +208,11 @@ public class OrderBook {
 					if (side == "offer") {
 						this.bids.updateOrderQty(newQty,
 												 headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
 					} else {
 						this.asks.updateOrderQty(newQty,
 												 headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				} else {
@@ -224,11 +224,11 @@ public class OrderBook {
 					if (side == "offer") {
 						this.bids.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
 					} else {
 						this.asks.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				}
@@ -240,10 +240,10 @@ public class OrderBook {
 
 					if (side == "offer") {
 						this.bids.removeOrderByID(headOrder.getqId());
-						orderRequestService.removeOrderRequest(headOrder.getId());
+						orderRequestService.removeOrderRequest(headOrder.getId().longValue());
 					} else {
 						this.asks.removeOrderByID(headOrder.getqId());
-						orderRequestService.removeOrderRequest(headOrder.getId());
+						orderRequestService.removeOrderRequest(headOrder.getId().longValue());
 					}
 					qtyRemaining -= qtyTraded;
 				} else {
@@ -255,11 +255,11 @@ public class OrderBook {
 					if (side == "offer") {
 						this.bids.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
 					} else {
 						this.asks.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				}

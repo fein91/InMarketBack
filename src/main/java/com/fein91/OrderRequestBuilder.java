@@ -12,12 +12,10 @@ import java.util.Date;
 
 public class OrderRequestBuilder {
 
-    public OrderRequestBuilder(BigInteger id, Counterparty counterparty) {
-        this.id = id;
+    public OrderRequestBuilder(Counterparty counterparty) {
         this.counterparty = counterparty;
     }
 
-    BigInteger id;
     Counterparty counterparty;
     BigDecimal price;
     BigDecimal quantity;
@@ -56,7 +54,6 @@ public class OrderRequestBuilder {
         }
 
         OrderRequest orderRequest = new OrderRequest();
-        orderRequest.setId(id);
         orderRequest.setCounterparty(counterparty);
         orderRequest.setDate(date);
         orderRequest.setOrderSide(orderSide);
