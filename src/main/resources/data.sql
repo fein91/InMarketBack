@@ -26,20 +26,20 @@ INSERT INTO counterparty
 values (24, 'supplier4');
 
 
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value)
-values             (1111,  11,     12,      200, 0);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value)
-values             (1112,   11,    13,      150, 0);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value)
-values             (1113,   11,    14,      100, 0);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value)
-values             (1114,   21,    11,      300, 0);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value)
-values             (1115,   22,    11,      100, 0);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value)
-values             (1116,   23,    11,      250, 0);
-insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value)
-values             (1117,   24,    11,      100, 0);
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)
+values             (1111,  11,     12,      200, 0,  to_date('29-06-16', 'DD-MM-YY'));
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)
+values             (1112,   11,    13,      150, 0,  to_date('30-07-16', 'DD-MM-YY'));
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)
+values             (1113,   11,    14,      100, 0,  to_date('28-07-16', 'DD-MM-YY'));
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)
+values             (1114,   21,    11,      300, 0,  to_date('27-06-16', 'DD-MM-YY'));
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)
+values             (1115,   22,    11,      100, 0,  to_date('26-06-16', 'DD-MM-YY'));
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)
+values             (1116,   23,    11,      250, 0,  to_date('25-06-16', 'DD-MM-YY'));
+insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)
+values             (1117,   24,    11,      100, 0,  to_date('29-07-16', 'DD-MM-YY'));
 
 -- 0 ASK 1 BID 0 LIMIT 1 MARKET
 insert into order_request(id, counterparty_fk, price, quantity, date, order_type, order_side)
