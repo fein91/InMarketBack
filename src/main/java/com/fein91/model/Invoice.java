@@ -2,7 +2,7 @@ package com.fein91.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.Date;
 
 /**
  * Created by olta1014 on 23.05.2016.
@@ -25,6 +25,8 @@ public class Invoice {
     BigDecimal value;
 
     BigDecimal prepaidValue;
+
+    Date paymentDate;
 
     public Long getId() {
         return id;
@@ -66,6 +68,14 @@ public class Invoice {
         this.prepaidValue = prepaidValue;
     }
 
+    public Date getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
     @Override
     public String toString() {
         return "Invoice{" +
@@ -74,6 +84,7 @@ public class Invoice {
                 ", target=" + target +
                 ", value=" + value +
                 ", prepaidValue=" + prepaidValue +
+                ", paymentDate=" + paymentDate +
                 '}';
     }
 }
