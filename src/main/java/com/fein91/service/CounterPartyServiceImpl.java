@@ -9,8 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("CounterPartyServiceImpl")
 public class CounterPartyServiceImpl implements CounterPartyService {
 
-    @Autowired(required = false)
-    CounterpartyRepository counterpartyRepository;
+    private final CounterpartyRepository counterpartyRepository;
+
+    @Autowired
+    public CounterPartyServiceImpl(CounterpartyRepository counterpartyRepository) {
+        this.counterpartyRepository = counterpartyRepository;
+    }
 
     @Override
     @Transactional

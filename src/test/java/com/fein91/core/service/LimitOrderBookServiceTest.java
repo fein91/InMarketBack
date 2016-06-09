@@ -55,7 +55,7 @@ public class LimitOrderBookServiceTest {
     * */
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void marketOrderTest1() throws Exception {
         Counterparty supplier = counterPartyService.addCounterParty("supplier");
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
@@ -120,7 +120,7 @@ public class LimitOrderBookServiceTest {
 
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void marketOrderTest2() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -202,7 +202,7 @@ public class LimitOrderBookServiceTest {
 
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void marketOrderTest3() throws Exception {
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
         Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
@@ -257,7 +257,7 @@ public class LimitOrderBookServiceTest {
     * */
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void marketOrderTest4() throws Exception {
         Counterparty supplier = counterPartyService.addCounterParty("supplier");
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
@@ -334,7 +334,7 @@ public class LimitOrderBookServiceTest {
     * */
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void marketOrderTest5() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -388,7 +388,7 @@ public class LimitOrderBookServiceTest {
        * */
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void limitOrderTest6() throws Exception {
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
         Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
@@ -434,7 +434,7 @@ public class LimitOrderBookServiceTest {
 
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void limitOrderTest7() throws Exception {
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
         Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
@@ -491,7 +491,7 @@ public class LimitOrderBookServiceTest {
     * */
     @Test
     @Transactional
-    @Rollback(true)
+    @Rollback
     public void marketOrdersOneByOne() {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
 

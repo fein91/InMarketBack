@@ -21,14 +21,21 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     private final static Logger LOGGER = Logger.getLogger(OrderRequestServiceImpl.class.getName());
 
+    private final OrderRequestRepository orderRequestRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final LimitOrderBookService lobService;
+    private final OrderBookBuilder orderBookBuilder;
+
     @Autowired
-    OrderRequestRepository orderRequestRepository;
-    @Autowired
-    InvoiceRepository invoiceRepository;
-    @Autowired
-    LimitOrderBookService lobService;
-    @Autowired
-    OrderBookBuilder orderBookBuilder;
+    public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository,
+                                   InvoiceRepository invoiceRepository,
+                                   LimitOrderBookService lobService,
+                                   OrderBookBuilder orderBookBuilder) {
+        this.orderRequestRepository = orderRequestRepository;
+        this.invoiceRepository = invoiceRepository;
+        this.lobService = lobService;
+        this.orderBookBuilder = orderBookBuilder;
+    }
 
     @Override
     public List<OrderRequest> getByCounterpartyId(Long counterpartyId) {
