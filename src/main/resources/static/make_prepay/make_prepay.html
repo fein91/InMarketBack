@@ -30,10 +30,10 @@
 		<uib-tab index="1" heading="Рыночная заявка">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<form ng-controller="MarketBidCtrl" ng-submit="submitBidMarketOrder()">
+					<form ng-controller="MarketBidCtrl">
 						<div class="form-group form-inline">
 							<label>Введите желаемую для заказа сумму предоплаты: </label>
-							<input ng-blur="calculateBidMarketOrder()" type="number" class="form-control" ng-model="bidQty" placeholder="Сумма" required>
+							<input type="number" min="0" class="form-control" ng-model="bidQty" placeholder="Сумма" required>
 						</div>
 						<div>
 							<p>В данный момент вы можете авансировать эту сумму под APR={{bidApr}}</p>
@@ -47,8 +47,9 @@
 							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 							К сожалению, в данный момент нет контрагентов, желающих получить предоплаты. Предлагаем воспользоваться отложенным исполнением по последней рыночной цене APR=
 						</div>
-						<button type="submit" class="btn btn-default">Подтвердить</button>
+						<button type="submit" ng-click="submitBidMarketOrder()" class="btn btn-default">Подтвердить</button>
 						<button type="reset" class="btn btn-default" ng-click="reset()">Сбросить</button>
+						<button type="submit" ng-click="calculateBidMarketOrder()" class="btn btn-default">Пересчитать</button>
 					</form>
 				</div>
 			</div>
@@ -56,14 +57,14 @@
 		<uib-tab index="2" heading="Отложенная заявка">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<form ng-controller="LimitBidCtrl" ng-submit="submitLimitBidOrder()">
+					<form ng-controller="LimitBidCtrl">
 						<div class="form-group form-inline">
 							<label>Введите желаемый APR: </label>
-							<input ng-blur="calculateLimitBidOrder()" ng-model="bidApr" type="number" class="form-control" placeholder="Процент" required>
+							<input ng-model="bidApr" type="number" min="0" max="99" class="form-control" placeholder="Процент" required>
 						</div>
 						<div class="form-group form-inline">
 							<label>Введите желаемую сумму для получения предоплаты: </label>
-							<input ng-blur="calculateLimitBidOrder()" ng-model="bidQty" type="number" class="form-control" placeholder="Сумма" required>
+							<input ng-model="bidQty" type="number" min="0" class="form-control" placeholder="Сумма" required>
 						</div>
 						<div>
 							<p>По заданному APR к моментальному исполнению подлежит сумма {{satisfiedBidQty}} грн.</p>
@@ -75,8 +76,9 @@
 								</canvas>
 							</div>
 						</div>
-						<button type="submit" class="btn btn-default">Подтвердить</button>
+						<button type="submit" ng-click="submitLimitBidOrder()" class="btn btn-default">Подтвердить</button>
 						<button type="reset" class="btn btn-default">Сбросить</button>
+						<button type="submit" ng-click="calculateLimitBidOrder()" class="btn btn-default">Пересчитать</button>
 					</form>
 				</div>
 			</div>

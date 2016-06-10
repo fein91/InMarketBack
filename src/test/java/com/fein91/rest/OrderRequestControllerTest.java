@@ -1,9 +1,14 @@
 package com.fein91.rest;
 
 import com.fein91.InMarketApplication;
+import com.fein91.OrderRequestBuilder;
+import com.fein91.core.model.OrderSide;
 import com.fein91.dao.InvoiceRepository;
+import com.fein91.model.Counterparty;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
+import com.fein91.model.OrderType;
+import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.service.OrderRequestService;
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static org.easymock.EasyMock.*;
@@ -32,22 +38,50 @@ public class OrderRequestControllerTest {
         controller = new OrderRequestController(serviceMock);
     }
 
-    @After
-    public void tearDown() {
+    @Test
+    public void process() throws OrderRequestException{
+        expect(serviceMock.processOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
+
+        replay(serviceMock);
+
+        controller.process(new OrderRequestBuilder(new Counterparty())
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.LIMIT)
+                .price(BigDecimal.ONE)
+                .quantity(BigDecimal.TEN)
+                .build());
+
         verify(serviceMock);
     }
 
+
     @Test
-    public void process() {
-        expect(serviceMock.processOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
+    public void calculate() throws OrderRequestException{
+        expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
+
+        replay(serviceMock);
+
+        controller.calculate(new OrderRequestBuilder(new Counterparty())
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.LIMIT)
+                .price(BigDecimal.ONE)
+                .quantity(BigDecimal.TEN)
+                .build());
+
+        verify(serviceMock);
+    }
+
+    @Test(expected = OrderRequestException.class)
+    public void processWithException() throws OrderRequestException{
+        expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
 
         controller.process(new OrderRequest());
     }
 
-    @Test
-    public void calculate() {
+    @Test(expected = OrderRequestException.class)
+    public void calculateWithException() throws OrderRequestException{
         expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
@@ -62,5 +96,7 @@ public class OrderRequestControllerTest {
         replay(serviceMock);
 
         controller.getByCounterpartyId(1L);
+
+        verify(serviceMock);
     }
 }

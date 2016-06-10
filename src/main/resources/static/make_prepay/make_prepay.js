@@ -16,68 +16,72 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 		$scope.noCounterparties = false;
 
 		$scope.calculateBidMarketOrder = function() {
-			var orderRequest = {
-				"id" : 123456789,
-				"quantity" : $scope.bidQty,
-				"orderSide" : 0,
-				"orderType" : 1,
-				"counterparty" : {
-					"id" : 11,
-					"name" : "supplyer"
-				}
-			};
-
-			orderRequestsService.calculate(orderRequest)
-				.then(function successCallback(response){
-					var orderResult = response.data;
-					console.log('order result: ' + JSON.stringify(orderResult));
-					$scope.bidApr = orderResult.apr;
-					$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-					if ($scope.bidQty > $scope.satisfiedBidQty) {
-						$scope.demandSatisfied = false;
+			if ($scope.bidQty) {
+				var orderRequest = {
+					"id" : 123456789,
+					"quantity" : $scope.bidQty,
+					"orderSide" : 0,
+					"orderType" : 1,
+					"counterparty" : {
+						"id" : 11,
+						"name" : "supplyer"
 					}
+				};
 
-				}, function errorCallback(response) {
-					console.log('got ' + response.status + ' error');
-				});
-		}
+				orderRequestsService.calculate(orderRequest)
+					.then(function successCallback(response){
+						var orderResult = response.data;
+						console.log('order result: ' + JSON.stringify(orderResult));
+						$scope.bidApr = orderResult.apr;
+						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+						if ($scope.bidQty > $scope.satisfiedBidQty) {
+							$scope.demandSatisfied = false;
+						}
+
+					}, function errorCallback(response) {
+						console.log('got ' + response.status + ' error');
+					});
+			}
+		};
 
 		$scope.submitBidMarketOrder = function() {
-			var orderRequest = {
-				"id" : 123456789,
-				"quantity" : $scope.bidQty,
-				"orderSide" : 0,
-				"orderType" : 1,
-				"counterparty" : {
-					"id" : 11,
-					"name" : "supplyer"
-				}
-			};
-
-			orderRequestsService.process(orderRequest)
-				.then(function successCallback(response){
-					var orderResult = response.data;
-					console.log('order result: ' + JSON.stringify(orderResult));
-					$scope.bidApr = orderResult.apr;
-					$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-					if ($scope.bidQty > $scope.satisfiedBidQty) {
-						$scope.demandSatisfied = false;
+			if ($scope.bidQty) {
+				var orderRequest = {
+					"id" : 123456789,
+					"quantity" : $scope.bidQty,
+					"orderSide" : 0,
+					"orderType" : 1,
+					"counterparty" : {
+						"id" : 11,
+						"name" : "supplyer"
 					}
+				};
 
-					$rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
-					$rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
+				orderRequestsService.process(orderRequest)
+					.then(function successCallback(response){
+						var orderResult = response.data;
+						console.log('order result: ' + JSON.stringify(orderResult));
+						$scope.bidApr = orderResult.apr;
+						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+						if ($scope.bidQty > $scope.satisfiedBidQty) {
+							$scope.demandSatisfied = false;
+						}
 
-				}, function errorCallback(response) {
-					console.log('got ' + response.status + ' error');
-				});
-		}
+						$rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
+						$rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
+
+					}, function errorCallback(response) {
+						console.log('got ' + response.status + ' error');
+					});
+			}
+		};
 
 		$scope.reset = function() {
 			$scope.bidQty = '';
 			$scope.bidApr = '';
 			$scope.demandSatisfied = true;
 			$scope.noCounterparties = false;
-		}
+		};
 	}])
 
 	.controller('LimitBidCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
