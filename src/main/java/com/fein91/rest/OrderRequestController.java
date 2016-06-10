@@ -5,6 +5,7 @@ import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
 import com.fein91.model.OrderType;
 import com.fein91.rest.exception.OrderRequestException;
+import com.fein91.rest.exception.OrderRequestProcessingException;
 import com.fein91.service.OrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,7 +44,7 @@ public class OrderRequestController {
         return orderRequestServiceImpl.getByCounterpartyId(counterpartyId);
     }
 
-    private void checkOrderRequest(OrderRequest orderRequest) throws OrderRequestException{
+    private void checkOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
         if (orderRequest.getCounterparty() == null) {
             throw new OrderRequestException("Order request counterparty isn't filled");
         }
@@ -68,9 +69,17 @@ public class OrderRequestController {
     }
 
     @ExceptionHandler(OrderRequestException.class)
-    public ResponseEntity<ErrorResponse> exceptionHandler(Exception ex) {
+    public ResponseEntity<ErrorResponse> orderRequestExceptionHandler(Exception ex) {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
+        error.setMessage(ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(OrderRequestProcessingException.class)
+    public ResponseEntity<ErrorResponse> orderRequestProcessingExceptionHandler(Exception ex) {
+        ErrorResponse error = new ErrorResponse();
+        error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setMessage(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.OK);
     }

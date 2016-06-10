@@ -1,13 +1,11 @@
-package com.fein91;
+package com.fein91.builders;
 
 import com.fein91.core.model.OrderSide;
 import com.fein91.model.Counterparty;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderType;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Date;
 
 public class OrderRequestBuilder {

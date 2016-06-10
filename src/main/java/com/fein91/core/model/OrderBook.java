@@ -1,16 +1,14 @@
 package com.fein91.core.model;
 
 import com.fein91.model.Invoice;
+import com.fein91.model.OrderType;
 import com.fein91.service.InvoiceService;
-import com.fein91.service.InvoiceServiceImpl;
 import com.fein91.service.OrderRequestService;
-import com.fein91.service.OrderRequestServiceImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
@@ -62,14 +60,14 @@ public class OrderBook {
 	
 	
 	public OrderReport processOrder(Order quote, boolean verbose) {
-		boolean isLimit = quote.isLimit();
+		OrderType orderType = quote.getOrderType();
 		OrderReport oReport;
 		// Update time
 		this.time = quote.getTimestamp();
 		if (quote.getQuantity() <= 0 ) {
 			throw new IllegalArgumentException("processOrder() given qty <= 0");
 		}
-		if (isLimit) {
+		if (OrderType.LIMIT == orderType) {
 			double clippedPrice = clipPrice(quote.getPrice());
 			quote.setPrice(clippedPrice);
 			oReport = processLimitOrder(quote, verbose);
@@ -82,9 +80,9 @@ public class OrderBook {
 	
 	private OrderReport processMarketOrder(Order quote, boolean verbose) {
 		ArrayList<Trade> trades = new ArrayList<Trade>();
-		String side = quote.getSide();
+		OrderSide side = quote.getOrderSide();
 		int qtyRemaining = quote.getQuantity();
-		if (side == "bid") {
+		if (side == OrderSide.BID) {
 			this.lastOrderSign = 1;
 			Iterator<OrderList> orderListIterator = this.asks.getOLsSortedByPriceIterator();
 			while ((qtyRemaining > 0) && (orderListIterator.hasNext())) {
@@ -92,7 +90,7 @@ public class OrderBook {
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
-		} else if (side == "offer") {
+		} else if (side == OrderSide.ASK) {
 			this.lastOrderSign = -1;
             Iterator<OrderList> orderListIterator = this.bids.getOLsInverseSortedByPriceIterator();
 			while ((qtyRemaining > 0) && (orderListIterator.hasNext())) {
@@ -113,10 +111,10 @@ public class OrderBook {
 										  boolean verbose) {
 		boolean orderInBook = false;
 		ArrayList<Trade> trades = new ArrayList<Trade>();
-		String side = quote.getSide();
+		OrderSide side = quote.getOrderSide();
 		int qtyRemaining = quote.getQuantity();
 		double price = quote.getPrice();
-		if (side=="bid") {
+		if (side == OrderSide.BID) {
 			this.lastOrderSign = 1;
 			Iterator<Map.Entry<Double, OrderList>> priceTreeIter = this.asks.getPriceTreeIterator();
 			while ((priceTreeIter.hasNext()) &&
@@ -140,7 +138,7 @@ public class OrderBook {
 			} else {
 				orderInBook = false;
 			}
-		} else if (side=="offer") {
+		} else if (side == OrderSide.ASK) {
 			this.lastOrderSign = -1;
 			Iterator<Map.Entry<Double, OrderList>> inversePriceTreeIter = this.bids.getPriceTreeInverseIterator();
 			while ((inversePriceTreeIter.hasNext()) &&
@@ -178,7 +176,7 @@ public class OrderBook {
 	private int processOrderList(ArrayList<Trade> trades, OrderList orders,
 								int qtyRemaining, Order quote,
 								boolean verbose) {
-		String side = quote.getSide();
+		OrderSide side = quote.getOrderSide();
 		long buyer, seller;
 		long takerId = quote.getTakerId();
 		long time = quote.getTimestamp();
@@ -187,7 +185,7 @@ public class OrderBook {
 			int qtyTraded = 0;
 			Order headOrder = iter.next();
 
-			List<Invoice> invoices = side == "offer"
+			List<Invoice> invoices = side == OrderSide.ASK
 					? invoiceService.findBySourceAndTarget( headOrder.getTakerId(), takerId)
 					: invoiceService.findBySourceAndTarget(takerId, headOrder.getTakerId());
 			if (CollectionUtils.isEmpty(invoices)) {
@@ -205,14 +203,14 @@ public class OrderBook {
 					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
 
 					int newQty = headOrder.getQuantity() - qtyRemaining;
-					if (side == "offer") {
+					if (side == OrderSide.ASK) {
 						this.bids.updateOrderQty(newQty,
 												 headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					} else {
 						this.asks.updateOrderQty(newQty,
-												 headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
+								headOrder.getqId());
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				} else {
@@ -221,14 +219,14 @@ public class OrderBook {
 					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
 
 					int newQty = headOrder.getQuantity() - localOrderQty;
-					if (side == "offer") {
+					if (side == OrderSide.ASK) {
 						this.bids.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					} else {
 						this.asks.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				}
@@ -238,12 +236,12 @@ public class OrderBook {
 					qtyTraded = localOrderQty;
 					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
 
-					if (side == "offer") {
+					if (side == OrderSide.ASK) {
 						this.bids.removeOrderByID(headOrder.getqId());
-						orderRequestService.removeOrderRequest(headOrder.getId().longValue());
+						orderRequestService.removeOrderRequest(headOrder.getId());
 					} else {
 						this.asks.removeOrderByID(headOrder.getqId());
-						orderRequestService.removeOrderRequest(headOrder.getId().longValue());
+						orderRequestService.removeOrderRequest(headOrder.getId());
 					}
 					qtyRemaining -= qtyTraded;
 				} else {
@@ -252,14 +250,14 @@ public class OrderBook {
 					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
 
 					int newQty = headOrder.getQuantity() - qtyRemaining;
-					if (side == "offer") {
+					if (side == OrderSide.ASK) {
 						this.bids.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					} else {
 						this.asks.updateOrderQty(newQty,
 								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId().longValue(), BigDecimal.valueOf(newQty));
+						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
 					}
 					qtyRemaining -= qtyTraded;
 				}
@@ -267,7 +265,7 @@ public class OrderBook {
 				throw new IllegalStateException("Shouldn't be here");
 			}
 
-			if (side == "offer") {
+			if (side == OrderSide.ASK) {
 				buyer = headOrder.getTakerId();
 				seller = takerId;
 			} else {
@@ -287,13 +285,13 @@ public class OrderBook {
 	}
 	
 	
-	public void cancelOrder(String side, int qId, int time) {
+	public void cancelOrder(OrderSide orderSide, int qId, int time) {
 		this.time = time;
-		if (side=="bid") {
+		if (orderSide == OrderSide.BID) {
 			if (bids.orderExists(qId)) {
 				bids.removeOrderByID(qId);
 			}
-		} else if (side=="offer") {
+		} else if (orderSide == OrderSide.ASK) {
 			if (asks.orderExists(qId)) {
 				asks.removeOrderByID(qId);
 			}

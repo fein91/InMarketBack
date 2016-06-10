@@ -1,16 +1,13 @@
 package com.fein91.rest;
 
 import com.fein91.InMarketApplication;
-import com.fein91.OrderRequestBuilder;
+import com.fein91.builders.OrderRequestBuilder;
 import com.fein91.core.model.OrderSide;
-import com.fein91.dao.InvoiceRepository;
 import com.fein91.model.Counterparty;
 import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderResult;
 import com.fein91.model.OrderType;
 import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.service.OrderRequestService;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +36,7 @@ public class OrderRequestControllerTest {
     }
 
     @Test
-    public void process() throws OrderRequestException{
+    public void process() throws OrderRequestException {
         expect(serviceMock.processOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
@@ -56,7 +53,7 @@ public class OrderRequestControllerTest {
 
 
     @Test
-    public void calculate() throws OrderRequestException{
+    public void calculate() throws OrderRequestException {
         expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
@@ -72,7 +69,7 @@ public class OrderRequestControllerTest {
     }
 
     @Test(expected = OrderRequestException.class)
-    public void processWithException() throws OrderRequestException{
+    public void processWithException() throws OrderRequestException {
         expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
@@ -81,7 +78,7 @@ public class OrderRequestControllerTest {
     }
 
     @Test(expected = OrderRequestException.class)
-    public void calculateWithException() throws OrderRequestException{
+    public void calculateWithException() throws OrderRequestException {
         expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
