@@ -16,8 +16,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private final static Logger LOGGER = Logger.getLogger(InvoiceServiceImpl.class.getName());
 
+    private final InvoiceRepository invoiceRepository;
+
     @Autowired
-    InvoiceRepository invoiceRepository;
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository) {
+        this.invoiceRepository = invoiceRepository;
+    }
 
     @Override
     @Transactional

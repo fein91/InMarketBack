@@ -2,10 +2,7 @@ package com.fein91.rest;
 
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.model.Invoice;
-import com.fein91.service.CounterPartyService;
-import com.fein91.service.OrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,14 +14,13 @@ import java.util.List;
 @RequestMapping("/counterparties")
 public class CounterpartyController {
 
+    private final InvoiceRepository invoiceRepository;
+
     @Autowired
-    InvoiceRepository invoiceRepository;
-    @Autowired
-    @Qualifier("OrderRequestServiceImpl")
-    OrderRequestService orderRequestServiceImpl;
-    @Autowired
-    @Qualifier("CounterPartyServiceImpl")
-    CounterPartyService counterPartyServiceImpl;
+    public CounterpartyController(InvoiceRepository invoiceRepository) {
+        this.invoiceRepository = invoiceRepository;
+    }
+
 
     @RequestMapping(method = RequestMethod.GET, value = "/{sourceId}/invoicesBySource")
     public List<Invoice> getBySourceId(@PathVariable Long sourceId) {
