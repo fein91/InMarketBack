@@ -17,7 +17,13 @@ public class InvoicesServiceStub implements InvoiceService {
     InvoiceRepository invoiceRepository;
 
     @Override
+    @Deprecated
     public Invoice addInvoice(Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
+        return null;
+    }
+
+    @Override
+    public Invoice addInvoice(Invoice invoice) {
         return null;
     }
 

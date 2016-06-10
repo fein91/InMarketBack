@@ -22,6 +22,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.fein91.core.model.OrderSide.ASK;
 import static com.fein91.core.model.OrderSide.BID;
@@ -127,7 +128,8 @@ public class OrderRequestServiceMockTest {
         reset(invoiceRepository);
         Counterparty source = Counterparty.of("src");
         Counterparty target = Counterparty.of("target");
-        Invoice invoice = new Invoice(11L, source, target, ONE, ONE);
+        Invoice invoice = new Invoice(source, target, ONE, ONE, new Date());
+        invoice.setId(11L);
 
         expect(invoiceRepository.findInvoicesByTargetId(1L)).andReturn(ImmutableList.of(invoice));
         expect(orderRequestRepository.findByCounterpartyAndOrderSide(source, BID.getId())).andReturn(new ArrayList<>());

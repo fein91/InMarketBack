@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 @Service("OrderRequestServiceStub")
 public class OrderRequestServiceStub implements OrderRequestService {
@@ -32,7 +33,7 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
+    public Set<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
         return null;
     }
 

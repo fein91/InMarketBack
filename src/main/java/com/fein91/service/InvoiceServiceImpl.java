@@ -25,6 +25,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional
+    @Deprecated
     public Invoice addInvoice(Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
         Invoice invoice = new Invoice();
         invoice.setSource(source);
@@ -32,6 +33,12 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setValue(value);
         invoice.setPrepaidValue(prepaidValue);
 
+        return invoiceRepository.save(invoice);
+    }
+
+    @Override
+    @Transactional
+    public Invoice addInvoice(Invoice invoice) {
         return invoiceRepository.save(invoice);
     }
 

@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static org.easymock.EasyMock.*;
 
@@ -45,7 +46,8 @@ public class InvoiceServiceMockTest {
         BigDecimal value = BigDecimal.ONE;
         BigDecimal prepaidValue = BigDecimal.TEN;
 
-        Invoice invoice = new Invoice(1L, cpSource, cpTarget, value, prepaidValue);
+        Invoice invoice = new Invoice(cpSource, cpTarget, value, prepaidValue, new Date());
+        invoice.setId(1L);
 
         expect(repoMock.save(anyObject(Invoice.class))).andReturn(invoice);
 

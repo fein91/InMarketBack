@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 public interface OrderRequestService {
     List<OrderRequest> getByCounterpartyId(Long counterpartyId);
@@ -21,7 +22,7 @@ public interface OrderRequestService {
     OrderResult calculateOrderRequest(OrderRequest orderRequest) throws OrderRequestException;
 
     @Transactional
-    List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) throws OrderRequestException;
+    Set<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) throws OrderRequestException;
 
     @Transactional
     void removeOrderRequest(Long orderId);

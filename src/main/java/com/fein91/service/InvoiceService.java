@@ -8,8 +8,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface InvoiceService {
-    @Transactional
+
+    @Deprecated
     Invoice addInvoice(Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue);
+
+    Invoice addInvoice(Invoice invoice);
 
     Invoice updateInvoice(Invoice invoice, BigDecimal prepaidValue);
 

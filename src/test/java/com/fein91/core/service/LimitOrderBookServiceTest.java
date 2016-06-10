@@ -5,10 +5,7 @@ import com.fein91.builders.OrderRequestBuilder;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
-import com.fein91.model.Counterparty;
-import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderResult;
-import com.fein91.model.OrderType;
+import com.fein91.model.*;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.InvoiceService;
 import com.fein91.service.OrderRequestService;
@@ -23,6 +20,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -530,6 +529,41 @@ public class LimitOrderBookServiceTest {
 
 //        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(invoiceServiceImpl.getById(invoice1Id).getPrepaidValue()));
 //        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(invoiceServiceImpl.getById(invoice1Id).getPrepaidValue()));
+    }
+
+    @Test
+    public void test() throws Exception {
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
+                .quantity(BigDecimal.valueOf(200))
+                .price(BigDecimal.valueOf(15))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.LIMIT)
+                .build();
+        orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
+
+        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
+        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
+                .quantity(BigDecimal.valueOf(200))
+                .price(BigDecimal.valueOf(14))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.LIMIT)
+                .build();
+        orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
+
+        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), BigDecimal.ZERO, new Date(2016, 6, 25)));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), BigDecimal.ZERO, new Date(2016, 6, 28)));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(150), BigDecimal.ZERO, new Date(2016, 6, 29)));
+
+        OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
+                .quantity(BigDecimal.valueOf(400))
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.MARKET)
+                .build();
+
+        OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
     }
 
     private Trade findTradeByBuyerAndSeller(List<Trade> trades, int buyerID, int sellerId) {

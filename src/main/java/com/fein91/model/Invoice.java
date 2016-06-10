@@ -28,16 +28,19 @@ public class Invoice {
 
     private Date paymentDate;
 
+    @Transient
+    private boolean processed;
+
     public Invoice() {
         //JPA
     }
 
-    public Invoice(Long id, Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
-        this.id = id;
+    public Invoice(Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue, Date paymentDate) {
         this.source = source;
         this.target = target;
         this.value = value;
         this.prepaidValue = prepaidValue;
+        this.paymentDate = paymentDate;
     }
 
     public Long getId() {
@@ -86,6 +89,14 @@ public class Invoice {
 
     public void setPaymentDate(Date paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public boolean isProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
     }
 
     @Override

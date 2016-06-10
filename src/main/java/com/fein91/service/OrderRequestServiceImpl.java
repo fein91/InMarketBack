@@ -16,7 +16,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Service("OrderRequestServiceImpl")
@@ -76,7 +78,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
+    public Set<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
         List<Invoice> invoices = OrderSide.BID == orderSide
                 ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
                 : invoiceRepository.findInvoicesByTargetId(counterpartyId);
@@ -85,13 +87,22 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             throw new OrderRequestProcessingException("No invoices were found while processing order request");
         }
 
-        List<OrderRequest> orderRequests = new ArrayList<>();
+        Set<Counterparty> counterparties = new HashSet<>();
+        Set<OrderRequest> orderRequests = new HashSet<>();
         for (Invoice invoice : invoices) {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
                     : invoice.getSource();
-            orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
+
+            if (counterparties.add(giver)) {
+                orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
+            }
         }
+
+        if (CollectionUtils.isEmpty(orderRequests)) {
+            throw new OrderRequestProcessingException("No suitable order requests were found");
+        }
+
         return orderRequests;
     }
 

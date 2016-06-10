@@ -9,6 +9,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
@@ -186,84 +188,99 @@ public class OrderBook {
 			Order headOrder = iter.next();
 
 			List<Invoice> invoices = side == OrderSide.ASK
-					? invoiceService.findBySourceAndTarget( headOrder.getTakerId(), takerId)
+					? invoiceService.findBySourceAndTarget(headOrder.getTakerId(), takerId)
 					: invoiceService.findBySourceAndTarget(takerId, headOrder.getTakerId());
 			if (CollectionUtils.isEmpty(invoices)) {
 				continue;
 			}
 
-			Invoice currentInvoice = invoices.iterator().next();
-			int unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue()).intValue();
-			int localOrderQty = Math.min(headOrder.getQuantity(), unpaidInvoiceValue);
-
-			if (localOrderQty < headOrder.getQuantity()) {
-				if (qtyRemaining <= localOrderQty) {
-					//обновляем значением ASK - qtyRem
-					qtyTraded = qtyRemaining;
-					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
-
-					int newQty = headOrder.getQuantity() - qtyRemaining;
-					if (side == OrderSide.ASK) {
-						this.bids.updateOrderQty(newQty,
-												 headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
-					} else {
-						this.asks.updateOrderQty(newQty,
-								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
-					}
-					qtyRemaining -= qtyTraded;
-				} else {
-					//обновляем значением ASK - localASK
-					qtyTraded = localOrderQty;
-					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
-
-					int newQty = headOrder.getQuantity() - localOrderQty;
-					if (side == OrderSide.ASK) {
-						this.bids.updateOrderQty(newQty,
-								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
-					} else {
-						this.asks.updateOrderQty(newQty,
-								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
-					}
-					qtyRemaining -= qtyTraded;
+			//TODO how to define first invoice to calculate
+			for (Invoice currentInvoice : invoices) {
+				if (currentInvoice.isProcessed()) {
+					continue;
 				}
-			} else if (localOrderQty == headOrder.getQuantity()) {
-				if (localOrderQty <= qtyRemaining) {
-					//поглощаем
-					qtyTraded = localOrderQty;
-					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
 
-					if (side == OrderSide.ASK) {
-						this.bids.removeOrderByID(headOrder.getqId());
-						orderRequestService.removeOrderRequest(headOrder.getId());
+				BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
+				int localOrderQty = Math.min(headOrder.getQuantity(), unpaidInvoiceValue.intValue());
+				BigDecimal discountPercent = calculateDiscount(headOrder.getPrice(), currentInvoice.getPaymentDate());
+				BigDecimal maxPrepaidValue = unpaidInvoiceValue.divide(BigDecimal.ONE.add(discountPercent), BigDecimal.ROUND_HALF_UP);
+				BigDecimal realDiscountValue = unpaidInvoiceValue.subtract(maxPrepaidValue);
+				System.out.println("discountPercent " + discountPercent);
+				System.out.println("maxPrepaidValue " + maxPrepaidValue);
+				System.out.println("realDiscountValue " + realDiscountValue);
+
+				if (localOrderQty < headOrder.getQuantity()) {
+					if (qtyRemaining <= localOrderQty) {
+						//обновляем значением ASK - qtyRem
+						qtyTraded = qtyRemaining;
+						invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
+						int newQty = headOrder.getQuantity() - qtyRemaining;
+						if (side == OrderSide.ASK) {
+							this.bids.updateOrderQty(newQty,
+									headOrder.getqId());
+							orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						} else {
+							this.asks.updateOrderQty(newQty,
+									headOrder.getqId());
+							orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						}
+						qtyRemaining -= qtyTraded;
 					} else {
-						this.asks.removeOrderByID(headOrder.getqId());
-						orderRequestService.removeOrderRequest(headOrder.getId());
+						//обновляем значением ASK - localASK
+						qtyTraded = localOrderQty;
+						invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
+						int newQty = headOrder.getQuantity() - localOrderQty;
+						if (side == OrderSide.ASK) {
+							this.bids.updateOrderQty(newQty,
+									headOrder.getqId());
+							orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						} else {
+							this.asks.updateOrderQty(newQty,
+									headOrder.getqId());
+							orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						}
+						qtyRemaining -= qtyTraded;
 					}
-					qtyRemaining -= qtyTraded;
+				} else if (localOrderQty == headOrder.getQuantity()) {
+					if (localOrderQty <= qtyRemaining) {
+						//поглощаем
+						qtyTraded = localOrderQty;
+						invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
+						if (side == OrderSide.ASK) {
+							this.bids.removeOrderByID(headOrder.getqId());
+							orderRequestService.removeOrderRequest(headOrder.getId());
+						} else {
+							this.asks.removeOrderByID(headOrder.getqId());
+							orderRequestService.removeOrderRequest(headOrder.getId());
+						}
+						qtyRemaining -= qtyTraded;
+					} else {
+						//обновляем значением ASK - qtyRem
+						qtyTraded = qtyRemaining;
+						invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
+
+						int newQty = headOrder.getQuantity() - qtyRemaining;
+						if (side == OrderSide.ASK) {
+							this.bids.updateOrderQty(newQty,
+									headOrder.getqId());
+							orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						} else {
+							this.asks.updateOrderQty(newQty,
+									headOrder.getqId());
+							orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
+						}
+						qtyRemaining -= qtyTraded;
+					}
 				} else {
-					//обновляем значением ASK - qtyRem
-					qtyTraded = qtyRemaining;
-					invoiceService.updateInvoice(currentInvoice, BigDecimal.valueOf(qtyTraded));
-
-					int newQty = headOrder.getQuantity() - qtyRemaining;
-					if (side == OrderSide.ASK) {
-						this.bids.updateOrderQty(newQty,
-								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
-					} else {
-						this.asks.updateOrderQty(newQty,
-								headOrder.getqId());
-						orderRequestService.updateOrderRequest(headOrder.getId(), BigDecimal.valueOf(newQty));
-					}
-					qtyRemaining -= qtyTraded;
+					throw new IllegalStateException("Shouldn't be here");
 				}
-			} else {
-				throw new IllegalStateException("Shouldn't be here");
+
+				currentInvoice.setProcessed(true);
 			}
+			//ALL invoices and orders are distributed and processed
 
 			if (side == OrderSide.ASK) {
 				buyer = headOrder.getTakerId();
@@ -283,8 +300,20 @@ public class OrderBook {
 		}
 		return qtyRemaining;
 	}
-	
-	
+
+	//=((1+APR/100)^(daysUntilPaymentDate/365)-1)
+	private BigDecimal calculateDiscount(double apr, Date paymentDate) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(paymentDate);
+
+		int paymentDateDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+		int currentDateDayOfYear = LocalDate.now().getDayOfYear();
+		double v = apr / 100;
+		double b = (paymentDateDayOfYear - currentDateDayOfYear) / 365d;
+		return new BigDecimal(Math.pow(1 + v, b) - 1).setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+
 	public void cancelOrder(OrderSide orderSide, int qId, int time) {
 		this.time = time;
 		if (orderSide == OrderSide.BID) {
