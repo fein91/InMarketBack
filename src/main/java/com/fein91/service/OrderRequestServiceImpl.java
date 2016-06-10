@@ -7,9 +7,12 @@ import com.fein91.core.service.OrderBookBuilder;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
 import com.fein91.model.*;
+import com.fein91.rest.exception.OrderRequestException;
+import com.fein91.rest.exception.OrderRequestProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,15 +52,15 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public OrderResult processOrderRequest(OrderRequest orderRequest) {
+    public OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
         orderRequestRepository.save(orderRequest);
 
         OrderBook lob = orderBookBuilder.getInstance();
         for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
-            addOrderRequest(lob, limitOrderRequest);
+            lobService.addOrder(lob, limitOrderRequest);
         }
 
-        return addOrderRequest(lob, orderRequest);
+        return lobService.addOrder(lob, orderRequest);
     }
 
     @Override
@@ -65,10 +68,10 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     public OrderResult calculateOrderRequest(OrderRequest orderRequest) {
         OrderBook lob = orderBookBuilder.getStubInstance();
         for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
-            addOrderRequest(lob, limitOrderRequest);
+            lobService.addOrder(lob, limitOrderRequest);
         }
 
-        return addOrderRequest(lob, orderRequest);
+        return lobService.addOrder(lob, orderRequest);
     }
 
     @Override
@@ -77,6 +80,10 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         List<Invoice> invoices = OrderSide.BID == orderSide
                 ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
                 : invoiceRepository.findInvoicesByTargetId(counterpartyId);
+
+        if (CollectionUtils.isEmpty(invoices)) {
+            throw new OrderRequestProcessingException("No invoices were found while processing order request");
+        }
 
         List<OrderRequest> orderRequests = new ArrayList<>();
         for (Invoice invoice : invoices) {
@@ -104,22 +111,4 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         LOGGER.info(orderRequest + " quantity was updated to: " + qty);
         return orderRequestRepository.save(orderRequest);
     }
-
-    private OrderResult addOrderRequest(OrderBook lob, OrderRequest orderRequest) {
-        if (OrderType.MARKET == orderRequest.getOrderType()) {
-            if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                return lobService.addAskMarketOrder(lob, orderRequest);
-            } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                return lobService.addBidMarketOrder(lob, orderRequest);
-            }
-        } else if (OrderType.LIMIT == orderRequest.getOrderType()) {
-            if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                return lobService.addAskLimitOrder(lob, orderRequest);
-            } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                return lobService.addBidLimitOrder(lob, orderRequest);
-            }
-        }
-        throw new IllegalStateException("Couldn't reach here");
-    }
-
 }

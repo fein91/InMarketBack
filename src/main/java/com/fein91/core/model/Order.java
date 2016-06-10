@@ -1,37 +1,32 @@
 package com.fein91.core.model;
 
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
+import com.fein91.model.OrderType;
 
 public class Order {
-	//TODO: do we really need BigInteger id?
-	private final BigInteger id;
+	private final long id;
 	private long timestamp;
-	private boolean limit;
+	private OrderType orderType;
 	private int quantity;
-	private String side;
+	private OrderSide orderSide;
 	private double price;
 	private int qId;
 	private long takerId;
 	private Order nextOrder;
 	private Order prevOrder;
 	private OrderList oL;
-	@Deprecated
-    private Map<Integer, List<Integer>> invoicesQtyByGiverId;
 	
-	public Order(BigInteger id, long time, boolean limit, int quantity, long takerId, String side) {
-		this(id, time, limit, quantity, takerId, side, null);
+	public Order(long id, long time, OrderType orderType, int quantity, long takerId, OrderSide orderSide) {
+		this(id, time, orderType, quantity, takerId, orderSide, null);
 	}	
 	
-	public Order(BigInteger id, long time, boolean limit, int quantity,
-				long takerId, String side, Double price) {
+	public Order(long id, long time, OrderType orderType, int quantity,
+				long takerId, OrderSide orderSide, Double price) {
 
 		this.id = id;
 		this.timestamp = time;
-		this.limit = limit;
-		this.side = side;
+		this.orderType = orderType;
+		this.orderSide = orderSide;
 		this.quantity = quantity;
 		if (price!=null) {
 			this.price = (double)price;
@@ -118,29 +113,19 @@ public class Order {
 		return oL;
 	}
 
-	public boolean isLimit() {
-		return limit;
+	public OrderType getOrderType() {
+		return orderType;
 	}
 
-	public String getSide() {
-		return side;
+	public OrderSide getOrderSide() {
+		return orderSide;
 	}
 
 	public void setoL(OrderList oL) {
 		this.oL = oL;
 	}
 
-	@Deprecated
-    public Map<Integer, List<Integer>> getInvoicesQtyByGiverId() {
-        return invoicesQtyByGiverId;
-    }
-
-	@Deprecated
-    public void setInvoicesQtyByGiverId(Map<Integer, List<Integer>> invoicesQtyByGiverId) {
-        this.invoicesQtyByGiverId = invoicesQtyByGiverId;
-    }
-
-	public BigInteger getId() {
+	public long getId() {
 		return id;
 	}
 }

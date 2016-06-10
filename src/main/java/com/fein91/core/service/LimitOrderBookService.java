@@ -1,23 +1,15 @@
 package com.fein91.core.service;
 
+import com.fein91.builders.OrderBuilder;
 import com.fein91.core.model.*;
-import com.fein91.model.OrderResult;
+import com.fein91.model.*;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
-import com.fein91.model.Counterparty;
-import com.fein91.model.Invoice;
-import com.fein91.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class LimitOrderBookService {
@@ -29,135 +21,30 @@ public class LimitOrderBookService {
     @Autowired
     OrderRequestRepository orderRequestRepository;
 
-    public OrderResult addAskMarketOrder(OrderBook lob, OrderRequest orderRequest) {
-        return addAskMarketOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
-    }
+    public OrderResult addOrder(OrderBook lob, OrderRequest orderRequest) {
+        BigDecimal quantity = orderRequest.getQuantity();
+        BigDecimal price = orderRequest.getPrice();
 
-    public OrderResult addAskMarketOrder(OrderBook lob, Long orderId, Counterparty target, int quantity) {
-        List<Invoice> invoices = invoiceRepository.findByTarget(target);
-
-        if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found target counterparty: " + target);
-        }
-
-        Map<Integer, List<Integer>> map = new HashMap<>();
-
-//        for (Invoice invoice : invoices) {
-//            Counterparty source = invoice.getSource();
-//            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-//        }
-
-        return addMarketOrder(lob, orderId, target.getId(), OrderSide.ASK, map, quantity);
-    }
-
-    public OrderResult addBidMarketOrder(OrderBook lob, OrderRequest orderRequest) {
-        return addBidMarketOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue());
-    }
-
-    public OrderResult addBidMarketOrder(OrderBook lob, Long orderId, Counterparty source, int quantity) {
-        List<Invoice> invoices = invoiceRepository.findBySource(source);
-
-        if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found source counterparty: " + source);
-        }
-
-        Map<Integer, List<Integer>> map = new HashMap<>();
-
-//        for (Invoice invoice : invoices) {
-//            Counterparty target = invoice.getTarget();
-//            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-//        }
-
-        return addMarketOrder(lob, orderId, source.getId(), OrderSide.BID, map, quantity);
-    }
-
-    public OrderResult addAskLimitOrder(OrderBook lob, OrderRequest orderRequest) {
-        return addAskLimitOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
-    }
-
-    public OrderResult addAskLimitOrder(OrderBook lob, Long orderId, Counterparty target, int quantity, double price) {
-        List<Invoice> invoices = invoiceRepository.findByTarget(target);
-
-        if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found target counterparty: " + target);
-        }
-
-        Map<Integer, List<Integer>> map = new HashMap<>();
-
-//        for (Invoice invoice : invoices) {
-//            Counterparty source = invoice.getSource();
-//            map.put(source.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-//        }
-
-        return addLimitOrder(lob, orderId, target.getId(), OrderSide.ASK, map, quantity, price);
-    }
-
-    public OrderResult addBidLimitOrder(OrderBook lob, OrderRequest orderRequest) {
-        return addBidLimitOrder(lob, orderRequest.getId(), orderRequest.getCounterparty(), orderRequest.getQuantity().intValue(), orderRequest.getPrice().doubleValue());
-    }
-
-    public OrderResult addBidLimitOrder(OrderBook lob, Long orderId, Counterparty source, int quantity, double price) {
-        List<Invoice> invoices = invoiceRepository.findBySource(source);
-
-        if (invoices.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found source counterparty: " + source);
-        }
-
-        Map<Integer, List<Integer>> map = new HashMap<>();
-
-//        for (Invoice invoice : invoices) {
-//            Counterparty target = invoice.getTarget();
-//            map.put(target.getId().intValue(), Collections.singletonList(invoice.getValue().intValue()));
-//        }
-
-        return addLimitOrder(lob, orderId, source.getId(), OrderSide.BID, map, quantity, price);
-    }
-
-    public OrderResult addLimitOrder(OrderBook lob,
-                                     Long orderId,
-                                     Long counterPartyId,
-                                     OrderSide orderSide,
-                                     Map<Integer, List<Integer>> invoicesQtyByGiverId,
-                                     int quantity,
-                                     double price) {
-        if (quantity <= 0) {
+        if (quantity.signum() <= 0) {
             throw new IllegalArgumentException("Quantity can't be 0");
-        } else if (price <= 0) {
+        } else if (OrderType.LIMIT == orderRequest.getOrderType() && price.signum() <= 0) {
             throw new IllegalArgumentException("Price can't be 0");
         }
 
         long time = System.nanoTime();
-        Order order = new Order(BigInteger.valueOf(orderId), time, true, quantity, counterPartyId.intValue(), orderSide.getCoreName(), price);
-        order.setInvoicesQtyByGiverId(invoicesQtyByGiverId);
+        Order order = new OrderBuilder(orderRequest.getId())
+                .timestamp(time)
+                .orderSide(orderRequest.getOrderSide())
+                .orderType(orderRequest.getOrderType())
+                .quantity(quantity)
+                .price(price)
+                .takerId(orderRequest.getCounterparty().getId())
+                .build();
 
         OrderReport orderReport = lob.processOrder(order, false);
         System.out.println(lob);
 
-        int satisfiedDemand = quantity - orderReport.getQtyRemaining();
-
-        BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
-        //updateInvoices(lob);
-
-        return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
-    }
-
-    public OrderResult addMarketOrder(OrderBook lob,
-                                      Long orderId,
-                                      Long counterPartyId,
-                                      OrderSide orderSide,
-                                      Map<Integer, List<Integer>> invoicesQtyByGiverId,
-                                      int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity can't be 0");
-        }
-
-        long time = System.nanoTime();
-        Order order = new Order(BigInteger.valueOf(orderId), time, false, quantity, counterPartyId.intValue(), orderSide.getCoreName());
-
-        OrderReport orderReport = lob.processOrder(order, false);
-        System.out.println(lob);
-
-        int satisfiedDemand = quantity - orderReport.getQtyRemaining();
+        int satisfiedDemand = quantity.intValue() - orderReport.getQtyRemaining();
 
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
 

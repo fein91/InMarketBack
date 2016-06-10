@@ -1,7 +1,7 @@
 package com.fein91.core.service;
 
 import com.fein91.InMarketApplication;
-import com.fein91.OrderRequestBuilder;
+import com.fein91.builders.OrderRequestBuilder;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.dao.CounterpartyRepository;
@@ -492,7 +492,7 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback
-    public void marketOrdersOneByOne() {
+    public void marketOrdersOneByOne() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
 
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
