@@ -53,11 +53,6 @@ public class OrderRequestServiceMockTest {
                 orderBookBuilder);
     }
 
-    @After
-    public void tearDown() {
-//        verify(repoMock);
-    }
-
     @Test
     public void getByCounterpartyId() {
         expect(orderRequestRepository.findByCounterpartyId(1L)).andReturn(new ArrayList<>());
