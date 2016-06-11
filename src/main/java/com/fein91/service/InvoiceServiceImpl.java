@@ -1,7 +1,6 @@
 package com.fein91.service;
 
 import com.fein91.dao.InvoiceRepository;
-import com.fein91.model.Counterparty;
 import com.fein91.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,19 +20,6 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Autowired
     public InvoiceServiceImpl(InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
-    }
-
-    @Override
-    @Transactional
-    @Deprecated
-    public Invoice addInvoice(Counterparty source, Counterparty target, BigDecimal value, BigDecimal prepaidValue) {
-        Invoice invoice = new Invoice();
-        invoice.setSource(source);
-        invoice.setTarget(target);
-        invoice.setValue(value);
-        invoice.setPrepaidValue(prepaidValue);
-
-        return invoiceRepository.save(invoice);
     }
 
     @Override

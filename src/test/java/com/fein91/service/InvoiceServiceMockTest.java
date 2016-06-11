@@ -53,7 +53,7 @@ public class InvoiceServiceMockTest {
 
         replay(repoMock);
 
-        Invoice addedInvoice = invoiceService.addInvoice(cpSource, cpTarget, value, prepaidValue);
+        Invoice addedInvoice = invoiceService.addInvoice(new Invoice(cpSource, cpTarget, value, prepaidValue, new Date()));
 
         Assert.assertNotNull(addedInvoice.getId());
         Assert.assertEquals(invoice, addedInvoice);

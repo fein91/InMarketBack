@@ -3,8 +3,8 @@ package com.fein91.core.service;
 import com.fein91.InMarketApplication;
 import com.fein91.builders.OrderRequestBuilder;
 import com.fein91.core.model.OrderSide;
-import com.fein91.dao.CounterpartyRepository;
 import com.fein91.model.Counterparty;
+import com.fein91.model.Invoice;
 import com.fein91.model.OrderType;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.InvoiceService;
@@ -21,14 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import static java.math.BigDecimal.ZERO;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = InMarketApplication.class)
 public class CounterpartyServiceTest {
 
     @Autowired
     CounterPartyService counterPartyService;
-    @Autowired
-    CounterpartyRepository counterpartyRepository;
     @Autowired
     @Qualifier("InvoiceServiceImpl")
     InvoiceService invoiceServiceImpl;
@@ -45,17 +45,17 @@ public class CounterpartyServiceTest {
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
         Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
         Counterparty supplier4 = counterPartyService.addCounterParty("supplier4");
-
-        invoiceServiceImpl.addInvoice(supplier1, buyer, BigDecimal.valueOf(100), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(supplier2, buyer, BigDecimal.valueOf(200), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(supplier3, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
-        invoiceServiceImpl.addInvoice(supplier4, buyer, BigDecimal.valueOf(50), BigDecimal.ZERO);
+        Date testDate = new Date();
+        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), ZERO, testDate));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, testDate));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(50), ZERO, testDate));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier4, buyer, BigDecimal.valueOf(50), ZERO, testDate));
 
         orderRequestService.addOrderRequest(
                 new OrderRequestBuilder(supplier2)
                         .orderSide(OrderSide.BID)
                         .orderType(OrderType.LIMIT)
-                        .date(new Date())
+                        .date(testDate)
                         .price(BigDecimal.valueOf(19))
                         .quantity(BigDecimal.valueOf(25))
                         .build());
@@ -64,7 +64,7 @@ public class CounterpartyServiceTest {
                 new OrderRequestBuilder(supplier1)
                         .orderSide(OrderSide.BID)
                         .orderType(OrderType.LIMIT)
-                        .date(new Date())
+                        .date(testDate)
                         .price(BigDecimal.valueOf(20))
                         .quantity(BigDecimal.valueOf(50))
                         .build());

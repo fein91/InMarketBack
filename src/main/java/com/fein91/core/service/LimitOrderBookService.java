@@ -1,34 +1,34 @@
 package com.fein91.core.service;
 
 import com.fein91.builders.OrderBuilder;
-import com.fein91.core.model.*;
-import com.fein91.model.*;
-import com.fein91.dao.InvoiceRepository;
-import com.fein91.dao.OrderRequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fein91.core.model.Order;
+import com.fein91.core.model.OrderBook;
+import com.fein91.core.model.OrderReport;
+import com.fein91.core.model.Trade;
+import com.fein91.model.OrderRequest;
+import com.fein91.model.OrderResult;
+import com.fein91.model.OrderType;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @Service
 public class LimitOrderBookService {
+    private static Logger log = Logger.getLogger(LimitOrderBookService.class);
 
     private static final int APR_SCALE = 1;
-
-    @Autowired
-    InvoiceRepository invoiceRepository;
-    @Autowired
-    OrderRequestRepository orderRequestRepository;
 
     public OrderResult addOrder(OrderBook lob, OrderRequest orderRequest) {
         BigDecimal quantity = orderRequest.getQuantity();
         BigDecimal price = orderRequest.getPrice();
 
-        if (quantity.signum() <= 0) {
-            throw new IllegalArgumentException("Quantity can't be 0");
-        } else if (OrderType.LIMIT == orderRequest.getOrderType() && price.signum() <= 0) {
-            throw new IllegalArgumentException("Price can't be 0");
+        checkArgument(quantity.signum() > 0, "Quantity can't be 0");
+        if (OrderType.LIMIT == orderRequest.getOrderType()) {
+            checkArgument(price.signum() > 0, "Price can't be 0");
         }
 
         long time = System.nanoTime();
@@ -42,7 +42,7 @@ public class LimitOrderBookService {
                 .build();
 
         OrderReport orderReport = lob.processOrder(order, false);
-        System.out.println(lob);
+        log.info(lob);
 
         int satisfiedDemand = quantity.intValue() - orderReport.getQtyRemaining();
 
@@ -51,7 +51,7 @@ public class LimitOrderBookService {
         return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
     }
 
-    protected BigDecimal calculateAPR(OrderBook lob, long time, int satisfiedDemand) {
+    private BigDecimal calculateAPR(OrderBook lob, long time, int satisfiedDemand) {
         BigDecimal apr = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
             if (trade.getTimestamp() == time) {
