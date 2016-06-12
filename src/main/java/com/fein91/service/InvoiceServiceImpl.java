@@ -32,7 +32,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Invoice updateInvoice(Invoice invoice, BigDecimal prepaidValue) {
         invoice.setPrepaidValue(invoice.getPrepaidValue().add(prepaidValue));
 
-        LOGGER.info(invoice + " prepaid value was updated to: " + prepaidValue);
+        LOGGER.info("Invoice with id: " + invoice.getId() + " prepaid value was updated to: " + prepaidValue);
         return invoiceRepository.save(invoice);
     }
 

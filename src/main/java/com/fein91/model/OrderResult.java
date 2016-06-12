@@ -8,10 +8,10 @@ import java.util.List;
 
 public class OrderResult {
     final BigDecimal apr;
-    final int satisfiedDemand;
+    final BigDecimal satisfiedDemand;
     final List<Trade> trades;
 
-    public OrderResult(BigDecimal apr, int satisfiedDemand, List<Trade> trades) {
+    public OrderResult(BigDecimal apr, BigDecimal satisfiedDemand, List<Trade> trades) {
         this.apr = apr;
         this.satisfiedDemand = satisfiedDemand;
         this.trades = trades;
@@ -21,7 +21,7 @@ public class OrderResult {
         return apr;
     }
 
-    public int getSatisfiedDemand() {
+    public BigDecimal getSatisfiedDemand() {
         return satisfiedDemand;
     }
 

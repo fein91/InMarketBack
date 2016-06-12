@@ -103,8 +103,8 @@ public class Invoice {
     public String toString() {
         return "Invoice{" +
                 "id=" + id +
-                ", source=" + source +
-                ", target=" + target +
+                ", source=" + source.getId()+
+                ", target=" + target.getId() +
                 ", value=" + value +
                 ", prepaidValue=" + prepaidValue +
                 ", paymentDate=" + paymentDate +

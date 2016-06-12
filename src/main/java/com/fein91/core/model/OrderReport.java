@@ -1,5 +1,6 @@
 package com.fein91.core.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class OrderReport {
@@ -12,10 +13,10 @@ public class OrderReport {
 	private ArrayList<Trade> trades = new ArrayList<Trade>();
 	private boolean orderInBook = false;
 	private Order order;
-	private int qtyRemaining;
+	private BigDecimal qtyRemaining;
 	
 	public OrderReport(ArrayList<Trade> trades, 
-					   boolean orderInBook, int qtyRemaining) {
+					   boolean orderInBook, BigDecimal qtyRemaining) {
 		this.trades = trades;
 		this.orderInBook = orderInBook;
 		this.qtyRemaining = qtyRemaining;
@@ -37,7 +38,7 @@ public class OrderReport {
 		return orderInBook;
 	}
 
-	public int getQtyRemaining() {
+	public BigDecimal getQtyRemaining() {
 		return qtyRemaining;
 	}
 

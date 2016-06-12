@@ -44,18 +44,18 @@ public class LimitOrderBookService {
         OrderReport orderReport = lob.processOrder(order, false);
         log.info(lob);
 
-        int satisfiedDemand = quantity.intValue() - orderReport.getQtyRemaining();
+        BigDecimal satisfiedDemand = quantity.subtract(orderReport.getQtyRemaining());
 
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
 
         return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
     }
 
-    private BigDecimal calculateAPR(OrderBook lob, long time, int satisfiedDemand) {
+    private BigDecimal calculateAPR(OrderBook lob, long time, BigDecimal satisfiedDemand) {
         BigDecimal apr = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
             if (trade.getTimestamp() == time) {
-                apr = apr.add(BigDecimal.valueOf(trade.getPrice() * trade.getQty() / satisfiedDemand));
+                apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQty()).divide(satisfiedDemand, BigDecimal.ROUND_HALF_UP));
             }
         }
 

@@ -1,16 +1,18 @@
 package com.fein91.core.model;
 
+import java.math.BigDecimal;
+
 public class Trade {
 	private long timestamp;
 	private double price;
-	private int qty;
+	private BigDecimal qty;
 	private long provider;
 	private long taker;
 	private long buyer;
 	private long seller;
 	private int orderHit;
 	
-	public Trade(long time, double price, int qty, long provider,
+	public Trade(long time, double price, BigDecimal qty, long provider,
 				 long taker, long buyer, long seller, int orderHit) {
 		this.timestamp = time;
 		this.price = price;
@@ -57,7 +59,7 @@ public class Trade {
 
 
 
-	public int getQty() {
+	public BigDecimal getQty() {
 		return qty;
 	}
 

@@ -52,7 +52,7 @@ public class OrderBuilder {
 
     public Order build() {
         return OrderType.LIMIT == orderType
-                ? new Order(id, timestamp, orderType, quantity.intValue(), takerId, orderSide, price.doubleValue())
-                : new Order(id, timestamp, orderType, quantity.intValue(), takerId, orderSide);
+                ? new Order(id, timestamp, orderType, quantity, takerId, orderSide, price.doubleValue())
+                : new Order(id, timestamp, orderType, quantity, takerId, orderSide);
     }
 }

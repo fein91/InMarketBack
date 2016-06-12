@@ -110,16 +110,15 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     @Transactional
     public void removeOrderRequest(Long orderId) {
         orderRequestRepository.delete(orderId);
-        LOGGER.info("Order request was removed: " + orderId);
+        LOGGER.info("Order with id: " + orderId + " request was removed");
     }
 
     @Override
     @Transactional
     public OrderRequest updateOrderRequest(Long orderId, BigDecimal qty) {
         OrderRequest orderRequest = orderRequestRepository.findOne(orderId);
+        LOGGER.info(orderRequest + " quantity will be updated to: " + qty);
         orderRequest.setQuantity(qty);
-
-        LOGGER.info(orderRequest + " quantity was updated to: " + qty);
         return orderRequestRepository.save(orderRequest);
     }
 }
