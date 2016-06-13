@@ -529,8 +529,17 @@ public class LimitOrderBookServiceTest {
 //        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(invoiceServiceImpl.getById(invoice1Id).getPrepaidValue()));
     }
 
+    /*
+    *   source  target  value paymentDate
+    *     s1      b1     200    60
+    *     s2      b1     300    15
+    *       BID
+    * s1 26 200
+    * s2 25 300
+    * b1 ask market order == 350
+    * */
     @Test
-    public void test() throws Exception {
+    public void testOrderWithDiscounts1() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
 
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -544,15 +553,14 @@ public class LimitOrderBookServiceTest {
 
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
-                .quantity(BigDecimal.valueOf(200))
+                .quantity(BigDecimal.valueOf(300))
                 .price(BigDecimal.valueOf(25))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
-        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getDate(2016, 8, 12)));
-        //invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getDate(2016, 6, 28)));
-        invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, getDate(2016, 6, 27)));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(60)));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, getCurrentDayPlusDays(15)));
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
@@ -561,10 +569,29 @@ public class LimitOrderBookServiceTest {
                 .build();
 
         OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
+        Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
+        Assert.assertNotNull(trade1);
+        Assert.assertEquals(26d, trade1.getPrice(), 0d);
+        Assert.assertEquals(0, BigDecimal.valueOf(192.54).compareTo(trade1.getQty()));
+
+        Trade trade2 = findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
+        Assert.assertNotNull(trade2);
+        Assert.assertEquals(25d, trade2.getPrice(), 0d);
+        Assert.assertEquals(0, BigDecimal.valueOf(157.46).compareTo(trade2.getQty()));
     }
 
+    /*
+    *   source  target  value paymentDate
+    *     s1      b1     200    70
+    *     s3      b1     100    70
+    *       BID
+    * s1 19 50
+    * s2 18 300
+    * s3 17 200
+    * b1 ask market order == 200
+    * */
     @Test
-    public void test1() throws Exception {
+    public void testOrderWithDiscounts2() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
 
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -594,9 +621,8 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest3);
 
-
-        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getDate(2016, 8, 22)));
-        invoiceServiceImpl.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(100), ZERO, getDate(2016, 8, 22)));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(70)));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(100), ZERO, getCurrentDayPlusDays(70)));
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(200))
@@ -684,6 +710,12 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(BigDecimal.valueOf(350).compareTo(trade.getQty()), 0);
     }
 
+    private Date getCurrentDayPlusDays(int days) {
+        Instant instant = LocalDate.now().plusDays(days).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);
+    }
+
+    @Deprecated
     private Date getDate(int year, int month, int day) {
         Instant instant = LocalDate.of(year, month, day).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
         return Date.from(instant);

@@ -305,13 +305,14 @@ public class OrderBook {
     }
 
     //=((1+APR/100)^(daysUntilPaymentDate/365)-1)
+    //TODO rewrite it with BigDecimal, problem here with BigDecimal.pow(BigDecimal)
     private BigDecimal calculateDiscount(double apr, Date paymentDate) {
         DateTime paymentDT = new DateTime(paymentDate);
         DateTime currDT = new DateTime();
         Days daysBetween = Days.daysBetween(currDT.toLocalDate(), paymentDT.toLocalDate());
         log.info("Days to payment date left: " + daysBetween.getDays());
         double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
-        return new BigDecimal(discount).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(discount);
     }
 
 
@@ -413,7 +414,7 @@ public class OrderBook {
         if (bids.getnOrders() > 0) {
             fileStr.write(bids.toString());
         }
-        fileStr.write("|   ------ Offer  Book -------   |\n");
+        fileStr.write("|   ------ Ask  Book -------   |\n");
         if (asks.getnOrders() > 0) {
             fileStr.write(asks.toString());
         }
