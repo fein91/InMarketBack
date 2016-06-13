@@ -5,6 +5,7 @@ import com.fein91.builders.OrderRequestBuilder;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.model.*;
+import com.fein91.rest.exception.OrderRequestProcessingException;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.InvoiceService;
 import com.fein91.service.OrderRequestService;
@@ -197,50 +198,38 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(BigDecimal.valueOf(350), result.getSatisfiedDemand());
     }
 
-    @Test
+    /*
+    *   source  target  value paymentDate
+    *     s1      b1     100    0
+    *       BID
+    * s1 27 90
+    * b1 ask market order == 150
+    * expected OrderRequestProcessingException, because order request quantity can't be greater than invoices sum
+    * */
+    @Test(expected = OrderRequestProcessingException.class)
     @Transactional
     @Rollback
     public void marketOrderTest3() throws Exception {
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
-        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
-
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
-        Counterparty supplier5 = counterPartyService.addCounterParty("supplier5");
 
         invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer1, BigDecimal.valueOf(100), ZERO, NEW_DATE));
-        invoiceServiceImpl.addInvoice(new Invoice(supplier5, buyer2, BigDecimal.valueOf(150), ZERO, NEW_DATE));
+        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer1, BigDecimal.valueOf(100), ZERO, NEW_DATE));
 
-        double supplier1AskPrice = 27d;
         OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
-                .quantity(BigDecimal.valueOf(300))
-                .price(BigDecimal.valueOf(supplier1AskPrice))
+                .quantity(BigDecimal.valueOf(90))
+                .price(BigDecimal.valueOf(27d))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
         orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
 
-        double supplier5AskPrice = 32d;
-        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier5)
-                .quantity(BigDecimal.valueOf(400))
-                .price(BigDecimal.valueOf(supplier5AskPrice))
-                .orderSide(OrderSide.BID)
-                .orderType(OrderType.LIMIT)
-                .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
-
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer1)
-                .quantity(BigDecimal.valueOf(350))
+                .quantity(BigDecimal.valueOf(150))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.MARKET)
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(askMarketOrderRequest);
-
-        Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer1.getId());
-        Assert.assertNotNull(trade1);
-        Assert.assertEquals(trade1.getPrice(), supplier1AskPrice, 0d);
-        Assert.assertEquals(trade1.getQty(), BigDecimal.valueOf(100));
-
-        Assert.assertEquals(BigDecimal.valueOf(100), result.getSatisfiedDemand());
+        orderRequestServiceImpl.processOrderRequest(askMarketOrderRequest);
     }
 
     /*

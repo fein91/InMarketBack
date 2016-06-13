@@ -212,36 +212,33 @@ public class OrderBook {
                 log.info("maxPrepaidInvoiceValue " + maxPrepaidInvoiceValue);
 
                 BigDecimal localOrderQty = headOrder.getQuantity().min(maxPrepaidInvoiceValue);
+                BigDecimal discountValue = localOrderQty.multiply(discountPercent);
                 if (localOrderQty.compareTo(headOrder.getQuantity()) < 0) {
                     if (qtyRemaining.compareTo(localOrderQty) <= 0) {
                         //обновляем значением ASK - qtyRem
                         qtyTraded = qtyTraded.add(qtyRemaining);
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded);
+                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyRemaining);
                         if (side == OrderSide.ASK) {
-                            this.bids.updateOrderQty(newQty,
-                                    headOrder.getqId());
+                            this.bids.updateOrderQty(newQty, headOrder.getqId());
                             orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
                         } else {
-                            this.asks.updateOrderQty(newQty,
-                                    headOrder.getqId());
+                            this.asks.updateOrderQty(newQty, headOrder.getqId());
                             orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
                     } else {
                         //обновляем значением ASK - localASK
                         qtyTraded = qtyTraded.add(localOrderQty);
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded);
+                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(localOrderQty);
                         if (side == OrderSide.ASK) {
-                            this.bids.updateOrderQty(newQty,
-                                    headOrder.getqId());
+                            this.bids.updateOrderQty(newQty, headOrder.getqId());
                             orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
                         } else {
-                            this.asks.updateOrderQty(newQty,
-                                    headOrder.getqId());
+                            this.asks.updateOrderQty(newQty, headOrder.getqId());
                             orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
@@ -250,7 +247,7 @@ public class OrderBook {
                     if (localOrderQty.compareTo(qtyRemaining) <= 0) {
                         //поглощаем
                         qtyTraded = qtyTraded.add(localOrderQty);
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded);
+                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         if (side == OrderSide.ASK) {
                             this.bids.removeOrderByID(headOrder.getqId());
@@ -263,16 +260,14 @@ public class OrderBook {
                     } else {
                         //обновляем значением ASK - qtyRem
                         qtyTraded = qtyTraded.add(qtyRemaining);
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded);
+                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyRemaining);
                         if (side == OrderSide.ASK) {
-                            this.bids.updateOrderQty(newQty,
-                                    headOrder.getqId());
+                            this.bids.updateOrderQty(newQty, headOrder.getqId());
                             orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
                         } else {
-                            this.asks.updateOrderQty(newQty,
-                                    headOrder.getqId());
+                            this.asks.updateOrderQty(newQty, headOrder.getqId());
                             orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded) ;

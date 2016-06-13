@@ -33,7 +33,7 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public Set<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
+    public Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
         return null;
     }
 

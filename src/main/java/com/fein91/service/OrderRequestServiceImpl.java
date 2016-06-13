@@ -58,7 +58,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         orderRequestRepository.save(orderRequest);
 
         OrderBook lob = orderBookBuilder.getInstance();
-        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
+        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
@@ -69,7 +69,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     @Transactional
     public OrderResult calculateOrderRequest(OrderRequest orderRequest) {
         OrderBook lob = orderBookBuilder.getStubInstance();
-        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
+        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
@@ -78,7 +78,9 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public Set<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
+    public Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
+        OrderSide orderSide = orderRequest.getOrderSide();
+        Long counterpartyId = orderRequest.getCounterparty().getId();
         List<Invoice> invoices = OrderSide.BID == orderSide
                 ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
                 : invoiceRepository.findInvoicesByTargetId(counterpartyId);
@@ -89,6 +91,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
         Set<Counterparty> counterparties = new HashSet<>();
         Set<OrderRequest> orderRequests = new HashSet<>();
+        BigDecimal invoicesSum = BigDecimal.ZERO;
         for (Invoice invoice : invoices) {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
@@ -97,10 +100,15 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             if (counterparties.add(giver)) {
                 orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
             }
+            invoicesSum = invoicesSum.add(invoice.getValue());
         }
 
         if (CollectionUtils.isEmpty(orderRequests)) {
             throw new OrderRequestProcessingException("No suitable order requests were found");
+        }
+        if (orderRequest.getQuantity().compareTo(invoicesSum) > 0) {
+            throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity()
+                    + " is greater than invoices sum: " + invoicesSum);
         }
 
         return orderRequests;

@@ -22,7 +22,7 @@ public interface OrderRequestService {
     OrderResult calculateOrderRequest(OrderRequest orderRequest) throws OrderRequestException;
 
     @Transactional
-    Set<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) throws OrderRequestException;
+    Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest);
 
     @Transactional
     void removeOrderRequest(Long orderId);
