@@ -203,7 +203,7 @@ public class OrderBook {
                 if (currentInvoice.isProcessed()) {
                     continue;
                 }
-                log.info("Invoice with is processing: " + currentInvoice);
+                log.info("Invoice is processing: " + currentInvoice);
 
                 BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
                 BigDecimal discountPercent = calculateDiscount(headOrder.getPrice(), currentInvoice.getPaymentDate());
@@ -212,11 +212,12 @@ public class OrderBook {
                 log.info("maxPrepaidInvoiceValue " + maxPrepaidInvoiceValue);
 
                 BigDecimal localOrderQty = headOrder.getQuantity().min(maxPrepaidInvoiceValue);
-                BigDecimal discountValue = localOrderQty.multiply(discountPercent);
+                BigDecimal discountValue;
                 if (localOrderQty.compareTo(headOrder.getQuantity()) < 0) {
                     if (qtyRemaining.compareTo(localOrderQty) <= 0) {
                         //обновляем значением ASK - qtyRem
                         qtyTraded = qtyTraded.add(qtyRemaining);
+                        discountValue = qtyTraded.multiply(discountPercent);
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyRemaining);
@@ -231,6 +232,7 @@ public class OrderBook {
                     } else {
                         //обновляем значением ASK - localASK
                         qtyTraded = qtyTraded.add(localOrderQty);
+                        discountValue = qtyTraded.multiply(discountPercent);
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(localOrderQty);
@@ -247,6 +249,7 @@ public class OrderBook {
                     if (localOrderQty.compareTo(qtyRemaining) <= 0) {
                         //поглощаем
                         qtyTraded = qtyTraded.add(localOrderQty);
+                        discountValue = qtyTraded.multiply(discountPercent);
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         if (side == OrderSide.ASK) {
@@ -260,6 +263,7 @@ public class OrderBook {
                     } else {
                         //обновляем значением ASK - qtyRem
                         qtyTraded = qtyTraded.add(qtyRemaining);
+                        discountValue = qtyTraded.multiply(discountPercent);
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyRemaining);

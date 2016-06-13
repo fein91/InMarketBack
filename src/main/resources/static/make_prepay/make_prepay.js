@@ -13,10 +13,13 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 		$scope.bidQty = '';
 		$scope.bidApr = '';
 		$scope.demandSatisfied = true;
-		$scope.noCounterparties = false;
+		$scope.calculationCalled = false;
+		$scope.calculatedWithError = true;
+		$scope.calculationErrorMsg = false;
 
 		$scope.calculateBidMarketOrder = function() {
 			if ($scope.bidQty) {
+				$scope.calculationCalled = true;
 				var orderRequest = {
 					"id" : 123456789,
 					"quantity" : $scope.bidQty,
@@ -38,8 +41,11 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 							$scope.demandSatisfied = false;
 						}
 
+						$scope.calculatedWithError = false;
 					}, function errorCallback(response) {
 						console.log('got ' + response.status + ' error');
+						$scope.calculatedWithError = true;
+						$scope.calculationErrorMsg = response.data.message;
 					});
 			}
 		};
@@ -72,6 +78,8 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 
 					}, function errorCallback(response) {
 						console.log('got ' + response.status + ' error');
+						$scope.calculatedWithError = true;
+						$scope.calculationErrorMsg = response.data.message;
 					});
 			}
 		};
@@ -80,7 +88,9 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 			$scope.bidQty = '';
 			$scope.bidApr = '';
 			$scope.demandSatisfied = true;
-			$scope.noCounterparties = false;
+			$scope.calculatedWithError = true;
+			$scope.calculationErrorMsg = '';
+			$scope.calculationCalled = false;
 		};
 	}])
 

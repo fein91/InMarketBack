@@ -103,7 +103,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             invoicesSum = invoicesSum.add(invoice.getValue());
         }
 
-        if (CollectionUtils.isEmpty(orderRequests)) {
+        if (OrderType.MARKET == orderRequest.getOrderType() && CollectionUtils.isEmpty(orderRequests)) {
             throw new OrderRequestProcessingException("No suitable order requests were found");
         }
         if (orderRequest.getQuantity().compareTo(invoicesSum) > 0) {

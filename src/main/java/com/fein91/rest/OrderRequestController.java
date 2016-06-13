@@ -73,7 +73,7 @@ public class OrderRequestController {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
         error.setMessage(ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.OK);
+        return new ResponseEntity<>(error, HttpStatus.PRECONDITION_FAILED);
     }
 
     @ExceptionHandler(OrderRequestProcessingException.class)
@@ -81,7 +81,7 @@ public class OrderRequestController {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setMessage(ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.OK);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
