@@ -138,8 +138,6 @@ public class OrderBook {
                 quote.setqId(this.nextQuoteID);
                 quote.setQuantity(qtyRemaining);
                 this.bids.insertOrder(quote);
-                //TODO add invoices check before persist
-                //orderRequestService.saveOrderRequest(quote);
                 orderInBook = true;
                 this.nextQuoteID += 1;
             } else {
@@ -163,8 +161,6 @@ public class OrderBook {
                 quote.setqId(this.nextQuoteID);
                 quote.setQuantity(qtyRemaining);
                 this.asks.insertOrder(quote);
-                //TODO add invoices check before persist
-                //orderRequestService.saveOrderRequest(quote);
                 orderInBook = true;
                 this.nextQuoteID += 1;
             } else {
@@ -311,8 +307,6 @@ public class OrderBook {
         return qtyRemaining;
     }
 
-    //=((1+APR/100)^(daysUntilPaymentDate/365)-1)
-    //TODO rewrite it with BigDecimal, problem here with BigDecimal.pow(BigDecimal)
     private BigDecimal calculateDiscount(BigDecimal apr, Date paymentDate) {
         DateTime paymentDT = new DateTime(paymentDate);
         DateTime currDT = new DateTime();

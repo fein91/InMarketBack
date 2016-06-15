@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 
 public class OrderBuilder {
 
-    public OrderBuilder(Long id) {
+    public OrderBuilder(long id) {
         this.id = id;
     }
 
-    private final Long id;
+    private final long id;
     private long timestamp;
     private long takerId;
     private OrderType orderType;
