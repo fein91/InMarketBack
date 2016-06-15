@@ -13,14 +13,20 @@ public class Trade {
 	private int orderHit;
 	private BigDecimal discountSum;
 	private BigDecimal invoicesSum;
+	//TODO maybe find more suitable name
+	/**
+	 * its needed to calculate avg days left to payment date
+	 */
+	private BigDecimal sumInvoicesDaysToPaymentMultQtyTraded;
 	
-	public Trade(long time, double price, BigDecimal qty, BigDecimal discountSum, BigDecimal invoicesSum, long provider,
-				 long taker, long buyer, long seller, int orderHit) {
+	public Trade(long time, double price, BigDecimal qty, BigDecimal discountSum, BigDecimal invoicesSum, BigDecimal sumInvoicesDaysToPaymentMultQtyTraded,
+				 long provider, long taker, long buyer, long seller, int orderHit) {
 		this.timestamp = time;
 		this.price = price;
 		this.qty = qty;
 		this.discountSum = discountSum;
 		this.invoicesSum = invoicesSum;
+		this.sumInvoicesDaysToPaymentMultQtyTraded = sumInvoicesDaysToPaymentMultQtyTraded;
 		this.provider = provider;
 		this.taker = taker;
 		this.buyer = buyer;
@@ -104,5 +110,9 @@ public class Trade {
 
 	public BigDecimal getInvoicesSum() {
 		return invoicesSum;
+	}
+
+	public BigDecimal getSumInvoicesDaysToPaymentMultQtyTraded() {
+		return sumInvoicesDaysToPaymentMultQtyTraded;
 	}
 }

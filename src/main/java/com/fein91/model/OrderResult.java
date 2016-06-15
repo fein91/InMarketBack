@@ -41,4 +41,16 @@ public class OrderResult {
     public List<Trade> getTape() {
         return trades;
     }
+
+    public BigDecimal getDiscountSum() {
+        return discountSum;
+    }
+
+    public BigDecimal getAvgDiscountPerc() {
+        return avgDiscountPerc;
+    }
+
+    public BigDecimal getAvgDaysToPayment() {
+        return avgDaysToPayment;
+    }
 }

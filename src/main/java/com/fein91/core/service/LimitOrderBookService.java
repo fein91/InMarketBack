@@ -50,8 +50,26 @@ public class LimitOrderBookService {
         BigDecimal totalDiscountSum = calculateTotalDiscountSum(lob);
         BigDecimal totalInvoicesSum = calculateTotalInvoicesSum(lob);
         BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0 ? totalDiscountSum.divide(totalInvoicesSum, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
+        BigDecimal avgDaysToPayment = calculateAvgDaysToPayment(lob);
 
-        return new OrderResult(apr, satisfiedDemand, totalDiscountSum, avgDiscountPerc, BigDecimal.ZERO, orderReport.getTrades());
+        return new OrderResult(apr, satisfiedDemand, totalDiscountSum, avgDiscountPerc, avgDaysToPayment, orderReport.getTrades());
+    }
+
+    /**
+     * avgDaysToPayment = (invoice1.getDaysToPayment() * paymentByInvoice1 + ... + invoiceN.getDaysToPayment() * paymentByInvoiceN) / paymentByInvoice1 + ... + paymentByInvoiceN
+     * @param lob
+     * @return
+     */
+    private BigDecimal calculateAvgDaysToPayment(OrderBook lob) {
+        BigDecimal totalSumInvoicesDaysToPaymentMultQtyTraded = BigDecimal.ZERO;
+        BigDecimal paymentsSum = BigDecimal.ZERO;
+        for (Trade trade: lob.getTape()) {
+            totalSumInvoicesDaysToPaymentMultQtyTraded = totalSumInvoicesDaysToPaymentMultQtyTraded.add(trade.getSumInvoicesDaysToPaymentMultQtyTraded());
+            paymentsSum = paymentsSum.add(trade.getQty());
+        }
+        return paymentsSum.signum() > 0 ?
+                totalSumInvoicesDaysToPaymentMultQtyTraded.divide(paymentsSum, BigDecimal.ROUND_HALF_UP)
+                : BigDecimal.ZERO;
     }
 
     private BigDecimal calculateTotalInvoicesSum(OrderBook lob) {

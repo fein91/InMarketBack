@@ -633,6 +633,8 @@ public class LimitOrderBookServiceTest {
         List<OrderRequest> supplier2Orders = orderRequestServiceImpl.getByCounterpartyId(supplier2.getId());
         Assert.assertEquals(1, supplier2Orders.size());
         Assert.assertEquals(BigDecimal.valueOf(3.16), supplier2Orders.iterator().next().getQuantity());
+
+        Assert.assertEquals(70, result.getAvgDaysToPayment().intValue());
     }
 
     @Test
