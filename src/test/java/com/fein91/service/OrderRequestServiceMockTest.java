@@ -22,9 +22,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import static com.fein91.core.model.OrderSide.ASK;
 import static com.fein91.core.model.OrderSide.BID;
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
@@ -42,6 +40,7 @@ public class OrderRequestServiceMockTest {
     private LimitOrderBookService lobService;
     private OrderBookBuilder orderBookBuilder;
     private OrderRequestService orderRequestService;
+    private CounterPartyService counterPartyService;
 
     @Before
     public void setUp() {
@@ -49,11 +48,12 @@ public class OrderRequestServiceMockTest {
         invoiceRepository = createMock(InvoiceRepository.class);
         lobService = createMock(LimitOrderBookService.class);
         orderBookBuilder = createMock(OrderBookBuilder.class);
+        counterPartyService = createMock(CounterPartyService.class);
         orderRequestService = new OrderRequestServiceImpl(
                 orderRequestRepository,
                 invoiceRepository,
                 lobService,
-                orderBookBuilder);
+                orderBookBuilder, counterPartyService);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class OrderRequestServiceMockTest {
 
         replay(orderRequestRepository);
 
-        orderRequestService.addOrderRequest(request);
+        orderRequestService.saveOrderRequest(request);
 
         verify(orderRequestRepository);
     }

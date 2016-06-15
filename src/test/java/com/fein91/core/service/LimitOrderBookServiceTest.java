@@ -138,7 +138,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest1);
 
         double supplier2AskPrice = 28d;
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
@@ -147,7 +147,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest2);
 
         double supplier3AskPrice = 29d;
         OrderRequest bidOrderRequest3 = new OrderRequestBuilder(supplier3)
@@ -156,7 +156,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest3);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest3);
 
         double supplier4AskPrice = 31d;
         OrderRequest bidOrderRequest4 = new OrderRequestBuilder(supplier4)
@@ -165,7 +165,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest4);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest4);
 
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
@@ -221,7 +221,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest1);
 
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer1)
                 .quantity(BigDecimal.valueOf(250))
@@ -261,7 +261,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(askOrderRequest1);
+        orderRequestServiceImpl.saveOrderRequest(askOrderRequest1);
 
         double buyer2AskPrice = 30d;
         OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
@@ -270,7 +270,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(askOrderRequest2);
+        orderRequestServiceImpl.saveOrderRequest(askOrderRequest2);
 
         double buyer3AskPrice = 31d;
         OrderRequest askOrderRequest3 = new OrderRequestBuilder(buyer3)
@@ -279,7 +279,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(askOrderRequest3);
+        orderRequestServiceImpl.saveOrderRequest(askOrderRequest3);
 
         OrderRequest bidMarketOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(450))
@@ -336,7 +336,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest1);
 
         double supplier3AskPrice = 26d;
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier3)
@@ -345,7 +345,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest2);
 
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(250))
@@ -487,7 +487,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest1);
 
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
@@ -496,7 +496,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.addOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest2);
 
         invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), ZERO, NEW_DATE));
         invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(150), ZERO, NEW_DATE));
@@ -577,8 +577,7 @@ public class LimitOrderBookServiceTest {
     *     s3      b1     100    70
     *       BID
     * s1 19 50
-    * s2 18 300
-    * s3 17 200
+    * s2 17 100
     * b1 ask market order == 200
     * */
     @Test
@@ -587,8 +586,8 @@ public class LimitOrderBookServiceTest {
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
 
-        invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(70)));
-        invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(100), ZERO, getCurrentDayPlusDays(70)));
+        Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(70)));
+        Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(100), ZERO, getCurrentDayPlusDays(70)));
 
         OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(50))
@@ -621,7 +620,19 @@ public class LimitOrderBookServiceTest {
         Trade trade2 = findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
         Assert.assertNotNull(trade2);
         Assert.assertEquals(17d, trade2.getPrice(), 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(97.03).compareTo(trade2.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(96.84).compareTo(trade2.getQty()));
+
+        invoiceS1B = invoiceServiceImpl.getById(invoiceS1B.getId());
+        Assert.assertEquals(BigDecimal.valueOf(51.82), invoiceS1B.getPrepaidValue());
+        invoiceS2B = invoiceServiceImpl.getById(invoiceS2B.getId());
+        Assert.assertEquals(BigDecimal.valueOf(100).compareTo(invoiceS2B.getPrepaidValue()), 0);
+
+        List<OrderRequest> supplier1Orders = orderRequestServiceImpl.getByCounterpartyId(supplier1.getId());
+        Assert.assertEquals(0, supplier1Orders.size());
+
+        List<OrderRequest> supplier2Orders = orderRequestServiceImpl.getByCounterpartyId(supplier2.getId());
+        Assert.assertEquals(1, supplier2Orders.size());
+        Assert.assertEquals(BigDecimal.valueOf(3.16), supplier2Orders.iterator().next().getQuantity());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.fein91.service;
 
+import com.fein91.core.model.Order;
 import com.fein91.core.model.OrderSide;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
@@ -13,7 +14,11 @@ import java.util.Set;
 public interface OrderRequestService {
     List<OrderRequest> getByCounterpartyId(Long counterpartyId);
 
-    OrderRequest addOrderRequest(OrderRequest orderRequest);
+    OrderRequest getById(Long id);
+
+    OrderRequest saveOrderRequest(OrderRequest orderRequest);
+
+    OrderRequest saveOrderRequest(Order order);
 
     @Transactional
     OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException;

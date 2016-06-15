@@ -8,4 +8,6 @@ import java.math.BigInteger;
 public interface CounterPartyService {
     @Transactional
     Counterparty addCounterParty(String name);
+
+    Counterparty getById(long id);
 }

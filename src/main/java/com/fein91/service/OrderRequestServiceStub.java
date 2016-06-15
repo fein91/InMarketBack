@@ -1,5 +1,6 @@
 package com.fein91.service;
 
+import com.fein91.core.model.Order;
 import com.fein91.core.model.OrderSide;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
@@ -18,7 +19,17 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public OrderRequest addOrderRequest(OrderRequest orderRequest) {
+    public OrderRequest getById(Long id) {
+        return null;
+    }
+
+    @Override
+    public OrderRequest saveOrderRequest(OrderRequest orderRequest) {
+        return null;
+    }
+
+    @Override
+    public OrderRequest saveOrderRequest(Order order) {
         return null;
     }
 

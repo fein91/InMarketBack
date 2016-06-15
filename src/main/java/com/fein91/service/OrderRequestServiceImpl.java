@@ -1,5 +1,7 @@
 package com.fein91.service;
 
+import com.fein91.builders.OrderRequestBuilder;
+import com.fein91.core.model.Order;
 import com.fein91.core.model.OrderBook;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.service.LimitOrderBookService;
@@ -30,16 +32,18 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     private final InvoiceRepository invoiceRepository;
     private final LimitOrderBookService lobService;
     private final OrderBookBuilder orderBookBuilder;
+    private final CounterPartyService counterPartyService;
 
     @Autowired
     public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository,
                                    InvoiceRepository invoiceRepository,
                                    LimitOrderBookService lobService,
-                                   OrderBookBuilder orderBookBuilder) {
+                                   OrderBookBuilder orderBookBuilder, CounterPartyService counterPartyService) {
         this.orderRequestRepository = orderRequestRepository;
         this.invoiceRepository = invoiceRepository;
         this.lobService = lobService;
         this.orderBookBuilder = orderBookBuilder;
+        this.counterPartyService = counterPartyService;
     }
 
     @Override
@@ -48,13 +52,34 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     }
 
     @Override
-    public OrderRequest addOrderRequest(OrderRequest orderRequest) {
+    public OrderRequest getById(Long id) {
+        return orderRequestRepository.findOne(id);
+    }
+
+    @Override
+    @Transactional
+    public OrderRequest saveOrderRequest(OrderRequest orderRequest) {
+        LOGGER.info("Order request to save: " + orderRequest);
+        return orderRequestRepository.save(orderRequest);
+    }
+
+    @Override
+    @Transactional
+    public OrderRequest saveOrderRequest(Order order) {
+        OrderRequest orderRequest = new OrderRequestBuilder(counterPartyService.getById(order.getTakerId()))
+                .orderSide(order.getOrderSide())
+                .orderType(order.getOrderType())
+                .price(BigDecimal.valueOf(order.getPrice()))
+                .quantity(order.getQuantity())
+                .build();
+        LOGGER.info("Order request to save: " + orderRequest);
         return orderRequestRepository.save(orderRequest);
     }
 
     @Override
     @Transactional
     public OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
+        LOGGER.info("Order request to save: " + orderRequest);
         orderRequestRepository.save(orderRequest);
 
         OrderBook lob = orderBookBuilder.getInstance();
@@ -62,7 +87,13 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
-        return lobService.addOrder(lob, orderRequest);
+        OrderResult result = lobService.addOrder(lob, orderRequest);
+        BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
+        if (unsatisfiedDemand.signum() > 0) {
+            //TODO fix it, there should be no order if there is no invoices
+            updateOrderRequest(orderRequest.getId(), unsatisfiedDemand);
+        }
+        return result;
     }
 
     @Override

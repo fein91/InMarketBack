@@ -51,7 +51,7 @@ public class CounterpartyServiceTest {
         invoiceServiceImpl.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(50), ZERO, testDate));
         invoiceServiceImpl.addInvoice(new Invoice(supplier4, buyer, BigDecimal.valueOf(50), ZERO, testDate));
 
-        orderRequestService.addOrderRequest(
+        orderRequestService.saveOrderRequest(
                 new OrderRequestBuilder(supplier2)
                         .orderSide(OrderSide.BID)
                         .orderType(OrderType.LIMIT)
@@ -60,7 +60,7 @@ public class CounterpartyServiceTest {
                         .quantity(BigDecimal.valueOf(25))
                         .build());
 
-        orderRequestService.addOrderRequest(
+        orderRequestService.saveOrderRequest(
                 new OrderRequestBuilder(supplier1)
                         .orderSide(OrderSide.BID)
                         .orderType(OrderType.LIMIT)

@@ -47,9 +47,21 @@ public class LimitOrderBookService {
         BigDecimal satisfiedDemand = quantity.subtract(orderReport.getQtyRemaining());
 
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
+        BigDecimal totalDiscountSum = calculateTotalDiscountSum(lob);
+        BigDecimal totalInvoicesSum = calculateTotalInvoicesSum(lob);
+        BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0 ? totalDiscountSum.divide(totalInvoicesSum, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
 
-        return new OrderResult(apr, satisfiedDemand, orderReport.getTrades());
+        return new OrderResult(apr, satisfiedDemand, totalDiscountSum, avgDiscountPerc, BigDecimal.ZERO, orderReport.getTrades());
     }
+
+    private BigDecimal calculateTotalInvoicesSum(OrderBook lob) {
+        BigDecimal result = BigDecimal.ZERO;
+        for (Trade trade : lob.getTape()) {
+            result = result.add(trade.getInvoicesSum());
+        }
+        return result;
+    }
+
 
     private BigDecimal calculateAPR(OrderBook lob, long time, BigDecimal satisfiedDemand) {
         BigDecimal apr = BigDecimal.ZERO;
@@ -60,5 +72,13 @@ public class LimitOrderBookService {
         }
 
         return apr.setScale(APR_SCALE, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateTotalDiscountSum(OrderBook lob) {
+        BigDecimal result = BigDecimal.ZERO;
+        for (Trade trade : lob.getTape()) {
+            result = result.add(trade.getDiscountSum());
+        }
+        return result;
     }
 }

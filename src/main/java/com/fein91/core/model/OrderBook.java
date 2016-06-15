@@ -138,6 +138,8 @@ public class OrderBook {
                 quote.setqId(this.nextQuoteID);
                 quote.setQuantity(qtyRemaining);
                 this.bids.insertOrder(quote);
+                //TODO add invoices check before persist
+                //orderRequestService.saveOrderRequest(quote);
                 orderInBook = true;
                 this.nextQuoteID += 1;
             } else {
@@ -161,6 +163,8 @@ public class OrderBook {
                 quote.setqId(this.nextQuoteID);
                 quote.setQuantity(qtyRemaining);
                 this.asks.insertOrder(quote);
+                //TODO add invoices check before persist
+                //orderRequestService.saveOrderRequest(quote);
                 orderInBook = true;
                 this.nextQuoteID += 1;
             } else {
@@ -185,6 +189,8 @@ public class OrderBook {
         long buyer, seller;
         long takerId = quote.getTakerId();
         long time = quote.getTimestamp();
+        BigDecimal discountSum = BigDecimal.ZERO;
+        BigDecimal invoicesSum = BigDecimal.ZERO;
         Iterator<Order> iter = orders.iterator();
         while ((orders.getLength() > 0) && (qtyRemaining.signum() > 0) && iter.hasNext()) {
             BigDecimal qtyTraded = BigDecimal.ZERO;
@@ -206,7 +212,7 @@ public class OrderBook {
                 log.info("Invoice is processing: " + currentInvoice);
 
                 BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
-                BigDecimal discountPercent = calculateDiscount(headOrder.getPrice(), currentInvoice.getPaymentDate());
+                BigDecimal discountPercent = calculateDiscount(BigDecimal.valueOf(headOrder.getPrice()), currentInvoice.getPaymentDate());
                 BigDecimal maxPrepaidInvoiceValue = unpaidInvoiceValue.divide(BigDecimal.ONE.add(discountPercent), BigDecimal.ROUND_HALF_UP);
                 log.info("discountPercent " + discountPercent);
                 log.info("maxPrepaidInvoiceValue " + maxPrepaidInvoiceValue);
@@ -281,6 +287,8 @@ public class OrderBook {
                 }
 
                 currentInvoice.setProcessed(true);
+                invoicesSum = invoicesSum.add(currentInvoice.getValue());
+                discountSum = discountSum.add(discountValue);
             }
             //ALL invoices and orders are distributed and processed
 
@@ -291,7 +299,7 @@ public class OrderBook {
                 buyer = takerId;
                 seller = headOrder.getTakerId();
             }
-            Trade trade = new Trade(time, headOrder.getPrice(), qtyTraded,
+            Trade trade = new Trade(time, headOrder.getPrice(), qtyTraded, discountSum, invoicesSum,
                     headOrder.getTakerId(), takerId, buyer, seller,
                     headOrder.getqId());
             trades.add(trade);
@@ -305,13 +313,16 @@ public class OrderBook {
 
     //=((1+APR/100)^(daysUntilPaymentDate/365)-1)
     //TODO rewrite it with BigDecimal, problem here with BigDecimal.pow(BigDecimal)
-    private BigDecimal calculateDiscount(double apr, Date paymentDate) {
+    private BigDecimal calculateDiscount(BigDecimal apr, Date paymentDate) {
         DateTime paymentDT = new DateTime(paymentDate);
         DateTime currDT = new DateTime();
         Days daysBetween = Days.daysBetween(currDT.toLocalDate(), paymentDT.toLocalDate());
         log.info("Days to payment date left: " + daysBetween.getDays());
-        double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
-        return new BigDecimal(discount);
+        //double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
+        BigDecimal discount = apr.multiply(BigDecimal.valueOf(daysBetween.getDays()))
+                .divide(BigDecimal.valueOf(365), 10, BigDecimal.ROUND_HALF_UP)
+                .divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP);
+        return discount;
     }
 
 
