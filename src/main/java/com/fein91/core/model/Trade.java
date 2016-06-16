@@ -1,20 +1,32 @@
 package com.fein91.core.model;
 
+import java.math.BigDecimal;
+
 public class Trade {
 	private long timestamp;
 	private double price;
-	private int qty;
+	private BigDecimal qty;
 	private long provider;
 	private long taker;
 	private long buyer;
 	private long seller;
 	private int orderHit;
+	private BigDecimal discountSum;
+	private BigDecimal invoicesSum;
+	//TODO maybe find more suitable name
+	/**
+	 * its needed to calculate avg days left to payment date
+	 */
+	private BigDecimal sumInvoicesDaysToPaymentMultQtyTraded;
 	
-	public Trade(long time, double price, int qty, long provider,
-				 long taker, long buyer, long seller, int orderHit) {
+	public Trade(long time, double price, BigDecimal qty, BigDecimal discountSum, BigDecimal invoicesSum, BigDecimal sumInvoicesDaysToPaymentMultQtyTraded,
+				 long provider, long taker, long buyer, long seller, int orderHit) {
 		this.timestamp = time;
 		this.price = price;
 		this.qty = qty;
+		this.discountSum = discountSum;
+		this.invoicesSum = invoicesSum;
+		this.sumInvoicesDaysToPaymentMultQtyTraded = sumInvoicesDaysToPaymentMultQtyTraded;
 		this.provider = provider;
 		this.taker = taker;
 		this.buyer = buyer;
@@ -28,6 +40,8 @@ public class Trade {
 		return ("\n| TRADE\tt= " + timestamp + 
 				"\tprice = " + price +
 				"\tquantity = " + qty +
+				"\tdiscountSum = " + discountSum +
+				"\tinvoicesSum = " + invoicesSum +
 				"\tProvider = " + provider +
 				"\tTaker = " + taker +
 				"\tBuyer = " + buyer +
@@ -57,7 +71,7 @@ public class Trade {
 
 
 
-	public int getQty() {
+	public BigDecimal getQty() {
 		return qty;
 	}
 
@@ -88,5 +102,17 @@ public class Trade {
 
 	public int getOrderHit() {
 		return orderHit;
+	}
+
+	public BigDecimal getDiscountSum() {
+		return discountSum;
+	}
+
+	public BigDecimal getInvoicesSum() {
+		return invoicesSum;
+	}
+
+	public BigDecimal getSumInvoicesDaysToPaymentMultQtyTraded() {
+		return sumInvoicesDaysToPaymentMultQtyTraded;
 	}
 }

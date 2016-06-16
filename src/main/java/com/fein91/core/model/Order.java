@@ -3,11 +3,13 @@ package com.fein91.core.model;
 
 import com.fein91.model.OrderType;
 
+import java.math.BigDecimal;
+
 public class Order {
 	private final long id;
 	private long timestamp;
 	private OrderType orderType;
-	private int quantity;
+	private BigDecimal quantity;
 	private OrderSide orderSide;
 	private double price;
 	private int qId;
@@ -16,11 +18,11 @@ public class Order {
 	private Order prevOrder;
 	private OrderList oL;
 	
-	public Order(long id, long time, OrderType orderType, int quantity, long takerId, OrderSide orderSide) {
+	public Order(long id, long time, OrderType orderType, BigDecimal quantity, long takerId, OrderSide orderSide) {
 		this(id, time, orderType, quantity, takerId, orderSide, null);
 	}	
 	
-	public Order(long id, long time, OrderType orderType, int quantity,
+	public Order(long id, long time, OrderType orderType, BigDecimal quantity,
 				long takerId, OrderSide orderSide, Double price) {
 
 		this.id = id;
@@ -34,18 +36,19 @@ public class Order {
 		this.takerId = takerId;
 	}
 	
-	public void updateQty(int qty, long tstamp) {
-		if ((qty > this.quantity) && (this.oL.getTailOrder() != this)) {
+	public void updateQty(BigDecimal qty, long tstamp) {
+		if ((qty.compareTo(this.quantity) > 0) && (this.oL.getTailOrder() != this)) {
 			// Move order to the end of the list. i.e. loses time priority
 			this.oL.moveTail(this);
 			this.timestamp = tstamp;
 		}
-		oL.setVolume(oL.getVolume()-(this.quantity-qty));
+		oL.setVolume(oL.getVolume()-(this.quantity.subtract(qty)).intValue());
 		this.quantity = qty;
 	}
 	
 	public String toString() {
-        return Integer.toString(quantity) + "\t@\t" + Double.toString(price) + 
+        return quantity + "\t@\t" + Double.toString(price) +
+				"\tid=" + Long.toString(id) +
         		"\tt=" + Long.toString(timestamp) +
         		"\tqId=" + Integer.toString(qId) +
         		"\ttakerId=" + Long.toString(takerId);
@@ -77,11 +80,11 @@ public class Order {
 		this.timestamp = timestamp;
 	}
 
-	public int getQuantity() {
+	public BigDecimal getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(BigDecimal quantity) {
 		this.quantity = quantity;
 	}
 

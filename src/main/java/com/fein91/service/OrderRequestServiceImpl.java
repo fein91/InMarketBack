@@ -1,5 +1,7 @@
 package com.fein91.service;
 
+import com.fein91.builders.OrderRequestBuilder;
+import com.fein91.core.model.Order;
 import com.fein91.core.model.OrderBook;
 import com.fein91.core.model.OrderSide;
 import com.fein91.core.service.LimitOrderBookService;
@@ -16,7 +18,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Service("OrderRequestServiceImpl")
@@ -28,16 +32,18 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     private final InvoiceRepository invoiceRepository;
     private final LimitOrderBookService lobService;
     private final OrderBookBuilder orderBookBuilder;
+    private final CounterPartyService counterPartyService;
 
     @Autowired
     public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository,
                                    InvoiceRepository invoiceRepository,
                                    LimitOrderBookService lobService,
-                                   OrderBookBuilder orderBookBuilder) {
+                                   OrderBookBuilder orderBookBuilder, CounterPartyService counterPartyService) {
         this.orderRequestRepository = orderRequestRepository;
         this.invoiceRepository = invoiceRepository;
         this.lobService = lobService;
         this.orderBookBuilder = orderBookBuilder;
+        this.counterPartyService = counterPartyService;
     }
 
     @Override
@@ -46,28 +52,55 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     }
 
     @Override
-    public OrderRequest addOrderRequest(OrderRequest orderRequest) {
+    public OrderRequest getById(Long id) {
+        return orderRequestRepository.findOne(id);
+    }
+
+    @Override
+    @Transactional
+    public OrderRequest saveOrderRequest(OrderRequest orderRequest) {
+        LOGGER.info("Order request to save: " + orderRequest);
+        return orderRequestRepository.save(orderRequest);
+    }
+
+    @Override
+    @Transactional
+    public OrderRequest saveOrderRequest(Order order) {
+        OrderRequest orderRequest = new OrderRequestBuilder(counterPartyService.getById(order.getTakerId()))
+                .orderSide(order.getOrderSide())
+                .orderType(order.getOrderType())
+                .price(BigDecimal.valueOf(order.getPrice()))
+                .quantity(order.getQuantity())
+                .build();
+        LOGGER.info("Order request to save: " + orderRequest);
         return orderRequestRepository.save(orderRequest);
     }
 
     @Override
     @Transactional
     public OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
+        LOGGER.info("Order request to save: " + orderRequest);
         orderRequestRepository.save(orderRequest);
 
         OrderBook lob = orderBookBuilder.getInstance();
-        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
+        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
-        return lobService.addOrder(lob, orderRequest);
+        OrderResult result = lobService.addOrder(lob, orderRequest);
+        BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
+        if (unsatisfiedDemand.signum() > 0) {
+            //TODO fix it, there should be no order if there is no invoices
+            updateOrderRequest(orderRequest.getId(), unsatisfiedDemand);
+        }
+        return result;
     }
 
     @Override
     @Transactional
     public OrderResult calculateOrderRequest(OrderRequest orderRequest) {
         OrderBook lob = orderBookBuilder.getStubInstance();
-        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest.getCounterparty().getId(), orderRequest.getOrderSide())) {
+        for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
@@ -76,7 +109,9 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
+    public Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
+        OrderSide orderSide = orderRequest.getOrderSide();
+        Long counterpartyId = orderRequest.getCounterparty().getId();
         List<Invoice> invoices = OrderSide.BID == orderSide
                 ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
                 : invoiceRepository.findInvoicesByTargetId(counterpartyId);
@@ -85,13 +120,28 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             throw new OrderRequestProcessingException("No invoices were found while processing order request");
         }
 
-        List<OrderRequest> orderRequests = new ArrayList<>();
+        Set<Counterparty> counterparties = new HashSet<>();
+        Set<OrderRequest> orderRequests = new HashSet<>();
+        BigDecimal invoicesSum = BigDecimal.ZERO;
         for (Invoice invoice : invoices) {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
                     : invoice.getSource();
-            orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
+
+            if (counterparties.add(giver)) {
+                orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
+            }
+            invoicesSum = invoicesSum.add(invoice.getValue());
         }
+
+        if (OrderType.MARKET == orderRequest.getOrderType() && CollectionUtils.isEmpty(orderRequests)) {
+            throw new OrderRequestProcessingException("No suitable order requests were found");
+        }
+        if (orderRequest.getQuantity().compareTo(invoicesSum) > 0) {
+            throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity()
+                    + " is greater than invoices sum: " + invoicesSum);
+        }
+
         return orderRequests;
     }
 
@@ -99,16 +149,15 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     @Transactional
     public void removeOrderRequest(Long orderId) {
         orderRequestRepository.delete(orderId);
-        LOGGER.info("Order request was removed: " + orderId);
+        LOGGER.info("Order with id: " + orderId + " request was removed");
     }
 
     @Override
     @Transactional
     public OrderRequest updateOrderRequest(Long orderId, BigDecimal qty) {
         OrderRequest orderRequest = orderRequestRepository.findOne(orderId);
+        LOGGER.info(orderRequest + " quantity will be updated to: " + qty);
         orderRequest.setQuantity(qty);
-
-        LOGGER.info(orderRequest + " quantity was updated to: " + qty);
         return orderRequestRepository.save(orderRequest);
     }
 }

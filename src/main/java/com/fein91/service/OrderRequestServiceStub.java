@@ -1,5 +1,6 @@
 package com.fein91.service;
 
+import com.fein91.core.model.Order;
 import com.fein91.core.model.OrderSide;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 @Service("OrderRequestServiceStub")
 public class OrderRequestServiceStub implements OrderRequestService {
@@ -17,7 +19,17 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public OrderRequest addOrderRequest(OrderRequest orderRequest) {
+    public OrderRequest getById(Long id) {
+        return null;
+    }
+
+    @Override
+    public OrderRequest saveOrderRequest(OrderRequest orderRequest) {
+        return null;
+    }
+
+    @Override
+    public OrderRequest saveOrderRequest(Order order) {
         return null;
     }
 
@@ -32,7 +44,7 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public List<OrderRequest> findLimitOrderRequestsToTrade(Long counterpartyId, OrderSide orderSide) {
+    public Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
         return null;
     }
 

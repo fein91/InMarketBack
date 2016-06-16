@@ -23,4 +23,9 @@ public class CounterPartyServiceImpl implements CounterPartyService {
         return counterpartyRepository.save(counterparty);
     }
 
+    @Override
+    public Counterparty getById(long id) {
+        return counterpartyRepository.findOne(id);
+    }
+
 }

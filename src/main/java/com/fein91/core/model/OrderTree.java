@@ -1,5 +1,6 @@
 package com.fein91.core.model;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class OrderTree {
@@ -75,21 +76,21 @@ public class OrderTree {
 		quote.setoL(priceMap.get(quotePrice));
 		priceMap.get(quotePrice).appendOrder(quote);
 		orderMap.put(quoteID, quote);
-		volume += quote.getQuantity();
+		volume += quote.getQuantity().intValue();
 	}
 	
-	public void updateOrderQty(int qty, int qId) {
+	public void updateOrderQty(BigDecimal qty, int qId) {
 		Order order = this.orderMap.get(qId);
-		int originalVol = order.getQuantity();
+		BigDecimal originalVol = order.getQuantity();
 		order.updateQty(qty, order.getTimestamp());
-		this.volume += (order.getQuantity() - originalVol);
+		this.volume += (order.getQuantity().subtract(originalVol)).intValue();
 	}
 	
 	public void updateOrder(Order orderUpdate) {
 		int idNum = orderUpdate.getqId();
 		double price = orderUpdate.getPrice();
 		Order order = this.orderMap.get(idNum);
-		int originalVol = order.getQuantity();
+		BigDecimal originalVol = order.getQuantity();
 		if (price != order.getPrice()) {
 			// Price has been updated
 			OrderList tempOL = this.priceMap.get(order.getPrice());
@@ -103,13 +104,13 @@ public class OrderTree {
 			order.updateQty(orderUpdate.getQuantity(),
                     orderUpdate.getTimestamp());
 		}
-		this.volume += (order.getQuantity() - originalVol);
+		this.volume += (order.getQuantity().subtract(originalVol).intValue());
 	}
 	
 	public void removeOrderByID(int id) {
 		this.nOrders -=1;
 		Order order = orderMap.get(id);
-		this.volume -= order.getQuantity();
+		this.volume -= order.getQuantity().intValue();
 		order.getoL().removeOrder(order);
 		if (order.getoL().getLength() == 0) {
 			this.removePrice(order.getPrice());

@@ -35,11 +35,11 @@ public class OrderList implements Iterable<Order>{
 			tailOrder = incomingOrder;
 		}
 		length+=1;
-		volume+=incomingOrder.getQuantity();
+		volume+=incomingOrder.getQuantity().intValue();
 	}
 	
 	public void removeOrder(Order order) {
-		this.volume -= order.getQuantity();
+		this.volume -= order.getQuantity().intValue();
 		this.length -= 1;
 		if (this.length == 0) {
 			return;

@@ -13,8 +13,6 @@
                                   {{invoice.id}}</td>
               <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
                                   {{invoice.value}}</td>
-              <td data-title="'% предоплаты'" sortable="'prepaidValue'">
-                                  {{invoice.prepaidValue}}</td>
               <td data-title="'Дата платежа'" sortable="'paymentDate'">
                                   {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
             </tr>
@@ -33,8 +31,6 @@
                       {{invoice.id}}</td>
                   <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
                       {{invoice.value}}</td>
-                  <td data-title="'% предоплаты'" sortable="'prepaidValue'">
-                      {{invoice.prepaidValue}}</td>
                   <td data-title="'Дата платежа'" sortable="'paymentDate'">
                       {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
               </tr>
