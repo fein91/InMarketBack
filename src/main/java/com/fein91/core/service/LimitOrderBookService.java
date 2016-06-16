@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class LimitOrderBookService {
     private static Logger log = Logger.getLogger(LimitOrderBookService.class);
 
-    private static final int APR_SCALE = 1;
+    private static final int SCALE = 2;
 
     public OrderResult addOrder(OrderBook lob, OrderRequest orderRequest) {
         BigDecimal quantity = orderRequest.getQuantity();
@@ -49,10 +49,17 @@ public class LimitOrderBookService {
         BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
         BigDecimal totalDiscountSum = calculateTotalDiscountSum(lob);
         BigDecimal totalInvoicesSum = calculateTotalInvoicesSum(lob);
-        BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0 ? totalDiscountSum.divide(totalInvoicesSum, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
+        BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0
+                ? totalDiscountSum.divide(totalInvoicesSum, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100))
+                : BigDecimal.ZERO;
         BigDecimal avgDaysToPayment = calculateAvgDaysToPayment(lob);
 
-        return new OrderResult(apr, satisfiedDemand, totalDiscountSum, avgDiscountPerc, avgDaysToPayment, orderReport.getTrades());
+        return new OrderResult(apr.setScale(SCALE, RoundingMode.HALF_UP),
+                satisfiedDemand.setScale(SCALE, RoundingMode.HALF_UP),
+                totalDiscountSum.setScale(SCALE, RoundingMode.HALF_UP),
+                avgDiscountPerc.setScale(SCALE, RoundingMode.HALF_UP),
+                avgDaysToPayment.setScale(SCALE, RoundingMode.HALF_UP),
+                orderReport.getTrades());
     }
 
     /**
@@ -89,7 +96,7 @@ public class LimitOrderBookService {
             }
         }
 
-        return apr.setScale(APR_SCALE, RoundingMode.HALF_UP);
+        return apr;
     }
 
     private BigDecimal calculateTotalDiscountSum(OrderBook lob) {
