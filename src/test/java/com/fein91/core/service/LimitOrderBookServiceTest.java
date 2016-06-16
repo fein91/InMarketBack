@@ -398,10 +398,10 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.processOrderRequest(askOrderRequest2);
 
-        double supplier1BidPrice = 29d;
+        BigDecimal supplier1BidPrice = BigDecimal.valueOf(29);
         OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(200))
-                .price(BigDecimal.valueOf(supplier1BidPrice))
+                .price(supplier1BidPrice)
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
@@ -412,11 +412,22 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(28d, trade1.getPrice(), 0d);
         Assert.assertEquals(BigDecimal.valueOf(150).compareTo(trade1.getQty()), 0);
 
-        //TODO fix it
-//        Assert.assertEquals(50, lob.getVolumeAtPrice(OrderSide.BID.getCoreName(), 29d));
-//        Assert.assertEquals(100, lob.getVolumeAtPrice(OrderSide.ASK.getCoreName(), 30d));
+        List<OrderRequest> orderRequests = orderRequestServiceImpl.getByCounterpartyId(supplier1.getId());
+        Assert.assertEquals(1, orderRequests.size());
+        OrderRequest limitOrderRequest = orderRequests.iterator().next();
+        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(limitOrderRequest.getQuantity()));
+        Assert.assertEquals(0, supplier1BidPrice.compareTo(limitOrderRequest.getPrice()));
     }
 
+    /*
+   *   source  target  value paymentDate
+   *     s1      b1     150    40
+   *     s1      b2     100    40
+   *       ASK
+   * b1 30 100
+   * b2 28 100
+   * s1 bid limit order qty == 200 price == 29
+   * */
     @Test
     @Transactional
     @Rollback
@@ -456,7 +467,7 @@ public class LimitOrderBookServiceTest {
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer2.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(28d, trade1.getPrice(), 0d);
-        Assert.assertEquals(BigDecimal.valueOf(97), trade1.getQty());
+        Assert.assertEquals(0, BigDecimal.valueOf(97).compareTo(trade1.getQty()));
 
         //TODO fix it
 //        Assert.assertEquals(100, lob.getVolumeAtPrice(OrderSide.BID.getCoreName(), 29d));
