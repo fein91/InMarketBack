@@ -78,9 +78,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     @Override
     @Transactional
     public OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
-        LOGGER.info("Order request to save: " + orderRequest);
-        orderRequest = orderRequestRepository.save(orderRequest);
-
         OrderBook lob = orderBookBuilder.getInstance();
         for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
@@ -89,8 +86,21 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         OrderResult result = lobService.addOrder(lob, orderRequest);
         BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
         if (unsatisfiedDemand.signum() > 0) {
-            //TODO fix it, there should be no order if there is no invoices
-            updateOrderRequest(orderRequest.getId(), unsatisfiedDemand);
+            if (OrderType.LIMIT == orderRequest.getOrderType()) {
+                orderRequest.setQuantity(unsatisfiedDemand);
+                orderRequestRepository.save(orderRequest);
+            } else {
+                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+                        .date(orderRequest.getDate())
+                        .orderSide(orderRequest.getOrderSide())
+                        .orderType(OrderType.LIMIT)
+                        .price(result.getApr())
+                        .quantity(unsatisfiedDemand)
+                        .build();
+                //it's needed here to validate if we can add this order
+                findLimitOrderRequestsToTrade(limitOrderRequest);
+                orderRequestRepository.save(limitOrderRequest);
+            }
         }
         return result;
     }
@@ -103,7 +113,24 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
-        return lobService.addOrder(lob, orderRequest);
+        OrderResult result = lobService.addOrder(lob, orderRequest);
+        BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
+        if (unsatisfiedDemand.signum() > 0) {
+            if (OrderType.LIMIT == orderRequest.getOrderType()) {
+                orderRequest.setQuantity(unsatisfiedDemand);
+                findLimitOrderRequestsToTrade(orderRequest);
+            } else {
+                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+                        .date(orderRequest.getDate())
+                        .orderSide(orderRequest.getOrderSide())
+                        .orderType(OrderType.LIMIT)
+                        .price(result.getApr())
+                        .quantity(unsatisfiedDemand)
+                        .build();
+                findLimitOrderRequestsToTrade(limitOrderRequest);
+            }
+        }
+        return result;
     }
 
     @Override
