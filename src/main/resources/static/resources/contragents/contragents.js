@@ -2,7 +2,7 @@ angular.module('inmarket.contragents', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/contragents', {
-    templateUrl: 'contragents/contragents.html'
+    templateUrl: 'partials/contragents.html'
   });
 }])
 

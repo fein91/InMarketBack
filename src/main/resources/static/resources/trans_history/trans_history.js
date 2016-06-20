@@ -2,7 +2,7 @@ angular.module('inmarket.trans_history', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/trans_history', {
-    templateUrl: 'trans_history/trans_history.html',
+    templateUrl: 'partials/trans_history.html',
     controller: 'TransHistoryCtrl'
   });
 }])

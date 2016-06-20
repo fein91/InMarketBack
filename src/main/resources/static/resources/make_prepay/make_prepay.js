@@ -2,7 +2,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.when('/make_prepay', {
-			templateUrl: 'make_prepay/make_prepay.html',
+			templateUrl: 'partials/make_prepay.html',
 			controller: 'MakePrepayCtrl'
 		});
 	}])

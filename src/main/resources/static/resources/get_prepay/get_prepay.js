@@ -2,7 +2,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.when('/get_prepay', {
-			templateUrl: 'get_prepay/get_prepay.html'
+			templateUrl: 'partials/get_prepay.html'
 		});
 	}])
 
