@@ -68,6 +68,9 @@
 						<div>
 							<p>По заданному APR к моментальному исполнению подлежит сумма {{satisfiedBidQty}} грн.</p>
 						</div>
+						<div class="alert alert-warning alert-dismissable" ng-show="calculationCalled && calculatedWithError">
+							{{calculationErrorMsg}}
+						</div>
 						<div class="row">
 							<div class="col-xs-4">
 								<canvas id="bar" class="chart chart-bar"
@@ -75,7 +78,7 @@
 								</canvas>
 							</div>
 						</div>
-						<button type="submit" ng-click="submitLimitBidOrder()" class="btn btn-default">Подтвердить</button>
+						<button type="submit" ng-click="submitLimitBidOrder()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
 						<button type="reset" class="btn btn-default">Сбросить</button>
 						<button type="submit" ng-click="calculateLimitBidOrder()" class="btn btn-default">Пересчитать</button>
 					</form>

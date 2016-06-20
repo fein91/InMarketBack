@@ -98,11 +98,14 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 		console.log('LimitBidCtrl inited');
 		$scope.bidQty = '';
 		$scope.bidApr = '';
+		$scope.calculationCalled = false;
+		$scope.calculatedWithError = true;
+		$scope.calculationErrorMsg = false;
 
 		$scope.calculateLimitBidOrder = function() {
 			if ($scope.bidQty && $scope.bidApr) {
+				$scope.calculationCalled = true;
 				var orderRequest = {
-					"id" : 123456789,
 					"price" : $scope.bidApr,
 					"quantity" : $scope.bidQty,
 					"orderSide" : 0,
@@ -119,8 +122,11 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 						console.log('order result: ' + JSON.stringify(orderResult));
 						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
 
+						$scope.calculatedWithError = false;
 					}, function errorCallback(response) {
 						console.log('got ' + response.status + ' error');
+						$scope.calculatedWithError = true;
+						$scope.calculationErrorMsg = response.data.message;
 					});
 			}
 		}
@@ -128,7 +134,6 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 		$scope.submitLimitBidOrder = function() {
 			if ($scope.bidQty && $scope.bidApr) {
 				var orderRequest = {
-					"id" : 123456789,
 					"price" : $scope.bidApr,
 					"quantity" : $scope.bidQty,
 					"orderSide" : 0,
@@ -147,9 +152,19 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 
 					}, function errorCallback(response) {
 						console.log('got ' + response.status + ' error');
+						$scope.calculatedWithError = true;
+						$scope.calculationErrorMsg = response.data.message;
 					});
 			}
-		}
+		};
+
+		$scope.reset = function() {
+			$scope.bidQty = '';
+			$scope.bidApr = '';
+			$scope.calculatedWithError = true;
+			$scope.calculationErrorMsg = '';
+			$scope.calculationCalled = false;
+		};
 
 	}])
 

@@ -17,7 +17,6 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 		$scope.calculateMarketAskOrder = function() {
 			if ($scope.askQty) {
 				var orderRequest = {
-					"id" : 123456789,
 					"quantity" : $scope.askQty,
 					"orderSide" : 1,
 					"orderType" : 1,
@@ -47,7 +46,6 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 		$scope.submitMarketAskOrder = function() {
 			if ($scope.askQty) {
 				var orderRequest = {
-					"id" : 123456789,
 					"quantity" : $scope.askQty,
 					"orderSide" : 1,
 					"orderType" : 1,

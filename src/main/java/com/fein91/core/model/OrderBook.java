@@ -318,6 +318,7 @@ public class OrderBook {
         return qtyRemaining;
     }
 
+    @Deprecated
     private BigDecimal calculateDiscount(BigDecimal apr, int daysToPayment) {
         //double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
         return apr.multiply(BigDecimal.valueOf(daysToPayment))
@@ -325,6 +326,7 @@ public class OrderBook {
                 .divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP);
     }
 
+    @Deprecated
     private int getDaysToPayment(Date paymentDate) {
         DateTime paymentDT = new DateTime(paymentDate);
         DateTime currDT = new DateTime();
