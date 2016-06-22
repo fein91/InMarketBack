@@ -22,7 +22,7 @@ angular
         };
 
         this.submitOrder = function(orderRequest) {
-            if (orderRequest.bidQty) {
+            if (orderRequest.quantity) {
                 this.process(orderRequest)
                     .then(function successCallback(response){
                         var orderResult = response.data;

@@ -38,21 +38,21 @@
 						<div>
 							<p>В данный момент вы можете получить предоплату на эту сумму со следующими параметрами:</br>
 								APR={{askApr}}</br>
-								средний % скидки=</br>
-								общая сумму скидок будет составлять=
+								средний % скидки={{avgDiscountPerc}}</br>
+								общая сумму скидок будет составлять={{discountSum}}</br>
+								средний срок оплаты={{avgDaysToPayment}} дней
 							</p>
 						</div>
 						<div ng-hide="demandSatisfied" class="alert alert-info alert-dismissable">
 							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-							В данный момент ваши покупатели готовы сделать предоплату только на сумму= грн. под APR=
-							Остаток ( грн) будет размещен по APR=
+							В данный момент ваши покупатели готовы сделать предоплату только на сумму={{satisfiedBidQty}} грн.
+							Остаток ({{askQty - satisfiedBidQty}} грн) будет размещен по APR={{askApr}}
 						</div>
-						<div ng-show="noCounterparties" class="alert alert-warning alert-dismissable">
-							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-							К сожалению, в данный момент нет контрагентов, желающих делать предоплаты. Предлагаем воспользоваться отложенным исполнением по последней рыночной цене APR=
+						<div class="alert alert-warning alert-dismissable" ng-show="calculationCalled && calculatedWithError">
+							{{calculationErrorMsg}}
 						</div>
-						<button type="submit" ng-click="submitMarketAskOrder()" class="btn btn-default">Подтвердить</button>
-						<button type="reset" class="btn btn-default">Сбросить</button>
+						<button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
+						<button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>
 						<button type="submit" ng-click="calculateMarketAskOrder()" class="btn btn-default">Пересчитать</button>
 					</form>
 				</div>

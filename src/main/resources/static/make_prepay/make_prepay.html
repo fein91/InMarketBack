@@ -1,7 +1,7 @@
-<div class="row page-content" ng-controller="MakePrepayCtrl as MakePrepay">
+<div class="row page-content">
 	<uib-tabset active="activeJustified" justified="false" type="pills">
 		<uib-tab index="0" heading="История рынка">
-			<div class="row">
+			<div class="row" ng-controller="MakePrepayHistoryChartCtrl">
 				<div class="col-xs-8">
 					<canvas id="line" class="chart chart-line" chart-data="line_data"
 							chart-labels="line_labels" chart-legend="true" chart-series="line_series"
@@ -78,7 +78,7 @@
 								</canvas>
 							</div>
 						</div>
-						<button type="submit" ng-click="submitLimitBidOrder()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
+						<button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
 						<button type="reset" class="btn btn-default">Сбросить</button>
 						<button type="submit" ng-click="calculateLimitBidOrder()" class="btn btn-default">Пересчитать</button>
 					</form>

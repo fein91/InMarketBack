@@ -2,8 +2,7 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.when('/make_prepay', {
-			templateUrl: 'make_prepay/make_prepay.html',
-			controller: 'MakePrepayCtrl'
+			templateUrl: 'make_prepay/make_prepay.html'
 		});
 	}])
 
@@ -81,7 +80,7 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 		};
 	}])
 
-	.controller('LimitBidCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
+	.controller('LimitBidCtrl', ['$scope', '$uibModal', 'orderRequestsService', function($scope, $uibModal, orderRequestsService) {
 		console.log('LimitBidCtrl inited');
 		$scope.bidQty = '';
 		$scope.bidApr = '';
@@ -108,6 +107,9 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 						var orderResult = response.data;
 						console.log('order result: ' + JSON.stringify(orderResult));
 						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+						if ($scope.bidQty > $scope.satisfiedBidQty) {
+							$scope.demandSatisfied = false;
+						}
 
 						$scope.calculatedWithError = false;
 					}, function errorCallback(response) {
@@ -116,33 +118,29 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 						$scope.calculationErrorMsg = response.data.message;
 					});
 			}
-		}
+		};
 
-		$scope.submitLimitBidOrder = function() {
-			if ($scope.bidQty && $scope.bidApr) {
-				var orderRequest = {
-					"price" : $scope.bidApr,
-					"quantity" : $scope.bidQty,
-					"orderSide" : 0,
-					"orderType" : 0,
-					"counterparty" : {
-						"id" : 11,
-						"name" : "supplyer"
+		$scope.openConfirmation = function() {
+			var modalInstance = $uibModal.open({
+				animation: true,
+				templateUrl: 'make_prepay/orderRequestConfirmPopup.html',
+				controller: 'OrderRequestConfirmPopupCtrl',
+				size: 'sm',
+				resolve: {
+					orderRequest: function () {
+						return {
+							"price" : $scope.bidApr,
+							"quantity" : $scope.bidQty,
+							"orderSide" : 0,
+							"orderType" : 0,
+							"counterparty" : {
+								"id" : 11,
+								"name" : "supplyer"
+							}
+						};
 					}
-				};
-
-				orderRequestsService.process(orderRequest)
-					.then(function successCallback(response){
-						var orderResult = response.data;
-						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-
-					}, function errorCallback(response) {
-						console.log('got ' + response.status + ' error');
-						$scope.calculatedWithError = true;
-						$scope.calculationErrorMsg = response.data.message;
-					});
-			}
+				}
+			});
 		};
 
 		$scope.reset = function() {
@@ -156,8 +154,8 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 	}])
 
 
-	.controller('MakePrepayCtrl', ['$scope', function($scope) {
-		console.log('MakePrepayCtrl inited');
+	.controller('MakePrepayHistoryChartCtrl', ['$scope', function($scope) {
+		console.log('MakePrepayHistoryChartCtrl inited');
 
 		$scope.maxPrice = 700;
 		$scope.minPrice = 300;
