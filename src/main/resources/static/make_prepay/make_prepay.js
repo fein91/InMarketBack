@@ -1,4 +1,4 @@
-angular.module('inmarket.make_prepay', ['ngRoute'])
+angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.when('/make_prepay', {
@@ -7,7 +7,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 		});
 	}])
 
-	.controller('MarketBidCtrl', ['$scope', '$rootScope', 'orderRequestsService', 'invoices', function($scope, $rootScope, orderRequestsService, invoices) {
+	.controller('MarketBidCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', function($scope, $rootScope, $uibModal, orderRequestsService, invoices) {
 		console.log('MarketBidCtrl inited');
 
 		$scope.bidQty = '';
@@ -21,7 +21,6 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 			if ($scope.bidQty) {
 				$scope.calculationCalled = true;
 				var orderRequest = {
-					"id" : 123456789,
 					"quantity" : $scope.bidQty,
 					"orderSide" : 0,
 					"orderType" : 1,
@@ -50,38 +49,26 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 			}
 		};
 
-		$scope.submitBidMarketOrder = function() {
-			if ($scope.bidQty) {
-				var orderRequest = {
-					"id" : 123456789,
-					"quantity" : $scope.bidQty,
-					"orderSide" : 0,
-					"orderType" : 1,
-					"counterparty" : {
-						"id" : 11,
-						"name" : "supplyer"
+		$scope.openConfirmation = function() {
+			var modalInstance = $uibModal.open({
+				animation: true,
+				templateUrl: 'make_prepay/orderRequestConfirmPopup.html',
+				controller: 'OrderRequestConfirmPopupCtrl',
+				size: 'sm',
+				resolve: {
+					orderRequest: function () {
+						return {
+							"quantity" : $scope.bidQty,
+							"orderSide" : 0,
+							"orderType" : 1,
+							"counterparty" : {
+								"id" : 11,
+								"name" : "supplyer"
+							}
+						};
 					}
-				};
-
-				orderRequestsService.process(orderRequest)
-					.then(function successCallback(response){
-						var orderResult = response.data;
-						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.bidApr = orderResult.apr;
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-						if ($scope.bidQty > $scope.satisfiedBidQty) {
-							$scope.demandSatisfied = false;
-						}
-
-						$rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
-						$rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
-
-					}, function errorCallback(response) {
-						console.log('got ' + response.status + ' error');
-						$scope.calculatedWithError = true;
-						$scope.calculationErrorMsg = response.data.message;
-					});
-			}
+				}
+			});
 		};
 
 		$scope.reset = function() {

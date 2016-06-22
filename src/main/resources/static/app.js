@@ -7,6 +7,7 @@ angular.module('inmarket', [
   'chart.js',
   'ui.bootstrap',
   'inmarket.proposal',
+  'inmarket.orderRequestConfirmPopup',
   'inmarket.contragents',
   'inmarket.get_prepay',
   'inmarket.make_prepay',

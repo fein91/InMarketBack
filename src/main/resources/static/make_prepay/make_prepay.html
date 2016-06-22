@@ -46,7 +46,7 @@
 						<div class="alert alert-warning alert-dismissable" ng-show="calculationCalled && calculatedWithError">
 							{{calculationErrorMsg}}
 						</div>
-						<button type="submit" ng-click="submitBidMarketOrder()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
+						<button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
 						<button type="reset" class="btn btn-default" ng-click="reset()">Сбросить</button>
 						<button type="submit" ng-click="calculateBidMarketOrder()" class="btn btn-default">Пересчитать</button>
 					</form>

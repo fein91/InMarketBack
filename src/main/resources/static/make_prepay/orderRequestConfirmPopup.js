@@ -1,13 +1,9 @@
-angular.module('inmarket.demo')
-    .controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
-
-    $scope.items = items;
-    $scope.selected = {
-        item: $scope.items[0]
-    };
+angular.module('inmarket.orderRequestConfirmPopup', ['ui.bootstrap'])
+    .controller('OrderRequestConfirmPopupCtrl', function ($scope, $uibModalInstance, orderRequestsService, orderRequest) {
 
     $scope.ok = function () {
-        $uibModalInstance.close($scope.selected.item);
+        orderRequestsService.submitOrder(orderRequest);
+        $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
