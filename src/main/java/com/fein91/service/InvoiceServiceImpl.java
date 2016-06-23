@@ -30,6 +30,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice updateInvoice(Invoice invoice, BigDecimal prepaidValue) {
+        BigDecimal unpaidInvoiceValue = invoice.getValue().subtract(prepaidValue).setScale(2, BigDecimal.ROUND_HALF_UP);
+        if (unpaidInvoiceValue.signum() < 0) {
+            throw new IllegalStateException("Invoice prepaid value can't be greater than invoice value");
+        } else  if (unpaidInvoiceValue.signum() == 0) {
+            invoice.setProcessed(true);
+        }
         invoice.setPrepaidValue(invoice.getPrepaidValue().add(prepaidValue));
 
         LOGGER.info("Invoice with id: " + invoice.getId() + " prepaid value was updated to: " + prepaidValue);

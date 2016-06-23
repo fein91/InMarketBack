@@ -6,7 +6,7 @@ import com.fein91.model.OrderType;
 import java.math.BigDecimal;
 
 public class Order {
-	private final long id;
+	private final Long id;
 	private long timestamp;
 	private OrderType orderType;
 	private BigDecimal quantity;
@@ -18,11 +18,11 @@ public class Order {
 	private Order prevOrder;
 	private OrderList oL;
 	
-	public Order(long id, long time, OrderType orderType, BigDecimal quantity, long takerId, OrderSide orderSide) {
+	public Order(Long id, long time, OrderType orderType, BigDecimal quantity, long takerId, OrderSide orderSide) {
 		this(id, time, orderType, quantity, takerId, orderSide, null);
 	}	
 	
-	public Order(long id, long time, OrderType orderType, BigDecimal quantity,
+	public Order(Long id, long time, OrderType orderType, BigDecimal quantity,
 				long takerId, OrderSide orderSide, Double price) {
 
 		this.id = id;
@@ -48,7 +48,7 @@ public class Order {
 	
 	public String toString() {
         return quantity + "\t@\t" + Double.toString(price) +
-				"\tid=" + Long.toString(id) +
+				(id != null ? "\tid=" + Long.toString(id) : "") +
         		"\tt=" + Long.toString(timestamp) +
         		"\tqId=" + Integer.toString(qId) +
         		"\ttakerId=" + Long.toString(takerId);
@@ -128,7 +128,7 @@ public class Order {
 		this.oL = oL;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 }

@@ -11,16 +11,15 @@ import com.fein91.dao.OrderRequestRepository;
 import com.fein91.model.*;
 import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.rest.exception.OrderRequestProcessingException;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Service("OrderRequestServiceImpl")
@@ -79,9 +78,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     @Override
     @Transactional
     public OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
-        LOGGER.info("Order request to save: " + orderRequest);
-        orderRequestRepository.save(orderRequest);
-
         OrderBook lob = orderBookBuilder.getInstance();
         for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
@@ -90,8 +86,21 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         OrderResult result = lobService.addOrder(lob, orderRequest);
         BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
         if (unsatisfiedDemand.signum() > 0) {
-            //TODO fix it, there should be no order if there is no invoices
-            updateOrderRequest(orderRequest.getId(), unsatisfiedDemand);
+            if (OrderType.LIMIT == orderRequest.getOrderType()) {
+                orderRequest.setQuantity(unsatisfiedDemand);
+                orderRequestRepository.save(orderRequest);
+            } else {
+                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+                        .date(orderRequest.getDate())
+                        .orderSide(orderRequest.getOrderSide())
+                        .orderType(OrderType.LIMIT)
+                        .price(result.getApr())
+                        .quantity(unsatisfiedDemand)
+                        .build();
+                //it's needed here to validate if we can add this order
+                findLimitOrderRequestsToTrade(limitOrderRequest);
+                orderRequestRepository.save(limitOrderRequest);
+            }
         }
         return result;
     }
@@ -104,7 +113,24 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
-        return lobService.addOrder(lob, orderRequest);
+        OrderResult result = lobService.addOrder(lob, orderRequest);
+        BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
+        if (unsatisfiedDemand.signum() > 0) {
+            if (OrderType.LIMIT == orderRequest.getOrderType()) {
+                orderRequest.setQuantity(unsatisfiedDemand);
+                findLimitOrderRequestsToTrade(orderRequest);
+            } else {
+                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+                        .date(orderRequest.getDate())
+                        .orderSide(orderRequest.getOrderSide())
+                        .orderType(OrderType.LIMIT)
+                        .price(result.getApr())
+                        .quantity(unsatisfiedDemand)
+                        .build();
+                findLimitOrderRequestsToTrade(limitOrderRequest);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -123,6 +149,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         Set<Counterparty> counterparties = new HashSet<>();
         Set<OrderRequest> orderRequests = new HashSet<>();
         BigDecimal invoicesSum = BigDecimal.ZERO;
+        BigDecimal discountsSum = BigDecimal.ZERO;
         for (Invoice invoice : invoices) {
             Counterparty giver = OrderSide.BID == orderSide
                     ? invoice.getTarget()
@@ -132,17 +159,37 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
             }
             invoicesSum = invoicesSum.add(invoice.getValue());
+            if (OrderType.LIMIT == orderRequest.getOrderType()) {
+                discountsSum = discountsSum.add(calculateDiscount(orderRequest.getPrice(), getDaysToPayment(invoice.getPaymentDate())));
+            }
         }
 
         if (OrderType.MARKET == orderRequest.getOrderType() && CollectionUtils.isEmpty(orderRequests)) {
             throw new OrderRequestProcessingException("No suitable order requests were found");
         }
-        if (orderRequest.getQuantity().compareTo(invoicesSum) > 0) {
+        BigDecimal availableOrderAmount = invoicesSum.subtract(discountsSum);
+        if (orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
             throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity()
-                    + " is greater than invoices sum: " + invoicesSum);
+                    + " is greater than available quantity = invoices - discounts: " + availableOrderAmount);
         }
 
         return orderRequests;
+    }
+
+    private BigDecimal calculateDiscount(BigDecimal apr, int daysToPayment) {
+        //double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
+        return apr.multiply(BigDecimal.valueOf(daysToPayment))
+                .divide(BigDecimal.valueOf(365), 10, BigDecimal.ROUND_HALF_UP)
+                .divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP);
+    }
+
+    private int getDaysToPayment(Date paymentDate) {
+        DateTime paymentDT = new DateTime(paymentDate);
+        DateTime currDT = new DateTime();
+        Days daysBetween = Days.daysBetween(currDT.toLocalDate(), paymentDT.toLocalDate());
+        int daysToPayment = daysBetween.getDays();
+        LOGGER.info("Days to payment date left: " + daysToPayment);
+        return daysToPayment;
     }
 
     @Override

@@ -226,7 +226,7 @@ public class OrderBook {
                         qtyTraded = qtyTraded.add(qtyTradedByCurrentInvoice);
                         discountValue = qtyTraded.multiply(discountPercent);
 
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
+                        invoiceService.updateInvoice(currentInvoice, qtyTradedByCurrentInvoice.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTradedByCurrentInvoice);
                         if (side == OrderSide.ASK) {
@@ -242,7 +242,7 @@ public class OrderBook {
                         qtyTradedByCurrentInvoice = localOrderQty;
                         qtyTraded = qtyTraded.add(qtyTradedByCurrentInvoice);
                         discountValue = qtyTraded.multiply(discountPercent);
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
+                        invoiceService.updateInvoice(currentInvoice, qtyTradedByCurrentInvoice.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTradedByCurrentInvoice);
                         if (side == OrderSide.ASK) {
@@ -260,7 +260,7 @@ public class OrderBook {
                         qtyTradedByCurrentInvoice = localOrderQty;
                         qtyTraded = qtyTraded.add(qtyTradedByCurrentInvoice);
                         discountValue = qtyTraded.multiply(discountPercent);
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
+                        invoiceService.updateInvoice(currentInvoice, qtyTradedByCurrentInvoice.add(discountValue));
 
                         if (side == OrderSide.ASK) {
                             this.bids.removeOrderByID(headOrder.getqId());
@@ -275,7 +275,7 @@ public class OrderBook {
                         qtyTradedByCurrentInvoice = qtyRemaining;
                         qtyTraded = qtyTraded.add(qtyTradedByCurrentInvoice);
                         discountValue = qtyTraded.multiply(discountPercent);
-                        invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
+                        invoiceService.updateInvoice(currentInvoice, qtyTradedByCurrentInvoice.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTradedByCurrentInvoice);
                         if (side == OrderSide.ASK) {
@@ -291,7 +291,6 @@ public class OrderBook {
                     throw new IllegalStateException("Shouldn't be here");
                 }
 
-                currentInvoice.setProcessed(true);
                 invoicesSum = invoicesSum.add(currentInvoice.getValue());
                 discountSum = discountSum.add(discountValue);
                 sumInvoicesDaysToPaymentMultQtyTraded = sumInvoicesDaysToPaymentMultQtyTraded.add(
@@ -318,6 +317,7 @@ public class OrderBook {
         return qtyRemaining;
     }
 
+    @Deprecated
     private BigDecimal calculateDiscount(BigDecimal apr, int daysToPayment) {
         //double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
         return apr.multiply(BigDecimal.valueOf(daysToPayment))
@@ -325,6 +325,7 @@ public class OrderBook {
                 .divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP);
     }
 
+    @Deprecated
     private int getDaysToPayment(Date paymentDate) {
         DateTime paymentDT = new DateTime(paymentDate);
         DateTime currDT = new DateTime();
