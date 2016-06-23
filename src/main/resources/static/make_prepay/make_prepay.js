@@ -6,21 +6,22 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 		});
 	}])
 
-	.controller('MarketBidCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', function($scope, $rootScope, $uibModal, orderRequestsService, invoices) {
-		console.log('MarketBidCtrl inited');
+	.controller('MarketAskCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', function($scope, $rootScope, $uibModal, orderRequestsService, invoices) {
+		console.log('MarketAskCtrl inited');
 
-		$scope.bidQty = '';
-		$scope.bidApr = '';
+		$scope.askQty = '';
+		$scope.askApr = '';
+		$scope.satisfiedAskQty = '';
 		$scope.demandSatisfied = true;
 		$scope.calculationCalled = false;
 		$scope.calculatedWithError = true;
 		$scope.calculationErrorMsg = false;
 
-		$scope.calculateBidMarketOrder = function() {
-			if ($scope.bidQty) {
+		$scope.calculateAskMarketOrder = function() {
+			if ($scope.askQty) {
 				$scope.calculationCalled = true;
 				var orderRequest = {
-					"quantity" : $scope.bidQty,
+					"quantity" : $scope.askQty,
 					"orderSide" : 0,
 					"orderType" : 1,
 					"counterparty" : {
@@ -33,9 +34,9 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 					.then(function successCallback(response){
 						var orderResult = response.data;
 						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.bidApr = orderResult.apr;
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-						if ($scope.bidQty > $scope.satisfiedBidQty) {
+						$scope.askApr = orderResult.apr;
+						$scope.satisfiedAskQty = orderResult.satisfiedDemand;
+						if ($scope.askQty > $scope.satisfiedAskQty) {
 							$scope.demandSatisfied = false;
 						}
 
@@ -57,7 +58,7 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 				resolve: {
 					orderRequest: function () {
 						return {
-							"quantity" : $scope.bidQty,
+							"quantity" : $scope.askQty,
 							"orderSide" : 0,
 							"orderType" : 1,
 							"counterparty" : {
@@ -71,8 +72,9 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 		};
 
 		$scope.reset = function() {
-			$scope.bidQty = '';
-			$scope.bidApr = '';
+			$scope.askQty = '';
+			$scope.askApr = '';
+			$scope.satisfiedAskQty = '';
 			$scope.demandSatisfied = true;
 			$scope.calculatedWithError = true;
 			$scope.calculationErrorMsg = '';
@@ -80,20 +82,21 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 		};
 	}])
 
-	.controller('LimitBidCtrl', ['$scope', '$uibModal', 'orderRequestsService', function($scope, $uibModal, orderRequestsService) {
-		console.log('LimitBidCtrl inited');
-		$scope.bidQty = '';
-		$scope.bidApr = '';
+	.controller('LimitAskCtrl', ['$scope', '$uibModal', 'orderRequestsService', function($scope, $uibModal, orderRequestsService) {
+		console.log('LimitAskCtrl inited');
+		$scope.askQty = '';
+		$scope.askApr = '';
+		$scope.satisfiedAskQty = '';
 		$scope.calculationCalled = false;
 		$scope.calculatedWithError = true;
 		$scope.calculationErrorMsg = false;
 
-		$scope.calculateLimitBidOrder = function() {
-			if ($scope.bidQty && $scope.bidApr) {
+		$scope.calculateLimitAskOrder = function() {
+			if ($scope.askQty && $scope.askApr) {
 				$scope.calculationCalled = true;
 				var orderRequest = {
-					"price" : $scope.bidApr,
-					"quantity" : $scope.bidQty,
+					"price" : $scope.askApr,
+					"quantity" : $scope.askQty,
 					"orderSide" : 0,
 					"orderType" : 0,
 					"counterparty" : {
@@ -106,8 +109,8 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 					.then(function successCallback(response){
 						var orderResult = response.data;
 						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-						if ($scope.bidQty > $scope.satisfiedBidQty) {
+						$scope.satisfiedAskQty = orderResult.satisfiedDemand;
+						if ($scope.askQty > $scope.satisfiedAskQty) {
 							$scope.demandSatisfied = false;
 						}
 
@@ -129,8 +132,8 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 				resolve: {
 					orderRequest: function () {
 						return {
-							"price" : $scope.bidApr,
-							"quantity" : $scope.bidQty,
+							"price" : $scope.askApr,
+							"quantity" : $scope.askQty,
 							"orderSide" : 0,
 							"orderType" : 0,
 							"counterparty" : {
@@ -144,8 +147,9 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 		};
 
 		$scope.reset = function() {
-			$scope.bidQty = '';
-			$scope.bidApr = '';
+			$scope.askQty = '';
+			$scope.askApr = '';
+			$scope.satisfiedAskQty = '';
 			$scope.calculatedWithError = true;
 			$scope.calculationErrorMsg = '';
 			$scope.calculationCalled = false;
