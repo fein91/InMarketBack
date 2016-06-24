@@ -7,6 +7,8 @@ import com.fein91.model.OrderType;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OrderRequestBuilder {
 
@@ -20,6 +22,7 @@ public class OrderRequestBuilder {
     Date date;
     OrderSide orderSide;
     OrderType orderType;
+    Map<Long, Boolean> invoicesChecked = new HashMap<>();
 
     public OrderRequestBuilder price(BigDecimal price) {
         this.price = price;
@@ -46,6 +49,11 @@ public class OrderRequestBuilder {
         return this;
     }
 
+    public OrderRequestBuilder invoicesChecked(Map<Long, Boolean> invoicesChecked) {
+        this.invoicesChecked = invoicesChecked;
+        return this;
+    }
+
     public OrderRequest build() {
         if (orderType == OrderType.LIMIT && price == null) {
             throw new IllegalStateException("Can't build limit order without price");
@@ -58,6 +66,7 @@ public class OrderRequestBuilder {
         orderRequest.setOrderType(orderType);
         orderRequest.setPrice(price);
         orderRequest.setQuantity(quantity);
+        orderRequest.setInvoicesChecked(invoicesChecked);
         return orderRequest;
     }
 }

@@ -27,7 +27,8 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 					"counterparty" : {
 						"id" : 11,
 						"name" : "supplyer"
-					}
+					},
+					"invoicesChecked" :  invoices.supplierInvoicesCheckboxes.invoices
 				};
 
 				orderRequestsService.calculate(orderRequest)
@@ -82,7 +83,7 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 		};
 	}])
 
-	.controller('LimitAskCtrl', ['$scope', '$uibModal', 'orderRequestsService', function($scope, $uibModal, orderRequestsService) {
+	.controller('LimitAskCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'invoices', function($scope, $uibModal, orderRequestsService, invoices) {
 		console.log('LimitAskCtrl inited');
 		$scope.askQty = '';
 		$scope.askApr = '';
@@ -102,7 +103,8 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 					"counterparty" : {
 						"id" : 11,
 						"name" : "supplyer"
-					}
+					},
+					"invoicesChecked" :  invoices.supplierInvoicesCheckboxes.invoices
 				};
 
 				orderRequestsService.calculate(orderRequest)
