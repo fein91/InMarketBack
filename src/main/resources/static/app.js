@@ -22,11 +22,30 @@ angular.module('inmarket', [
   $routeProvider.otherwise({redirectTo: '/contragents'})
   .when('/support', {
     templateUrl: 'support/support.html'
-  });
+  })
+  .when('/importExcelFile', {
+    templateUrl: 'import/import.html'
+   })
+    ;
 }])
 
 .controller('HeaderController', ['$scope', '$location', function($scope, $location) {
 	$scope.isActive = function (viewLocation) { 
         return viewLocation === $location.path();
     };
+}])
+
+.controller('uploadCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.uploadFile = function(files) {
+        var fd = new FormData();
+        //Take the first selected file
+        fd.append("file", files[0]);
+
+        $http.post('upload', fd, {
+            withCredentials: true,
+            headers: {'Content-Type': undefined },
+            transformRequest: angular.identity
+        });
+
+    }
 }]);

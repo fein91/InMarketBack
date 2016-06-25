@@ -1,0 +1,5 @@
+<div class="row page-content">
+    <div ng-controller="uploadCtrl">
+        <input type="file" name="file" accept=".xlsx" onchange="angular.element(this).scope().uploadFile(this.files)"/>
+    </div>
+</div>
