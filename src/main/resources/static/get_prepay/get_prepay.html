@@ -30,30 +30,30 @@
 		<uib-tab index="1" heading="Рыночная заявка">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<form name="askMarketForm" ng-controller="AskMarketCtrl">
+					<form name="bidMarketForm" ng-controller="BidMarketCtrl">
 						<div class="form-group form-inline">
 							<label>Заказать предоплаты на сумму: </label>
-							<input ng-model="askQty" type="number" min="0" class="form-control" placeholder="Сумма" required>
+							<input ng-model="bidQty" type="number" min="0" class="form-control" placeholder="Сумма" required>
 						</div>
 						<div>
 							<p>В данный момент вы можете получить предоплату на эту сумму со следующими параметрами:</br>
-								APR={{askApr}}</br>
-								средний % скидки=</br>
-								общая сумму скидок будет составлять=
+								APR={{bidApr}}</br>
+								средний % скидки={{avgDiscountPerc}}</br>
+								общая сумму скидок будет составлять={{discountSum}}</br>
+								средний срок оплаты={{avgDaysToPayment}} дней
 							</p>
 						</div>
 						<div ng-hide="demandSatisfied" class="alert alert-info alert-dismissable">
 							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-							В данный момент ваши покупатели готовы сделать предоплату только на сумму= грн. под APR=
-							Остаток ( грн) будет размещен по APR=
+							В данный момент ваши покупатели готовы сделать предоплату только на сумму={{satisfiedBidQty}} грн.
+							Остаток ({{bidQty - satisfiedBidQty}} грн) будет размещен по APR={{bidApr}}
 						</div>
-						<div ng-show="noCounterparties" class="alert alert-warning alert-dismissable">
-							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-							К сожалению, в данный момент нет контрагентов, желающих делать предоплаты. Предлагаем воспользоваться отложенным исполнением по последней рыночной цене APR=
+						<div class="alert alert-warning alert-dismissable" ng-show="calculationCalled && calculatedWithError">
+							{{calculationErrorMsg}}
 						</div>
-						<button type="submit" ng-click="submitMarketAskOrder()" class="btn btn-default">Подтвердить</button>
-						<button type="reset" class="btn btn-default">Сбросить</button>
-						<button type="submit" ng-click="calculateMarketAskOrder()" class="btn btn-default">Пересчитать</button>
+						<button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
+						<button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>
+						<button type="submit" ng-click="calculateMarketBidOrder()" class="btn btn-default">Пересчитать</button>
 					</form>
 				</div>
 			</div>
@@ -61,20 +61,20 @@
 		<uib-tab index="2" heading="Отложенная заявка">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<form name="askLimitForm" ng-controller="AskLimitCtrl">
+					<form name="bidLimitForm" ng-controller="BidLimitCtrl">
 						<div class="form-group form-inline">
 							<label>Введите желаемый APR: </label>
-							<input name="apr" ng-model="apr" type="number" min="0" max="99" class="form-control" placeholder="Процент" required>
+							<input name="bidApr" ng-model="bidApr" type="number" min="0" max="99" class="form-control" placeholder="Процент" required>
 						</div>
 						<div class="form-group form-inline">
-							<label>Введите желаемую сумму для осуществления предоплаты: </label>
-							<input name="askQty" ng-model="askQty" type="number" min="0" class="form-control" placeholder="Сумма" required>
+							<label>Введите желаемую сумму для получения предоплаты: </label>
+							<input name="bidQty" ng-model="bidQty" type="number" min="0" class="form-control" placeholder="Сумма" required>
 						</div>
 						<div>
-							<p>По заданному APR к моментальному исполнению подлежит сумма .</p>
+							<p>По заданному APR к моментальному исполнению подлежит сумма: {{satisfiedBidQty}} грн.</p>
 						</div>
-						<div class="alert alert-warning alert-dismissable" ng-show="!askLimitForm.$valid">
-							Для расчета заявки необходимо заполнить все обязательные поля
+						<div class="alert alert-warning alert-dismissable" ng-show="calculationCalled && calculatedWithError">
+							{{calculationErrorMsg}}
 						</div>
 						<div class="row">
 							<div class="col-xs-4">
@@ -83,9 +83,9 @@
 								</canvas>
 							</div>
 						</div>
-						<button type="submit" ng-click="" class="btn btn-default">Подтвердить</button>
-						<button type="reset" class="btn btn-default">Сбросить</button>
-						<button type="submit" ng-click="" class="btn btn-default">Пересчитать</button>
+						<button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError" class="btn btn-default">Подтвердить</button>
+						<button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>
+						<button type="submit" ng-click="calculateLimitBidOrder()" class="btn btn-default">Пересчитать</button>
 					</form>
 				</div>
 			</div>

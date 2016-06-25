@@ -1,4 +1,6 @@
+#ignore list idea
+.idea/
+out/
+*.iml
 *.class
-.idea/*
-InMarket.iml
 target/

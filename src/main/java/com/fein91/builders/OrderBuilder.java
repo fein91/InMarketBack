@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 
 public class OrderBuilder {
 
-    public OrderBuilder(long id) {
+    public OrderBuilder(Long id) {
         this.id = id;
     }
 
-    private final long id;
+    private final Long id;
     private long timestamp;
     private long takerId;
     private OrderType orderType;
@@ -52,7 +52,7 @@ public class OrderBuilder {
 
     public Order build() {
         return OrderType.LIMIT == orderType
-                ? new Order(id, timestamp, orderType, quantity.intValue(), takerId, orderSide, price.doubleValue())
-                : new Order(id, timestamp, orderType, quantity.intValue(), takerId, orderSide);
+                ? new Order(id, timestamp, orderType, quantity, takerId, orderSide, price.doubleValue())
+                : new Order(id, timestamp, orderType, quantity, takerId, orderSide);
     }
 }

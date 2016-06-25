@@ -25,6 +25,7 @@
         <guava.version>19.0</guava.version>
         <poi.version>3.14</poi.version>
         <poi-ooxml.version>3.14</poi-ooxml.version>
+        <joda-time.version>2.9.4</joda-time.version>
     </properties>
 
     <dependencies>
@@ -76,6 +77,12 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi-ooxml.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
         </dependency>
     </dependencies>
 

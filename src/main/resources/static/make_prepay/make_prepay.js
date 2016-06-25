@@ -1,25 +1,27 @@
-angular.module('inmarket.make_prepay', ['ngRoute'])
+angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider.when('/make_prepay', {
-			templateUrl: 'make_prepay/make_prepay.html',
-			controller: 'MakePrepayCtrl'
+			templateUrl: 'make_prepay/make_prepay.html'
 		});
 	}])
 
-	.controller('MarketBidCtrl', ['$scope', '$rootScope', 'orderRequestsService', 'invoices', function($scope, $rootScope, orderRequestsService, invoices) {
-		console.log('MarketBidCtrl inited');
+	.controller('MarketAskCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', function($scope, $rootScope, $uibModal, orderRequestsService, invoices) {
+		console.log('MarketAskCtrl inited');
 
-		$scope.bidQty = '';
-		$scope.bidApr = '';
+		$scope.askQty = '';
+		$scope.askApr = '';
+		$scope.satisfiedAskQty = '';
 		$scope.demandSatisfied = true;
-		$scope.noCounterparties = false;
+		$scope.calculationCalled = false;
+		$scope.calculatedWithError = true;
+		$scope.calculationErrorMsg = false;
 
-		$scope.calculateBidMarketOrder = function() {
-			if ($scope.bidQty) {
+		$scope.calculateAskMarketOrder = function() {
+			if ($scope.askQty) {
+				$scope.calculationCalled = true;
 				var orderRequest = {
-					"id" : 123456789,
-					"quantity" : $scope.bidQty,
+					"quantity" : $scope.askQty,
 					"orderSide" : 0,
 					"orderType" : 1,
 					"counterparty" : {
@@ -32,69 +34,69 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 					.then(function successCallback(response){
 						var orderResult = response.data;
 						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.bidApr = orderResult.apr;
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-						if ($scope.bidQty > $scope.satisfiedBidQty) {
+						$scope.askApr = orderResult.apr;
+						$scope.satisfiedAskQty = orderResult.satisfiedDemand;
+						if ($scope.askQty > $scope.satisfiedAskQty) {
 							$scope.demandSatisfied = false;
 						}
 
+						$scope.calculatedWithError = false;
 					}, function errorCallback(response) {
 						console.log('got ' + response.status + ' error');
+						$scope.calculatedWithError = true;
+						$scope.calculationErrorMsg = response.data.message;
 					});
 			}
 		};
 
-		$scope.submitBidMarketOrder = function() {
-			if ($scope.bidQty) {
-				var orderRequest = {
-					"id" : 123456789,
-					"quantity" : $scope.bidQty,
-					"orderSide" : 0,
-					"orderType" : 1,
-					"counterparty" : {
-						"id" : 11,
-						"name" : "supplyer"
+		$scope.openConfirmation = function() {
+			var modalInstance = $uibModal.open({
+				animation: true,
+				templateUrl: 'make_prepay/orderRequestConfirmPopup.html',
+				controller: 'OrderRequestConfirmPopupCtrl',
+				size: 'sm',
+				resolve: {
+					orderRequest: function () {
+						return {
+							"quantity" : $scope.askQty,
+							"orderSide" : 0,
+							"orderType" : 1,
+							"counterparty" : {
+								"id" : 11,
+								"name" : "supplyer"
+							}
+						};
 					}
-				};
-
-				orderRequestsService.process(orderRequest)
-					.then(function successCallback(response){
-						var orderResult = response.data;
-						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.bidApr = orderResult.apr;
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-						if ($scope.bidQty > $scope.satisfiedBidQty) {
-							$scope.demandSatisfied = false;
-						}
-
-						$rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
-						$rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
-
-					}, function errorCallback(response) {
-						console.log('got ' + response.status + ' error');
-					});
-			}
+				}
+			});
 		};
 
 		$scope.reset = function() {
-			$scope.bidQty = '';
-			$scope.bidApr = '';
+			$scope.askQty = '';
+			$scope.askApr = '';
+			$scope.satisfiedAskQty = '';
 			$scope.demandSatisfied = true;
-			$scope.noCounterparties = false;
+			$scope.calculatedWithError = true;
+			$scope.calculationErrorMsg = '';
+			$scope.calculationCalled = false;
 		};
 	}])
 
-	.controller('LimitBidCtrl', ['$scope', 'orderRequestsService', function($scope, orderRequestsService) {
-		console.log('LimitBidCtrl inited');
-		$scope.bidQty = '';
-		$scope.bidApr = '';
+	.controller('LimitAskCtrl', ['$scope', '$uibModal', 'orderRequestsService', function($scope, $uibModal, orderRequestsService) {
+		console.log('LimitAskCtrl inited');
+		$scope.askQty = '';
+		$scope.askApr = '';
+		$scope.satisfiedAskQty = '';
+		$scope.calculationCalled = false;
+		$scope.calculatedWithError = true;
+		$scope.calculationErrorMsg = false;
 
-		$scope.calculateLimitBidOrder = function() {
-			if ($scope.bidQty && $scope.bidApr) {
+		$scope.calculateLimitAskOrder = function() {
+			if ($scope.askQty && $scope.askApr) {
+				$scope.calculationCalled = true;
 				var orderRequest = {
-					"id" : 123456789,
-					"price" : $scope.bidApr,
-					"quantity" : $scope.bidQty,
+					"price" : $scope.askApr,
+					"quantity" : $scope.askQty,
 					"orderSide" : 0,
 					"orderType" : 0,
 					"counterparty" : {
@@ -107,45 +109,57 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 					.then(function successCallback(response){
 						var orderResult = response.data;
 						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
+						$scope.satisfiedAskQty = orderResult.satisfiedDemand;
+						if ($scope.askQty > $scope.satisfiedAskQty) {
+							$scope.demandSatisfied = false;
+						}
 
+						$scope.calculatedWithError = false;
 					}, function errorCallback(response) {
 						console.log('got ' + response.status + ' error');
+						$scope.calculatedWithError = true;
+						$scope.calculationErrorMsg = response.data.message;
 					});
 			}
-		}
+		};
 
-		$scope.submitLimitBidOrder = function() {
-			if ($scope.bidQty && $scope.bidApr) {
-				var orderRequest = {
-					"id" : 123456789,
-					"price" : $scope.bidApr,
-					"quantity" : $scope.bidQty,
-					"orderSide" : 0,
-					"orderType" : 0,
-					"counterparty" : {
-						"id" : 11,
-						"name" : "supplyer"
+		$scope.openConfirmation = function() {
+			var modalInstance = $uibModal.open({
+				animation: true,
+				templateUrl: 'make_prepay/orderRequestConfirmPopup.html',
+				controller: 'OrderRequestConfirmPopupCtrl',
+				size: 'sm',
+				resolve: {
+					orderRequest: function () {
+						return {
+							"price" : $scope.askApr,
+							"quantity" : $scope.askQty,
+							"orderSide" : 0,
+							"orderType" : 0,
+							"counterparty" : {
+								"id" : 11,
+								"name" : "supplyer"
+							}
+						};
 					}
-				};
+				}
+			});
+		};
 
-				orderRequestsService.process(orderRequest)
-					.then(function successCallback(response){
-						var orderResult = response.data;
-						console.log('order result: ' + JSON.stringify(orderResult));
-						$scope.satisfiedBidQty = orderResult.satisfiedDemand;
-
-					}, function errorCallback(response) {
-						console.log('got ' + response.status + ' error');
-					});
-			}
-		}
+		$scope.reset = function() {
+			$scope.askQty = '';
+			$scope.askApr = '';
+			$scope.satisfiedAskQty = '';
+			$scope.calculatedWithError = true;
+			$scope.calculationErrorMsg = '';
+			$scope.calculationCalled = false;
+		};
 
 	}])
 
 
-	.controller('MakePrepayCtrl', ['$scope', function($scope) {
-		console.log('MakePrepayCtrl inited');
+	.controller('MakePrepayHistoryChartCtrl', ['$scope', function($scope) {
+		console.log('MakePrepayHistoryChartCtrl inited');
 
 		$scope.maxPrice = 700;
 		$scope.minPrice = 300;
