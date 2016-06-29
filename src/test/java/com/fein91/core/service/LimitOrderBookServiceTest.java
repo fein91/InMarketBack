@@ -588,17 +588,19 @@ public class LimitOrderBookServiceTest {
     * s2 25 300
     * b1 ask market order == 350
     * */
-    @Test
-    public void testOrderWithDiscounts1() throws Exception {
+    //TODO fix this NPE
+     @Test
+    public void testOrderWithSomeUncheckedInvoices() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
 
         Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(60)));
-        Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, getCurrentDayPlusDays(15)));
+        Invoice invoice1S2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, getCurrentDayPlusDays(15)));
+        Invoice invoice2S2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, getCurrentDayPlusDays(15)));
 
         OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
-                .quantity(BigDecimal.valueOf(190))
+                .quantity(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(26))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
@@ -606,7 +608,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.processOrderRequest(bidOrderRequest1);
 
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
-                .quantity(BigDecimal.valueOf(290))
+                .quantity(BigDecimal.valueOf(250))
                 .price(BigDecimal.valueOf(25))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
@@ -616,7 +618,7 @@ public class LimitOrderBookServiceTest {
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
                 .orderSide(OrderSide.ASK)
-                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true))
+                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoice1S2B.getId(), true, invoice2S2B.getId(), false))
                 .orderType(OrderType.MARKET)
                 .build();
 
