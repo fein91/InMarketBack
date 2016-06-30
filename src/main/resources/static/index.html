@@ -53,7 +53,7 @@
                 </ul>
             </div>
         </div>
-        <div ng-show="authenticated" class="container-fluid proposal-bar">
+        <div class="container-fluid proposal-bar">
             <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
                 <div class="col-lg-3">Можно предоплатить поставщикам: {{supplier_invoices_sum}};</div>
                 <div class="col-lg-3">Можно запросить у покупателей: {{buyer_invoices_sum}};</div>
@@ -63,9 +63,9 @@
         </div>
     </nav>
 
-    <div ng-show="authenticated" class="container-fluid">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-3 col-md-2 sidebar">
+            <div ng-show="authenticated" class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar" ng-controller="HeaderController">
                     <li ng-class="{ active: isActive('/contragents')}"><a href="#/contragents">Мои контракты <span
                             class="sr-only">(current)</span></a></li>
@@ -84,7 +84,6 @@
         </div>
     </div>
 </div>
-<div ng-view class="container"></div>
 
 
 <!--Bootstrap core CSS-->
