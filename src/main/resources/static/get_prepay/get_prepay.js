@@ -26,7 +26,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 					"counterparty" : {
 						"id" : 11,
 						"name" : "test"
-					}
+					},
+					"invoicesChecked" :  invoices.buyerInvoicesCheckboxes.invoices
 				};
 
 				orderRequestsService.calculate(orderRequest)
@@ -126,7 +127,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 
 	}])
 
-	.controller('BidLimitCtrl', ['$scope', '$uibModal', 'orderRequestsService', function($scope, $uibModal, orderRequestsService) {
+	.controller('BidLimitCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'invoices', function($scope, $uibModal, orderRequestsService, invoices) {
 		console.log('BidLimitCtrl inited');
 
 		self = this;
@@ -148,7 +149,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 					"counterparty" : {
 						"id" : 11,
 						"name" : "supplyer"
-					}
+					},
+					"invoicesChecked" :  invoices.buyerInvoicesCheckboxes.invoices
 				};
 
 				orderRequestsService.calculate(orderRequest)
