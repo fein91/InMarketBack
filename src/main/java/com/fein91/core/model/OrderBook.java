@@ -185,14 +185,14 @@ public class OrderBook {
         long buyer, seller;
         long takerId = quote.getTakerId();
         long time = quote.getTimestamp();
-        Iterator<Order> iter = orders.iterator();
-        while ((orders.getLength() > 0) && (qtyRemaining.signum() > 0) && iter.hasNext()) {
+        Iterator<Order> ordersIter = orders.iterator();
+        while ((orders.getLength() > 0) && (qtyRemaining.signum() > 0) && ordersIter.hasNext()) {
             BigDecimal qtyTraded = BigDecimal.ZERO;
             BigDecimal discountSum = BigDecimal.ZERO;
             BigDecimal invoicesSum = BigDecimal.ZERO;
             BigDecimal sumInvoicesDaysToPaymentMultQtyTraded = BigDecimal.ZERO;
 
-            Order headOrder = iter.next();
+            Order headOrder = ordersIter.next();
             log.info("Head order is processing: " + headOrder.getId());
 
             List<Invoice> invoices = side == OrderSide.ASK
@@ -264,9 +264,13 @@ public class OrderBook {
 
                         if (side == OrderSide.ASK) {
                             this.bids.removeOrderByID(headOrder.getqId());
+                            //TODO implement
+                            //ordersIter.remove();
                             orderRequestService.removeOrderRequest(headOrder.getId());
                         } else {
                             this.asks.removeOrderByID(headOrder.getqId());
+                            //TODO implement 
+                            //ordersIter.remove();
                             orderRequestService.removeOrderRequest(headOrder.getId());
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);

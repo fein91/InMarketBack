@@ -6,6 +6,8 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by olta1014 on 23.05.2016.
@@ -30,6 +32,9 @@ public class OrderRequest {
     int orderSide;
 
     int orderType;
+
+    @Transient
+    Map<Long, Boolean> invoicesChecked;
 
     public Long getId() {
         return id;
@@ -85,6 +90,14 @@ public class OrderRequest {
 
     public void setOrderType(OrderType orderType) {
         this.orderType = orderType.getId();
+    }
+
+    public Map<Long, Boolean> getInvoicesChecked() {
+        return invoicesChecked;
+    }
+
+    public void setInvoicesChecked(Map<Long, Boolean> invoicesChecked) {
+        this.invoicesChecked = invoicesChecked;
     }
 
     @Override
