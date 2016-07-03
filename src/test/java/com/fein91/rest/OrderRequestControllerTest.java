@@ -37,7 +37,7 @@ public class OrderRequestControllerTest {
 
     @Test
     public void process() throws OrderRequestException {
-        expect(serviceMock.processOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
+        expect(serviceMock.process(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
 
@@ -54,7 +54,7 @@ public class OrderRequestControllerTest {
 
     @Test
     public void calculate() throws OrderRequestException {
-        expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
+        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
 
@@ -70,7 +70,7 @@ public class OrderRequestControllerTest {
 
     @Test(expected = OrderRequestException.class)
     public void processWithException() throws OrderRequestException {
-        expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
+        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
 
@@ -79,7 +79,7 @@ public class OrderRequestControllerTest {
 
     @Test(expected = OrderRequestException.class)
     public void calculateWithException() throws OrderRequestException {
-        expect(serviceMock.calculateOrderRequest(anyObject(OrderRequest.class))).andReturn(null);
+        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
 
         replay(serviceMock);
 

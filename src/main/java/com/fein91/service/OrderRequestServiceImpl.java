@@ -14,6 +14,7 @@ import com.fein91.rest.exception.OrderRequestProcessingException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -32,17 +33,21 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     private final LimitOrderBookService lobService;
     private final OrderBookBuilder orderBookBuilder;
     private final CounterPartyService counterPartyService;
+    private final HistoryOrderRequestService historyOrderRequestService;
 
     @Autowired
     public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository,
                                    InvoiceRepository invoiceRepository,
                                    LimitOrderBookService lobService,
-                                   OrderBookBuilder orderBookBuilder, CounterPartyService counterPartyService) {
+                                   OrderBookBuilder orderBookBuilder,
+                                   CounterPartyService counterPartyService,
+                                   @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService) {
         this.orderRequestRepository = orderRequestRepository;
         this.invoiceRepository = invoiceRepository;
         this.lobService = lobService;
         this.orderBookBuilder = orderBookBuilder;
         this.counterPartyService = counterPartyService;
+        this.historyOrderRequestService = historyOrderRequestService;
     }
 
     @Override
@@ -57,14 +62,14 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public OrderRequest saveOrderRequest(OrderRequest orderRequest) {
+    public OrderRequest save(OrderRequest orderRequest) {
         LOGGER.info("Order request to save: " + orderRequest);
         return orderRequestRepository.save(orderRequest);
     }
 
     @Override
     @Transactional
-    public OrderRequest saveOrderRequest(Order order) {
+    public OrderRequest saveOrder(Order order) {
         OrderRequest orderRequest = new OrderRequestBuilder(counterPartyService.getById(order.getTakerId()))
                 .orderSide(order.getOrderSide())
                 .orderType(order.getOrderType())
@@ -77,20 +82,27 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
+    public OrderResult process(OrderRequest orderRequest) throws OrderRequestException {
         OrderBook lob = orderBookBuilder.getInstance();
         for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
         }
 
         OrderResult result = lobService.addOrder(lob, orderRequest);
+
+        if (result.getSatisfiedDemand().signum() > 0) {
+            historyOrderRequestService
+        }
+
         BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
         if (unsatisfiedDemand.signum() > 0) {
+            OrderRequest limitOrderRequest;
             if (OrderType.LIMIT == orderRequest.getOrderType()) {
-                orderRequest.setQuantity(unsatisfiedDemand);
-                orderRequestRepository.save(orderRequest);
+                limitOrderRequest = orderRequest;
+                limitOrderRequest.setQuantity(unsatisfiedDemand);
+                orderRequestRepository.save(limitOrderRequest);
             } else {
-                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+                limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
                         .date(orderRequest.getDate())
                         .orderSide(orderRequest.getOrderSide())
                         .orderType(OrderType.LIMIT)
@@ -101,13 +113,14 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 findLimitOrderRequestsToTrade(limitOrderRequest);
                 orderRequestRepository.save(limitOrderRequest);
             }
+            historyOrderRequestService.save(historyOrderRequestService.convertFrom(limitOrderRequest));
         }
         return result;
     }
 
     @Override
     @Transactional
-    public OrderResult calculateOrderRequest(OrderRequest orderRequest) {
+    public OrderResult calculate(OrderRequest orderRequest) {
         OrderBook lob = orderBookBuilder.getStubInstance();
         for (OrderRequest limitOrderRequest : findLimitOrderRequestsToTrade(orderRequest)) {
             lobService.addOrder(lob, limitOrderRequest);
@@ -200,7 +213,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public void removeOrderRequest(Long orderId) {
+    public void removeById(Long orderId) {
         orderRequestRepository.delete(orderId);
         LOGGER.info("Order with id: " + orderId + " request was removed");
     }

@@ -3,7 +3,7 @@ package com.fein91.core.model;
 import java.math.BigDecimal;
 
 public class Trade {
-	private long timestamp;
+
 	private double price;
 	private BigDecimal qty;
 	private long provider;
@@ -11,37 +11,38 @@ public class Trade {
 	private long buyer;
 	private long seller;
 	private int orderHit;
-	private BigDecimal discountSum;
-	private BigDecimal invoicesSum;
+	private long invoiceId;
+	private BigDecimal discountValue;
+	private BigDecimal invoiceValue;
 	//TODO maybe find more suitable name
 	/**
 	 * its needed to calculate avg days left to payment date
 	 */
-	private BigDecimal sumInvoicesDaysToPaymentMultQtyTraded;
+	private BigDecimal daysToPaymentMultQtyTraded;
 	
-	public Trade(long time, double price, BigDecimal qty, BigDecimal discountSum, BigDecimal invoicesSum, BigDecimal sumInvoicesDaysToPaymentMultQtyTraded,
-				 long provider, long taker, long buyer, long seller, int orderHit) {
-		this.timestamp = time;
+	public Trade(double price, BigDecimal qty, BigDecimal discountValue, BigDecimal invoiceValue, BigDecimal daysToPaymentMultQtyTraded,
+				 long provider, long taker, long buyer, long seller, int orderHit, long invoiceId) {
 		this.price = price;
 		this.qty = qty;
-		this.discountSum = discountSum;
-		this.invoicesSum = invoicesSum;
-		this.sumInvoicesDaysToPaymentMultQtyTraded = sumInvoicesDaysToPaymentMultQtyTraded;
+		this.discountValue = discountValue;
+		this.invoiceValue = invoiceValue;
+		this.daysToPaymentMultQtyTraded = daysToPaymentMultQtyTraded;
 		this.provider = provider;
 		this.taker = taker;
 		this.buyer = buyer;
 		this.seller = seller;
 		this.orderHit = orderHit; // the qId of the order that was in the book
+		this.invoiceId = invoiceId;
 	}
 	
 	
 	@Override
 	public String toString() {
-		return ("\n| TRADE\tt= " + timestamp + 
+		return ("\n| TRADE\tt= " +
 				"\tprice = " + price +
 				"\tquantity = " + qty +
-				"\tdiscountSum = " + discountSum +
-				"\tinvoicesSum = " + invoicesSum +
+				"\tdiscountValue = " + discountValue +
+				"\tinvoiceValue = " + invoiceValue +
 				"\tProvider = " + provider +
 				"\tTaker = " + taker +
 				"\tBuyer = " + buyer +
@@ -49,21 +50,13 @@ public class Trade {
 	}
 	
 	public String toCSV() {
-		return (timestamp + ", " + 
-				price + ", " + 
+		return (price + ", " +
 				qty + ", " + 
 				provider + ", " + 
 				taker + ", " + 
 				buyer + ", " + 
 				seller + "\n");
 	}
-
-
-	public long getTimestamp() {
-		return timestamp;
-	}
-
-
 
 	public double getPrice() {
 		return price;
@@ -104,15 +97,19 @@ public class Trade {
 		return orderHit;
 	}
 
-	public BigDecimal getDiscountSum() {
-		return discountSum;
+	public BigDecimal getDiscountValue() {
+		return discountValue;
 	}
 
-	public BigDecimal getInvoicesSum() {
-		return invoicesSum;
+	public BigDecimal getInvoiceValue() {
+		return invoiceValue;
 	}
 
-	public BigDecimal getSumInvoicesDaysToPaymentMultQtyTraded() {
-		return sumInvoicesDaysToPaymentMultQtyTraded;
+	public BigDecimal getDaysToPaymentMultQtyTraded() {
+		return daysToPaymentMultQtyTraded;
+	}
+
+	public long getInvoiceId() {
+		return invoiceId;
 	}
 }

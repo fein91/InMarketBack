@@ -16,21 +16,21 @@ public interface OrderRequestService {
 
     OrderRequest getById(Long id);
 
-    OrderRequest saveOrderRequest(OrderRequest orderRequest);
+    OrderRequest save(OrderRequest orderRequest);
 
-    OrderRequest saveOrderRequest(Order order);
-
-    @Transactional
-    OrderResult processOrderRequest(OrderRequest orderRequest) throws OrderRequestException;
+    OrderRequest saveOrder(Order order);
 
     @Transactional
-    OrderResult calculateOrderRequest(OrderRequest orderRequest) throws OrderRequestException;
+    OrderResult process(OrderRequest orderRequest) throws OrderRequestException;
+
+    @Transactional
+    OrderResult calculate(OrderRequest orderRequest) throws OrderRequestException;
 
     @Transactional
     Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest);
 
     @Transactional
-    void removeOrderRequest(Long orderId);
+    void removeById(Long orderId);
 
     @Transactional
     OrderRequest updateOrderRequest(Long orderId, BigDecimal qty);

@@ -73,7 +73,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askOrderRequest1);
+        orderRequestServiceImpl.process(askOrderRequest1);
 
         double buyer2AskPrice = 28d;
         OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
@@ -82,7 +82,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askOrderRequest2);
+        orderRequestServiceImpl.process(askOrderRequest2);
 
         double buyer3AskPrice = 29d;
         OrderRequest askOrderRequest3 = new OrderRequestBuilder(buyer3)
@@ -91,7 +91,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askOrderRequest3);
+        orderRequestServiceImpl.process(askOrderRequest3);
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(350))
@@ -99,7 +99,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true, invoiceSB3.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
+        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
 
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer1.getId());
         Assert.assertNotNull(trade1);
@@ -151,7 +151,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.save(bidOrderRequest1);
 
         double supplier2AskPrice = 28d;
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
@@ -160,7 +160,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.save(bidOrderRequest2);
 
         double supplier3AskPrice = 29d;
         OrderRequest bidOrderRequest3 = new OrderRequestBuilder(supplier3)
@@ -169,7 +169,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest3);
+        orderRequestServiceImpl.save(bidOrderRequest3);
 
         double supplier4AskPrice = 31d;
         OrderRequest bidOrderRequest4 = new OrderRequestBuilder(supplier4)
@@ -178,7 +178,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest4);
+        orderRequestServiceImpl.save(bidOrderRequest4);
 
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
@@ -186,7 +186,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true, invoiceS3B.getId(), true, invoiceS4B.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(askMarketOrderRequest);
+        OrderResult result = orderRequestServiceImpl.process(askMarketOrderRequest);
 
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
@@ -235,7 +235,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.save(bidOrderRequest1);
 
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(250))
@@ -243,7 +243,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoice1SB.getId(), true, invoice2SB.getId(), true))
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askMarketOrderRequest);
+        orderRequestServiceImpl.process(askMarketOrderRequest);
     }
 
     /*
@@ -275,7 +275,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(askOrderRequest1);
+        orderRequestServiceImpl.save(askOrderRequest1);
 
         double buyer2AskPrice = 30d;
         OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
@@ -284,7 +284,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(askOrderRequest2);
+        orderRequestServiceImpl.save(askOrderRequest2);
 
         double buyer3AskPrice = 31d;
         OrderRequest askOrderRequest3 = new OrderRequestBuilder(buyer3)
@@ -293,7 +293,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(askOrderRequest3);
+        orderRequestServiceImpl.save(askOrderRequest3);
 
         OrderRequest bidMarketOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(450))
@@ -301,7 +301,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true, invoiceSB3.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(bidMarketOrderRequest);
+        OrderResult result = orderRequestServiceImpl.process(bidMarketOrderRequest);
 
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer1.getId());
         Assert.assertNotNull(trade1);
@@ -350,7 +350,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.save(bidOrderRequest1);
 
         double supplier3AskPrice = 26d;
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier3)
@@ -359,7 +359,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.saveOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.save(bidOrderRequest2);
 
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(250))
@@ -367,7 +367,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS3B.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(askMarketOrderRequest);
+        OrderResult result = orderRequestServiceImpl.process(askMarketOrderRequest);
 
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
@@ -403,7 +403,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askOrderRequest1);
+        orderRequestServiceImpl.process(askOrderRequest1);
 
         OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
                 .quantity(BigDecimal.valueOf(150))
@@ -411,7 +411,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askOrderRequest2);
+        orderRequestServiceImpl.process(askOrderRequest2);
 
         BigDecimal supplier1BidPrice = BigDecimal.valueOf(29);
         OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier)
@@ -421,7 +421,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.LIMIT)
                 .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(bidOrderRequest);
+        OrderResult result = orderRequestServiceImpl.process(bidOrderRequest);
 
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer2.getId());
         Assert.assertNotNull(trade1);
@@ -463,7 +463,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askOrderRequest1);
+        orderRequestServiceImpl.process(askOrderRequest1);
 
         OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
                 .quantity(BigDecimal.valueOf(99))
@@ -471,7 +471,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(askOrderRequest2);
+        orderRequestServiceImpl.process(askOrderRequest2);
 
         double supplier1BidPrice = 28d;
         OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier)
@@ -481,7 +481,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.LIMIT)
                 .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(bidOrderRequest);
+        OrderResult result = orderRequestServiceImpl.process(bidOrderRequest);
 
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer2.getId());
         Assert.assertNotNull(trade1);
@@ -527,7 +527,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.process(bidOrderRequest1);
 
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(200))
@@ -535,7 +535,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.process(bidOrderRequest2);
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(100))
@@ -543,7 +543,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
+        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
 
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
@@ -556,7 +556,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true))
                 .build();
-        result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest2);
+        result = orderRequestServiceImpl.process(marketOrderRequest2);
 
         Trade trade2 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade2);
@@ -605,7 +605,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.process(bidOrderRequest1);
 
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(250))
@@ -613,7 +613,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.process(bidOrderRequest2);
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
@@ -622,7 +622,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .build();
 
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
+        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(26d, trade1.getPrice(), 0d);
@@ -660,7 +660,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.process(bidOrderRequest1);
 
         OrderRequest bidOrderRequest3 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(95))
@@ -668,7 +668,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest3);
+        orderRequestServiceImpl.process(bidOrderRequest3);
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(200))
@@ -677,7 +677,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.MARKET)
                 .build();
 
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
+        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(19d, trade1.getPrice(), 0d);
@@ -731,7 +731,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.process(bidOrderRequest1);
 
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(200))
@@ -739,7 +739,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.process(bidOrderRequest2);
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
@@ -748,7 +748,7 @@ public class LimitOrderBookServiceTest {
                 .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true))
                 .build();
 
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
+        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
         Trade trade = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade);
         Assert.assertEquals(bid1Price.doubleValue(), trade.getPrice(), 0d);
@@ -772,7 +772,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest1);
+        orderRequestServiceImpl.process(bidOrderRequest1);
 
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(295))
@@ -780,7 +780,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        orderRequestServiceImpl.processOrderRequest(bidOrderRequest2);
+        orderRequestServiceImpl.process(bidOrderRequest2);
 
         OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(350))
@@ -789,7 +789,7 @@ public class LimitOrderBookServiceTest {
                 .invoicesChecked(ImmutableMap.of(invoice1S1B.getId(), true, invoice2S1B.getId(), true, invoiceS2B.getId(), true))
                 .build();
 
-        OrderResult result = orderRequestServiceImpl.processOrderRequest(marketOrderRequest1);
+        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
         Trade trade = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade);
         Assert.assertEquals(bid1Price.doubleValue(), trade.getPrice(), 0d);

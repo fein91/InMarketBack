@@ -41,6 +41,7 @@ public class OrderRequestServiceMockTest {
     private OrderBookBuilder orderBookBuilder;
     private OrderRequestService orderRequestService;
     private CounterPartyService counterPartyService;
+    private HistoryOrderRequestService historyOrderRequestService;
 
     @Before
     public void setUp() {
@@ -49,11 +50,12 @@ public class OrderRequestServiceMockTest {
         lobService = createMock(LimitOrderBookService.class);
         orderBookBuilder = createMock(OrderBookBuilder.class);
         counterPartyService = createMock(CounterPartyService.class);
+        historyOrderRequestService = createMock(HistoryOrderRequestService.class);
         orderRequestService = new OrderRequestServiceImpl(
                 orderRequestRepository,
                 invoiceRepository,
                 lobService,
-                orderBookBuilder, counterPartyService);
+                orderBookBuilder, counterPartyService, historyOrderRequestService);
     }
 
     @Test
@@ -74,7 +76,7 @@ public class OrderRequestServiceMockTest {
 
         replay(orderRequestRepository);
 
-        orderRequestService.saveOrderRequest(request);
+        orderRequestService.save(request);
 
         verify(orderRequestRepository);
     }
@@ -96,7 +98,7 @@ public class OrderRequestServiceMockTest {
 
         replay(orderRequestRepository, orderBookBuilder, invoiceRepository);
 
-        orderRequestService.processOrderRequest(request);
+        orderRequestService.process(request);
 
         verify(orderRequestRepository, orderBookBuilder, invoiceRepository);
     }
@@ -117,7 +119,7 @@ public class OrderRequestServiceMockTest {
 
         replay(orderRequestRepository, orderBookBuilder, invoiceRepository);
 
-        orderRequestService.calculateOrderRequest(request);
+        orderRequestService.calculate(request);
 
         verify(orderBookBuilder, invoiceRepository);
     }
@@ -166,7 +168,7 @@ public class OrderRequestServiceMockTest {
         expectLastCall();
 
         replay(orderRequestRepository);
-        orderRequestService.removeOrderRequest(1L);
+        orderRequestService.removeById(1L);
 
         verify(orderRequestRepository);
     }

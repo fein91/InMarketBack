@@ -29,14 +29,14 @@ public class OrderRequestController {
     @RequestMapping(method = RequestMethod.POST, value = "/process")
     public ResponseEntity<OrderResult> process(@RequestBody OrderRequest orderRequest) throws OrderRequestException {
         checkOrderRequest(orderRequest);
-        return new ResponseEntity<>(orderRequestServiceImpl.processOrderRequest(orderRequest), HttpStatus.OK);
+        return new ResponseEntity<>(orderRequestServiceImpl.process(orderRequest), HttpStatus.OK);
     }
 
 
     @RequestMapping(method = RequestMethod.POST, value = "/calculate")
     public ResponseEntity<OrderResult> calculate(@RequestBody OrderRequest orderRequest) throws OrderRequestException {
         checkOrderRequest(orderRequest);
-        return new ResponseEntity<>(orderRequestServiceImpl.calculateOrderRequest(orderRequest), HttpStatus.OK);
+        return new ResponseEntity<>(orderRequestServiceImpl.calculate(orderRequest), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET)
