@@ -29,7 +29,7 @@ public class HistoryOrderRequest {
     int orderType;
 
     @OneToMany(mappedBy = "processingOrderRequest")
-    List<Trade> trades;
+    List<HistoryTrade> historyTrades;
 
     public Long getId() {
         return id;
@@ -87,12 +87,12 @@ public class HistoryOrderRequest {
         this.orderType = orderType.getId();
     }
 
-    public List<Trade> getTrades() {
-        return trades;
+    public List<HistoryTrade> getHistoryTrades() {
+        return historyTrades;
     }
 
-    public void setTrades(List<Trade> trades) {
-        this.trades = trades;
+    public void setHistoryTrades(List<HistoryTrade> historyTrades) {
+        this.historyTrades = historyTrades;
     }
 
     @Override

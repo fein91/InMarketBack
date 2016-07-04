@@ -298,7 +298,7 @@ public class OrderBook {
                 }
                 Trade trade = new Trade(headOrder.getPrice(), qtyTraded, discountValue, currentInvoice.getValue(), daysToPaymentMultQtyTraded,
                         headOrder.getTakerId(), takerId, buyer, seller,
-                        headOrder.getqId(), currentInvoice.getId());
+                        headOrder.getId(), currentInvoice.getId());
                 trades.add(trade);
                 this.tape.add(trade);
                 if (verbose) {

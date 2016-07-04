@@ -34,6 +34,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     private final OrderBookBuilder orderBookBuilder;
     private final CounterPartyService counterPartyService;
     private final HistoryOrderRequestService historyOrderRequestService;
+    private final HistoryTradeService historyTradeService;
 
     @Autowired
     public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository,
@@ -41,13 +42,15 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                                    LimitOrderBookService lobService,
                                    OrderBookBuilder orderBookBuilder,
                                    CounterPartyService counterPartyService,
-                                   @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService) {
+                                   @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService,
+                                   HistoryTradeService historyTradeService) {
         this.orderRequestRepository = orderRequestRepository;
         this.invoiceRepository = invoiceRepository;
         this.lobService = lobService;
         this.orderBookBuilder = orderBookBuilder;
         this.counterPartyService = counterPartyService;
         this.historyOrderRequestService = historyOrderRequestService;
+        this.historyTradeService = historyTradeService;
     }
 
     @Override
@@ -91,7 +94,10 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         OrderResult result = lobService.addOrder(lob, orderRequest);
 
         if (result.getSatisfiedDemand().signum() > 0) {
-            historyOrderRequestService
+            HistoryOrderRequest executedHor = historyOrderRequestService.convertFrom(orderRequest);
+            executedHor.setQuantity(result.getSatisfiedDemand());
+            executedHor.setHistoryTrades(historyTradeService.convertFrom(lob.getTape()));
+            historyOrderRequestService.save(executedHor);
         }
 
         BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());

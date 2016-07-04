@@ -7,10 +7,7 @@ import com.fein91.core.service.LimitOrderBookService;
 import com.fein91.core.service.OrderBookBuilder;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
-import com.fein91.model.Counterparty;
-import com.fein91.model.Invoice;
-import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderType;
+import com.fein91.model.*;
 import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.rest.exception.OrderRequestProcessingException;
 import com.google.common.collect.ImmutableList;
@@ -42,6 +39,7 @@ public class OrderRequestServiceMockTest {
     private OrderRequestService orderRequestService;
     private CounterPartyService counterPartyService;
     private HistoryOrderRequestService historyOrderRequestService;
+    private HistoryTradeService historyTradeService;
 
     @Before
     public void setUp() {
@@ -51,11 +49,12 @@ public class OrderRequestServiceMockTest {
         orderBookBuilder = createMock(OrderBookBuilder.class);
         counterPartyService = createMock(CounterPartyService.class);
         historyOrderRequestService = createMock(HistoryOrderRequestService.class);
+        historyTradeService = createMock(HistoryTradeService.class);
         orderRequestService = new OrderRequestServiceImpl(
                 orderRequestRepository,
                 invoiceRepository,
                 lobService,
-                orderBookBuilder, counterPartyService, historyOrderRequestService);
+                orderBookBuilder, counterPartyService, historyOrderRequestService, historyTradeService);
     }
 
     @Test

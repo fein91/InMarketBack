@@ -1,11 +1,14 @@
 package com.fein91.service;
 
 import com.fein91.dao.HistoryOrderRequestRepository;
+import com.fein91.model.Counterparty;
 import com.fein91.model.HistoryOrderRequest;
 import com.fein91.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("HistoryOrderRequestServiceImpl")
 public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestService {
@@ -39,4 +42,15 @@ public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestServic
         historyOrderRequest.setOrderType(orderRequest.getOrderType());
         return historyOrderRequest;
     }
+
+    @Override
+    public List<HistoryOrderRequest> getByCounterparty(Counterparty counterparty) {
+        return historyOrderRequestRepository.findByCounterparty(counterparty);
+    }
+
+    @Override
+    public List<HistoryOrderRequest> getByCounterpartyId(Long counterpartyId) {
+        return historyOrderRequestRepository.findByCounterpartyId(counterpartyId);
+    }
+
 }

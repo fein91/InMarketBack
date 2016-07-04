@@ -4,13 +4,14 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-public class Trade {
+public class HistoryTrade {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @OneToOne
+    @JoinColumn(name="invoice_fk")
     Invoice invoice;
 
     /**

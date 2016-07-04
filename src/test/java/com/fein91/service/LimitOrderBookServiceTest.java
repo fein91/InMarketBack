@@ -1,4 +1,4 @@
-package com.fein91.core.service;
+package com.fein91.service;
 
 import com.fein91.InMarketApplication;
 import com.fein91.builders.OrderRequestBuilder;

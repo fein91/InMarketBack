@@ -10,7 +10,7 @@ public class Trade {
 	private long taker;
 	private long buyer;
 	private long seller;
-	private int orderHit;
+	private long orderHit;
 	private long invoiceId;
 	private BigDecimal discountValue;
 	private BigDecimal invoiceValue;
@@ -21,7 +21,7 @@ public class Trade {
 	private BigDecimal daysToPaymentMultQtyTraded;
 	
 	public Trade(double price, BigDecimal qty, BigDecimal discountValue, BigDecimal invoiceValue, BigDecimal daysToPaymentMultQtyTraded,
-				 long provider, long taker, long buyer, long seller, int orderHit, long invoiceId) {
+				 long provider, long taker, long buyer, long seller, long orderHit, long invoiceId) {
 		this.price = price;
 		this.qty = qty;
 		this.discountValue = discountValue;
@@ -93,7 +93,7 @@ public class Trade {
 	}
 
 
-	public int getOrderHit() {
+	public long getOrderHit() {
 		return orderHit;
 	}
 
