@@ -17,11 +17,11 @@ angular.module('inmarket.trans_history', ['ngRoute'])
         self.init = function () {
             return transHistoryService.getTransactionHistory(self.counterpartyId)
                 .then(function successCallback(response) {
-                    self.tableParams = new NgTableParams({}, {
+                    $scope.tableParams = new NgTableParams({}, {
                         //filterOptions: { filterFn: priceRangeFilter },
-                        dataset: response.data.history
+                        dataset: response.data
                     });
-                    console.log('init trans history from db');
+                    console.log('init trans history from db: ' + JSON.stringify(response.data));
                 }, function errorCallback(response) {
                     console.log('got ' + response.status + ' error');
                 });

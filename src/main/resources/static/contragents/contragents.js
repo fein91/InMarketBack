@@ -30,7 +30,7 @@ angular.module('inmarket.contragents', ['ngRoute'])
 
         // watch for data checkboxes
         $scope.$watch('checkboxes.invoices', function(values) {
-            console.log(JSON.stringify(values) + 'checkboxes.invoices');
+            console.log(JSON.stringify(values) + ' checkboxes.invoices');
 
             var checked = 0, unchecked = 0,
                 total = $scope.currentInvoicesPage.length;

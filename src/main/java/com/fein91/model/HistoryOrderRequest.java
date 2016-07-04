@@ -28,7 +28,7 @@ public class HistoryOrderRequest {
 
     int orderType;
 
-    @OneToMany(mappedBy = "processingOrderRequest")
+    @OneToMany(mappedBy = "processingOrderRequest", cascade = CascadeType.PERSIST)
     List<HistoryTrade> historyTrades;
 
     public Long getId() {

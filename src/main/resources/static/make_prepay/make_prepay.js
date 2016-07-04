@@ -142,7 +142,8 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 							"counterparty" : {
 								"id" : 11,
 								"name" : "supplyer"
-							}
+							},
+							"invoicesChecked" :  invoices.supplierInvoicesCheckboxes.invoices
 						};
 					}
 				}

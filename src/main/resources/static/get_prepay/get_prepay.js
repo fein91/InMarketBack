@@ -187,7 +187,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 							"counterparty" : {
 								"id" : 11,
 								"name" : "supplyer"
-							}
+							},
+							"invoicesChecked" :  invoices.buyerInvoicesCheckboxes.invoices
 						};
 					}
 				}

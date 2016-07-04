@@ -1,5 +1,7 @@
 package com.fein91.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
@@ -17,6 +19,7 @@ public class HistoryTrade {
     /**
      * ref to new order request which is currently processing
      */
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="processingOrderRequestFk")
     HistoryOrderRequest processingOrderRequest;
@@ -24,6 +27,7 @@ public class HistoryTrade {
     /**
      * ref to existed limit order request from order book which was affected in current trade
      */
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="affectedOrderRequestFk")
     HistoryOrderRequest affectedOrderRequest;
