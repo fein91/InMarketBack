@@ -17,14 +17,6 @@ public class HistoryTrade {
     Invoice invoice;
 
     /**
-     * ref to new order request which is currently processing
-     */
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name="processingOrderRequestFk")
-    HistoryOrderRequest processingOrderRequest;
-
-    /**
      * ref to existed limit order request from order book which was affected in current trade
      */
     @JsonIgnore
@@ -46,14 +38,6 @@ public class HistoryTrade {
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
-    }
-
-    public HistoryOrderRequest getProcessingOrderRequest() {
-        return processingOrderRequest;
-    }
-
-    public void setProcessingOrderRequest(HistoryOrderRequest processingOrderRequest) {
-        this.processingOrderRequest = processingOrderRequest;
     }
 
     public HistoryOrderRequest getAffectedOrderRequest() {
@@ -78,5 +62,15 @@ public class HistoryTrade {
 
     public void setDiscountValue(BigDecimal discountValue) {
         this.discountValue = discountValue;
+    }
+
+    @Override
+    public String toString() {
+        return "HistoryTrade{" +
+                "id=" + id +
+                ", invoice=" + invoice +
+                ", quantity=" + quantity +
+                ", discountValue=" + discountValue +
+                '}';
     }
 }

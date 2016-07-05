@@ -41,7 +41,6 @@ public class HistoryTradeService {
         historyTrade.setQuantity(trade.getQty());
         historyTrade.setDiscountValue(trade.getDiscountValue());
         historyTrade.setInvoice(invoiceService.getById(trade.getInvoiceId()));
-        historyTrade.setProcessingOrderRequest(historyOrderRequestService.getById(trade.getOrderHit()));
         return historyTrade;
     }
 

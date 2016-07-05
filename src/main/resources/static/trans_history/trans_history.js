@@ -15,7 +15,7 @@ angular.module('inmarket.trans_history', ['ngRoute'])
         self.counterpartyId = 11;
 
         self.init = function () {
-            return transHistoryService.getTransactionHistory(self.counterpartyId)
+            transHistoryService.getTransactionHistory(self.counterpartyId)
                 .then(function successCallback(response) {
                     $scope.tableParams = new NgTableParams({}, {
                         //filterOptions: { filterFn: priceRangeFilter },

@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service("HistoryOrderRequestServiceImpl")
 public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestService {
+
+    private final static Logger LOGGER = Logger.getLogger(HistoryOrderRequestServiceImpl.class.getName());
 
     private final HistoryOrderRequestRepository historyOrderRequestRepository;
 
@@ -28,6 +31,7 @@ public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestServic
     @Override
     @Transactional
     public HistoryOrderRequest save(HistoryOrderRequest historyOrderRequest) {
+        LOGGER.info("Saving history order request: " + historyOrderRequest);
         return historyOrderRequestRepository.save(historyOrderRequest);
     }
 

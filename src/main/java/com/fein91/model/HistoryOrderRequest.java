@@ -28,7 +28,8 @@ public class HistoryOrderRequest {
 
     int orderType;
 
-    @OneToMany(mappedBy = "processingOrderRequest", cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name="processing_order_request_fk")
     List<HistoryTrade> historyTrades;
 
     public Long getId() {
@@ -97,7 +98,7 @@ public class HistoryOrderRequest {
 
     @Override
     public String toString() {
-        return "OrderRequest{" +
+        return "HistoryOrderRequest{" +
                 "id=" + id +
                 ", counterparty=" + counterparty +
                 ", price=" + price +
@@ -105,6 +106,7 @@ public class HistoryOrderRequest {
                 ", date=" + date +
                 ", orderSide=" + orderSide +
                 ", orderType=" + orderType +
+                ", historyTrades=" + historyTrades +
                 '}';
     }
 

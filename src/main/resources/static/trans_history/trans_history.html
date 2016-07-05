@@ -3,19 +3,26 @@
     <uib-tab index="0" heading="Мои покупатели">   
         <div class="table-responsive">
           <table ng-table="tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
-            <tr ng-repeat-start="record in $data">
-              <td data-title="'Сумма'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                                  {{record.quantity}}</td>
-              <td data-title="'APR'" filter="{ 'price': 'number'}" sortable="'price'">
-                                  {{record.price}}</td>
-              <td data-title="'Дата'" sortable="'date'">
-                                  {{record.date | date:'dd/MM/yyyy'}}</td>
-            </tr>
-              <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
+              <tr ng-repeat-start="record in $data">
+                  <td>
+                      <a href="" ng-click="record.$hideRows = !record.$hideRows">
+                          <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"></span>
+                      </a></td>
                   <td data-title="'Сумма'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                      {{trade.quantity}}</td>
-                  <td data-title="'Дисконт'" filter="{ 'discountValue': 'number'}" sortable="'discountValue'">
-                      {{trade.discountValue}}</td>
+                      {{record.quantity}}</td>
+                  <td data-title="'APR'" filter="{ 'price': 'number'}" sortable="'price'">
+                      {{record.price}}</td>
+                  <td data-title="'Тип'" filter="{ 'orderType': 'number'}" sortable="'orderType'">
+                      {{record.orderType}}</td>
+                  <td data-title="'Дата'" sortable="'date'">
+                      {{record.date | date:'dd/MM/yyyy'}}</td>
+              </tr>
+              <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
+                  <td colspan="5">
+                      <b>Название компании:</b> {{record.orderSide === 'BID' ? trade.invoice.target.name : trade.invoice.source.name}};
+                      <b>#Платежа:</b> {{trade.invoice.id}};
+                      <b>Сумма:</b> {{trade.quantity}};
+                      <b>Скидка:</b> {{trade.discountValue}}</td>
               </tr>
           </table>
         </div>
@@ -30,7 +37,7 @@
                                   {{record.invoice_id}}</td>
               <td data-title="'Сумма'" filter="{ 'sum': 'number'}" sortable="'sum'">
                                   {{record.sum}}</td>
-              <td data-title="'Дисконт % г'" filter="{ 'discount_percent': 'number'}" sortable="'discount_percent'">
+              <td data-title="'Скидка %'" filter="{ 'discount_percent': 'number'}" sortable="'discount_percent'">
                                   {{record.discount_percent}}</td>
               <td data-title="'APR'" filter="{ 'apr': 'number'}" sortable="'apr'">
                                   {{record.apr}}</td>
