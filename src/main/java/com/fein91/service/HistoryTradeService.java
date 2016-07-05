@@ -17,14 +17,17 @@ public class HistoryTradeService {
     private final HistoryTradeRepository historyTradeRepository;
     private final InvoiceService invoiceService;
     private final HistoryOrderRequestService historyOrderRequestService;
+    private final CounterPartyService counterPartyService;
 
     @Autowired
     public HistoryTradeService(HistoryTradeRepository historyTradeRepository,
                                @Qualifier("InvoiceServiceImpl") InvoiceService invoiceService,
-                               @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService) {
+                               @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService,
+                               CounterPartyService counterPartyService) {
         this.historyTradeRepository = historyTradeRepository;
         this.invoiceService = invoiceService;
         this.historyOrderRequestService = historyOrderRequestService;
+        this.counterPartyService = counterPartyService;
     }
 
     public HistoryTrade getById(Long id) {
@@ -41,6 +44,7 @@ public class HistoryTradeService {
         historyTrade.setQuantity(trade.getQty());
         historyTrade.setDiscountValue(trade.getDiscountValue());
         historyTrade.setInvoice(invoiceService.getById(trade.getInvoiceId()));
+        historyTrade.setTarget(counterPartyService.getById(trade.getSeller()));
         return historyTrade;
     }
 

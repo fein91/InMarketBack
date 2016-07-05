@@ -106,7 +106,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             if (OrderType.LIMIT == orderRequest.getOrderType()) {
                 limitOrderRequest = orderRequest;
                 limitOrderRequest.setQuantity(unsatisfiedDemand);
-                orderRequestRepository.save(limitOrderRequest);
+                save(limitOrderRequest);
             } else {
                 limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
                         .date(orderRequest.getDate())
@@ -117,7 +117,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                         .build();
                 //it's needed here to validate if we can add this order
                 findLimitOrderRequestsToTrade(limitOrderRequest);
-                orderRequestRepository.save(limitOrderRequest);
+                save(limitOrderRequest);
             }
             historyOrderRequestService.save(historyOrderRequestService.convertFrom(limitOrderRequest));
         }

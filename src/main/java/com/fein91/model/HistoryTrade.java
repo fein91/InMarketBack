@@ -24,6 +24,13 @@ public class HistoryTrade {
     @JoinColumn(name="affectedOrderRequestFk")
     HistoryOrderRequest affectedOrderRequest;
 
+    /**
+     * trade source is historyOrderRequest.counterparty
+     */
+    @OneToOne
+    @JoinColumn(name="counterparty_fk")
+    Counterparty target;
+
     BigDecimal quantity;
 
     BigDecimal discountValue;
@@ -64,11 +71,17 @@ public class HistoryTrade {
         this.discountValue = discountValue;
     }
 
+    public void setTarget(Counterparty target) {
+        this.target = target;
+    }
+
     @Override
     public String toString() {
         return "HistoryTrade{" +
                 "id=" + id +
                 ", invoice=" + invoice +
+                ", affectedOrderRequest=" + affectedOrderRequest +
+                ", target=" + target +
                 ", quantity=" + quantity +
                 ", discountValue=" + discountValue +
                 '}';

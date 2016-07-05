@@ -12,13 +12,15 @@
                       {{record.quantity}}</td>
                   <td data-title="'APR'" filter="{ 'price': 'number'}" sortable="'price'">
                       {{record.price}}</td>
-                  <td data-title="'Тип'" filter="{ 'orderType': 'number'}" sortable="'orderType'">
+                  <td data-title="'Тип'" filter="{ 'orderType': 'text'}" sortable="'orderType'">
                       {{record.orderType}}</td>
+                  <td data-title="'Сторона'" filter="{ 'orderSide': 'text'}" sortable="'orderSide'">
+                      {{record.orderSide}}</td>
                   <td data-title="'Дата'" sortable="'date'">
                       {{record.date | date:'dd/MM/yyyy'}}</td>
               </tr>
               <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
-                  <td colspan="5">
+                  <td colspan="6">
                       <b>Название компании:</b> {{record.orderSide === 'BID' ? trade.invoice.target.name : trade.invoice.source.name}};
                       <b>#Платежа:</b> {{trade.invoice.id}};
                       <b>Сумма:</b> {{trade.quantity}};
