@@ -34,6 +34,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private RestUnauthorizedEntryPoint restAuthenticationEntryPoint;
+    @Autowired
+    private RestAuthenticationSuccessHandler restAuthenticationSuccessHandler;
+    @Autowired
+    RestAuthenticationFailureHandler restAuthenticationFailureHandler;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -45,21 +51,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .anyRequest().authenticated()
+                    .anyRequest().authenticated()
+                    .and()
+                .exceptionHandling()
+                    .authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and()
                 .formLogin()
-                .loginPage("/")
-                .permitAll()
+                    //.loginPage("/")
+                .loginProcessingUrl("/authenticate")
+                .successHandler(restAuthenticationSuccessHandler)
+                    .failureHandler(restAuthenticationFailureHandler)
+                    .permitAll()
                 .and()
                 .logout()
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "remember-me")
+                    .deleteCookies("JSESSIONID", "remember-me")
                 .permitAll()
                 .and()
                 .csrf()
                 .csrfTokenRepository(csrfTokenRepository()).and()
-                .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
-                .httpBasic();
+                    .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
+                    .httpBasic();
     }
 
     @Override

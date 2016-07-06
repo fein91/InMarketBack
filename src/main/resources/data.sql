@@ -7,22 +7,22 @@
 -- DROP TABLE orderbook;
 -- CREATE TABLE orderbook (id int, counterparty_fk int, price DECIMAL(18, 2), quantity DECIMAL(18, 2), date DATE);
 
-INSERT INTO counterparty
-values (11, 'test');
-INSERT INTO counterparty
+INSERT INTO counterparty(id, name, login_name)
+values (11, 'test', 'user');
+INSERT INTO counterparty(id, name)
 values (12, 'buyer1');
-INSERT INTO counterparty
+INSERT INTO counterparty(id, name)
 values (13, 'buyer2');
-INSERT INTO counterparty
+INSERT INTO counterparty(id, name)
 values (14, 'buyer3');
 
-INSERT INTO counterparty
+INSERT INTO counterparty(id, name)
 values (21, 'supplier1');
-INSERT INTO counterparty
+INSERT INTO counterparty(id, name)
 values (22, 'supplier2');
-INSERT INTO counterparty
+INSERT INTO counterparty(id, name)
 values (23, 'supplier3');
-INSERT INTO counterparty
+INSERT INTO counterparty(id, name)
 values (24, 'supplier4');
 
 
