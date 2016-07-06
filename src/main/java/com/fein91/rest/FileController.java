@@ -11,11 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -24,6 +27,7 @@ import java.util.Date;
 @RestController
 public class FileController {
     private final InvoiceService invoiceService;
+    public static final SimpleDateFormat FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 
     @Autowired
     public FileController(@Qualifier("InvoiceServiceImpl") InvoiceService invoiceService) {
@@ -35,25 +39,36 @@ public class FileController {
         try {
             Workbook workbook = new XSSFWorkbook(file.getInputStream());
 
+            String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
             for (Sheet sheet : workbook) {
                 for (Row row : sheet) {
-                    String source = row.getCell(0).getStringCellValue();
-                    String target = row.getCell(1).getStringCellValue();
-                    double amount = row.getCell(2).getNumericCellValue();
-                    String stringCellValue = row.getCell(3).getStringCellValue();
+                    int rowNum = 0;
+                    String source = row.getCell(rowNum++).getStringCellValue();
+                    double amount = row.getCell(rowNum++).getNumericCellValue();
+                    String stringDate = row.getCell(rowNum++).getStringCellValue();
 
                     Invoice invoice = new Invoice();
                     invoice.setSource(Counterparty.of(source));
-                    invoice.setTarget(Counterparty.of(target));
+                    invoice.setTarget(Counterparty.of(loggedInUser));
                     invoice.setValue(BigDecimal.valueOf(amount));
-                    invoice.setPaymentDate(new Date());
-                    //TODO: you know what to do
-//                    invoiceService.addInvoice();
+                    invoice.setPaymentDate(FORMAT.parse(stringDate));
+
+                    invoiceService.addInvoice(invoice);
                 }
             }
         } catch (Exception e) {
             return new ResponseEntity<>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>("{}", HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/exportInvoices", method = RequestMethod.POST, produces = "text/csv")
+    @ResponseBody
+    public ResponseEntity<String> exportInvoices(final HttpServletResponse response) throws IOException {
+        response.setHeader("Content-Disposition", "attachment");
+        response.setContentType("text/csv");
+        String csvResponse = "1,2,3" + "\n" + "4,5,6";
+        return new ResponseEntity<>(csvResponse, HttpStatus.OK);
+
     }
 }

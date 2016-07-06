@@ -151,7 +151,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         BigDecimal invoicesSum = BigDecimal.ZERO;
         BigDecimal discountsSum = BigDecimal.ZERO;
         for (Invoice invoice : invoices) {
-            Boolean invoiceUnchecked = Boolean.FALSE.equals(orderRequest.getInvoicesChecked().get(invoice.getId()));
+            boolean invoiceUnchecked = Boolean.FALSE.equals(orderRequest.getInvoicesChecked().get(invoice.getId()));
             if (invoiceUnchecked) {
                 LOGGER.info("Invoice: " + invoice + " was skipped, because it was unchecked in UI");
                 continue;

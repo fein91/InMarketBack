@@ -47,6 +47,22 @@ angular.module('inmarket', [
             headers: {'Content-Type': undefined },
             transformRequest: angular.identity
         });
-
     }
+}])
+.controller('exportCtrl', ['$scope', '$http', function($scope, $http) {
+    $http({
+                method: 'POST',
+                url: '/exportInvoices',
+                headers: {'Content-Type': 'text/csv'}
+
+            }).success(function(data, status, headers, config) {
+                         var anchor = angular.element('<a/>');
+                         console.log(data);
+                         anchor.attr({
+                             href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
+                             target: '_blank',
+                             download: 'export.xlsx'
+                         })[0].click();
+                      })
+
 }]);

@@ -1,5 +1,8 @@
 package com.fein91.model;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,10 +19,12 @@ public class Invoice {
 
     @ManyToOne
     @JoinColumn(name = "counterparty_from_fk")
+    @Cascade(CascadeType.ALL)
     private Counterparty source;
 
     @ManyToOne
     @JoinColumn(name = "counterparty_to_fk")
+    @Cascade(CascadeType.ALL)
     private Counterparty target;
 
     private BigDecimal value;
@@ -103,7 +108,7 @@ public class Invoice {
     public String toString() {
         return "Invoice{" +
                 "id=" + id +
-                ", source=" + source.getId()+
+                ", source=" + source.getId() +
                 ", target=" + target.getId() +
                 ", value=" + value +
                 ", prepaidValue=" + prepaidValue +
