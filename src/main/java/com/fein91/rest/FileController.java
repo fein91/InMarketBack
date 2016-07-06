@@ -69,6 +69,5 @@ public class FileController {
         response.setContentType("text/csv");
         String csvResponse = "1,2,3" + "\n" + "4,5,6";
         return new ResponseEntity<>(csvResponse, HttpStatus.OK);
-
     }
 }

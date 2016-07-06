@@ -2,7 +2,8 @@
     <div ng-controller="uploadCtrl">
         <input type="file" name="file" accept=".xlsx" onchange="angular.element(this).scope().uploadFile(this.files)"/>
     </div>
+    <p></p>
     <div ng-controller="exportCtrl">
-        <button ng-click="exportData()"> Export</button>
+        <button ng-click="exportData()">Export to file</button>
     </div>
 </div>

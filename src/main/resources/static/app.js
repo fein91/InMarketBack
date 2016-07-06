@@ -17,7 +17,7 @@ angular.module('inmarket', [
   'inmarket.orderRequestsService',
   'inmarket.counterpartyService',
   'inmarket.invoices'
-])
+  ])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/contragents'})
@@ -26,43 +26,44 @@ angular.module('inmarket', [
   })
   .when('/importExcelFile', {
     templateUrl: 'import/import.html'
-   })
-    ;
+  })
+  ;
 }])
 
 .controller('HeaderController', ['$scope', '$location', function($scope, $location) {
-	$scope.isActive = function (viewLocation) { 
-        return viewLocation === $location.path();
-    };
+  $scope.isActive = function (viewLocation) {
+    return viewLocation === $location.path();
+  };
 }])
 
 .controller('uploadCtrl', ['$scope', '$http', function($scope, $http) {
-    $scope.uploadFile = function(files) {
-        var fd = new FormData();
+  $scope.uploadFile = function(files) {
+    var fd = new FormData();
         //Take the first selected file
         fd.append("file", files[0]);
 
         $http.post('upload', fd, {
-            withCredentials: true,
-            headers: {'Content-Type': undefined },
-            transformRequest: angular.identity
+          withCredentials: true,
+          headers: {'Content-Type': undefined },
+          transformRequest: angular.identity
         });
-    }
-}])
+      }
+    }])
 .controller('exportCtrl', ['$scope', '$http', function($scope, $http) {
+
+  $scope.exportData = function(){
     $http({
-                method: 'POST',
-                url: '/exportInvoices',
-                headers: {'Content-Type': 'text/csv'}
+      method: 'POST',
+      url: '/exportInvoices',
+      headers: {'Content-Type': 'text/csv'}
 
-            }).success(function(data, status, headers, config) {
-                         var anchor = angular.element('<a/>');
-                         console.log(data);
-                         anchor.attr({
-                             href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
-                             target: '_blank',
-                             download: 'export.xlsx'
-                         })[0].click();
-                      })
-
+    }).success(function(data, status, headers, config) {
+     var anchor = angular.element('<a/>');
+     anchor.attr({
+       href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
+       target: '_blank',
+       download: 'export.xlsx'
+     })[0].click();
+   })
+  }
 }]);
