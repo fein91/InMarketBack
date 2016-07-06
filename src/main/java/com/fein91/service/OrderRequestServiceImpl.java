@@ -94,34 +94,43 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         OrderResult result = lobService.addOrder(lob, orderRequest);
 
         if (result.getSatisfiedDemand().signum() > 0) {
-            HistoryOrderRequest executedHor = historyOrderRequestService.convertFrom(orderRequest);
-            executedHor.setQuantity(result.getSatisfiedDemand());
-            executedHor.setHistoryTrades(historyTradeService.convertFrom(lob.getTape()));
-            historyOrderRequestService.save(executedHor);
+            saveMarketHistoryOrderRequest(orderRequest, lob, result);
         }
 
         BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
         if (unsatisfiedDemand.signum() > 0) {
-            OrderRequest limitOrderRequest;
-            if (OrderType.LIMIT == orderRequest.getOrderType()) {
-                limitOrderRequest = orderRequest;
-                limitOrderRequest.setQuantity(unsatisfiedDemand);
-                save(limitOrderRequest);
-            } else {
-                limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
-                        .date(orderRequest.getDate())
-                        .orderSide(orderRequest.getOrderSide())
-                        .orderType(OrderType.LIMIT)
-                        .price(result.getApr())
-                        .quantity(unsatisfiedDemand)
-                        .build();
-                //it's needed here to validate if we can add this order
-                findLimitOrderRequestsToTrade(limitOrderRequest);
-                save(limitOrderRequest);
-            }
-            historyOrderRequestService.save(historyOrderRequestService.convertFrom(limitOrderRequest));
+            saveLimitOrderRequest(orderRequest, result, unsatisfiedDemand);
         }
         return result;
+    }
+
+
+    private void saveMarketHistoryOrderRequest(OrderRequest orderRequest, OrderBook lob, OrderResult result) {
+        HistoryOrderRequest executedHor = historyOrderRequestService.convertFrom(orderRequest);
+        executedHor.setQuantity(result.getSatisfiedDemand());
+        executedHor.setHistoryTrades(historyTradeService.convertFrom(lob.getTape()));
+        historyOrderRequestService.save(executedHor);
+    }
+
+    private void saveLimitOrderRequest(OrderRequest orderRequest, OrderResult result, BigDecimal unsatisfiedDemand) {
+        OrderRequest limitOrderRequest;
+        if (OrderType.LIMIT == orderRequest.getOrderType()) {
+            limitOrderRequest = orderRequest;
+            limitOrderRequest.setQuantity(unsatisfiedDemand);
+            limitOrderRequest = save(limitOrderRequest);
+        } else {
+            limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+                    .date(orderRequest.getDate())
+                    .orderSide(orderRequest.getOrderSide())
+                    .orderType(OrderType.LIMIT)
+                    .price(result.getApr())
+                    .quantity(unsatisfiedDemand)
+                    .build();
+            //it's needed here to validate if we can add this order
+            findLimitOrderRequestsToTrade(limitOrderRequest);
+            limitOrderRequest = save(limitOrderRequest);
+        }
+        historyOrderRequestService.save(historyOrderRequestService.convertFrom(limitOrderRequest));
     }
 
     @Override

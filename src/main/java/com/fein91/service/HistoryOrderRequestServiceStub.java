@@ -43,4 +43,9 @@ public class HistoryOrderRequestServiceStub implements HistoryOrderRequestServic
     public List<HistoryOrderRequest> getByCounterpartyId(Long counterpartyId) {
         return historyOrderRequestRepository.findByCounterpartyId(counterpartyId);
     }
+
+    @Override
+    public HistoryOrderRequest getByOriginOrderRequestId(Long originOrderRequestId) {
+        return historyOrderRequestRepository.findByOriginOrderRequestId(originOrderRequestId);
+    }
 }

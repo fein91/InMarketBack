@@ -44,6 +44,7 @@ public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestServic
         historyOrderRequest.setDate(orderRequest.getDate());
         historyOrderRequest.setOrderSide(orderRequest.getOrderSide());
         historyOrderRequest.setOrderType(orderRequest.getOrderType());
+        historyOrderRequest.setOriginOrderRequestId(orderRequest.getId());
         return historyOrderRequest;
     }
 
@@ -55,6 +56,11 @@ public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestServic
     @Override
     public List<HistoryOrderRequest> getByCounterpartyId(Long counterpartyId) {
         return historyOrderRequestRepository.findByCounterpartyId(counterpartyId);
+    }
+
+    @Override
+    public HistoryOrderRequest getByOriginOrderRequestId(Long originOrderRequestId) {
+        return historyOrderRequestRepository.findByOriginOrderRequestId(originOrderRequestId);
     }
 
 }

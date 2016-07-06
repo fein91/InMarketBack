@@ -18,4 +18,6 @@ public interface HistoryOrderRequestService {
     List<HistoryOrderRequest> getByCounterparty(Counterparty counterparty);
 
     List<HistoryOrderRequest> getByCounterpartyId(Long counterpartyId);
+
+    HistoryOrderRequest getByOriginOrderRequestId(Long originOrderRequestId);
 }

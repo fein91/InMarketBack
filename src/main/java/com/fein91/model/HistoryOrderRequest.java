@@ -28,6 +28,8 @@ public class HistoryOrderRequest {
 
     int orderType;
 
+    Long originOrderRequestId;
+
     @OneToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name="processing_order_request_fk")
     List<HistoryTrade> historyTrades;
@@ -88,6 +90,14 @@ public class HistoryOrderRequest {
         this.orderType = orderType.getId();
     }
 
+    public Long getOriginOrderRequestId() {
+        return originOrderRequestId;
+    }
+
+    public void setOriginOrderRequestId(Long originOrderRequestId) {
+        this.originOrderRequestId = originOrderRequestId;
+    }
+
     public List<HistoryTrade> getHistoryTrades() {
         return historyTrades;
     }
@@ -106,6 +116,7 @@ public class HistoryOrderRequest {
                 ", date=" + date +
                 ", orderSide=" + orderSide +
                 ", orderType=" + orderType +
+                ", originOrderRequestId=" + originOrderRequestId +
                 ", historyTrades=" + historyTrades +
                 '}';
     }

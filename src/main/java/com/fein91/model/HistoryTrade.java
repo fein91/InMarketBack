@@ -19,7 +19,6 @@ public class HistoryTrade {
     /**
      * ref to existed limit order request from order book which was affected in current trade
      */
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="affectedOrderRequestFk")
     HistoryOrderRequest affectedOrderRequest;
@@ -73,6 +72,10 @@ public class HistoryTrade {
 
     public void setTarget(Counterparty target) {
         this.target = target;
+    }
+
+    public Counterparty getTarget() {
+        return target;
     }
 
     @Override
