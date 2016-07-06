@@ -1,6 +1,6 @@
 <div class="row page-content" ng-controller="TransHistoryCtrl as transactionHistory"> 
   <uib-tabset active="activeJustified" justified="false" type="pills">
-    <uib-tab index="0" heading="Мои покупатели">   
+    <uib-tab index="0" heading="Выданные предоплаты">
         <div class="table-responsive">
           <table ng-table="tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
               <tr ng-repeat-start="record in $data">
@@ -29,7 +29,7 @@
           </table>
         </div>
     </uib-tab>
-    <uib-tab index="1" heading="Мои поставщики">   
+    <uib-tab index="1" heading="Полученные предоплаты">
        <div class="table-responsive">
           <table ng-table="transactionHistory.tableParams" class="table table-condensed table-bordered table-striped" show-filter="true">
             <tr ng-repeat="record in $data">
