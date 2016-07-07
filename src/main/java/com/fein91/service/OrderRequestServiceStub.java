@@ -24,22 +24,22 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public OrderRequest saveOrderRequest(OrderRequest orderRequest) {
+    public OrderRequest save(OrderRequest orderRequest) {
         return null;
     }
 
     @Override
-    public OrderRequest saveOrderRequest(Order order) {
+    public OrderRequest saveOrder(Order order) {
         return null;
     }
 
     @Override
-    public OrderResult processOrderRequest(OrderRequest orderRequest) {
+    public OrderResult process(OrderRequest orderRequest) {
         return null;
     }
 
     @Override
-    public OrderResult calculateOrderRequest(OrderRequest orderRequest) {
+    public OrderResult calculate(OrderRequest orderRequest) {
         return null;
     }
 
@@ -49,7 +49,7 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public void removeOrderRequest(Long orderId) {
+    public void removeById(Long orderId) {
 
     }
 

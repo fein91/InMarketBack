@@ -46,7 +46,7 @@ public class LimitOrderBookService {
 
         BigDecimal satisfiedDemand = quantity.subtract(orderReport.getQtyRemaining());
 
-        BigDecimal apr = calculateAPR(lob, time, satisfiedDemand);
+        BigDecimal apr = calculateAPR(lob, satisfiedDemand);
         BigDecimal totalDiscountSum = calculateTotalDiscountSum(lob);
         BigDecimal totalInvoicesSum = calculateTotalInvoicesSum(lob);
         BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0
@@ -71,7 +71,7 @@ public class LimitOrderBookService {
         BigDecimal totalSumInvoicesDaysToPaymentMultQtyTraded = BigDecimal.ZERO;
         BigDecimal paymentsSum = BigDecimal.ZERO;
         for (Trade trade: lob.getTape()) {
-            totalSumInvoicesDaysToPaymentMultQtyTraded = totalSumInvoicesDaysToPaymentMultQtyTraded.add(trade.getSumInvoicesDaysToPaymentMultQtyTraded());
+            totalSumInvoicesDaysToPaymentMultQtyTraded = totalSumInvoicesDaysToPaymentMultQtyTraded.add(trade.getDaysToPaymentMultQtyTraded());
             paymentsSum = paymentsSum.add(trade.getQty());
         }
         return paymentsSum.signum() > 0 ?
@@ -82,18 +82,16 @@ public class LimitOrderBookService {
     private BigDecimal calculateTotalInvoicesSum(OrderBook lob) {
         BigDecimal result = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
-            result = result.add(trade.getInvoicesSum());
+            result = result.add(trade.getInvoiceValue());
         }
         return result;
     }
 
 
-    private BigDecimal calculateAPR(OrderBook lob, long time, BigDecimal satisfiedDemand) {
+    private BigDecimal calculateAPR(OrderBook lob, BigDecimal satisfiedDemand) {
         BigDecimal apr = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
-            if (trade.getTimestamp() == time) {
-                apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQty()).divide(satisfiedDemand, BigDecimal.ROUND_HALF_UP));
-            }
+            apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQty()).divide(satisfiedDemand, BigDecimal.ROUND_HALF_UP));
         }
 
         return apr;
@@ -102,7 +100,7 @@ public class LimitOrderBookService {
     private BigDecimal calculateTotalDiscountSum(OrderBook lob) {
         BigDecimal result = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
-            result = result.add(trade.getDiscountSum());
+            result = result.add(trade.getDiscountValue());
         }
         return result;
     }

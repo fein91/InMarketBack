@@ -1,30 +1,30 @@
-angular.module('inmarket.trans_history', ['ngRoute'])
+angular.module('inmarket.limit_orders', ['ngRoute'])
 
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/trans_history', {
-            templateUrl: 'trans_history/trans_history.html',
-            controller: 'TransHistoryCtrl'
+        $routeProvider.when('/limit_orders', {
+            templateUrl: 'limit_orders/limit_orders.html',
+            controller: 'LimitOrdersCtrl'
         });
     }])
 
 
-    .controller('TransHistoryCtrl', ['$scope', 'transHistoryService', 'NgTableParams', function ($scope, transHistoryService, NgTableParams) {
-        console.log('TransHistoryCtrl inited');
+    .controller('LimitOrdersCtrl', ['$scope', 'orderRequestsService', 'NgTableParams', function ($scope, orderRequestsService, NgTableParams) {
+        console.log('LimitOrdersCtrl inited');
 
         var self = this;
         self.counterpartyId = 11;
 
         self.init = function () {
-            transHistoryService.getTransactionHistory(self.counterpartyId)
+            orderRequestsService.getOrderRequests(self.counterpartyId)
                 .then(function successCallback(response) {
                     var bids = [];
                     var asks = [];
 
-                    angular.forEach(response.data, function(historyMarketOrder) {
-                        if ('ASK' === historyMarketOrder.orderSide) {
-                            asks.push(historyMarketOrder);
-                        } else if ('BID' === historyMarketOrder.orderSide) {
-                            bids.push(historyMarketOrder);
+                    angular.forEach(response.data, function(limitOrder) {
+                        if ('ASK' === limitOrder.orderSide) {
+                            asks.push(limitOrder);
+                        } else if ('BID' === limitOrder.orderSide) {
+                            bids.push(limitOrder);
                         }
                     });
 
@@ -32,12 +32,12 @@ angular.module('inmarket.trans_history', ['ngRoute'])
                         //filterOptions: { filterFn: priceRangeFilter },
                         dataset: bids
                     });
-
                     $scope.asksTableParams = new NgTableParams({}, {
                         //filterOptions: { filterFn: priceRangeFilter },
                         dataset: asks
                     });
-                    console.log('init trans history from db: ' + JSON.stringify(response.data));
+
+                    console.log('loaded order requests from db: ' + JSON.stringify(response.data));
                 }, function errorCallback(response) {
                     console.log('got ' + response.status + ' error');
                 });

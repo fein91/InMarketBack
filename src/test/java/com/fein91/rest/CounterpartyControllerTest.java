@@ -2,6 +2,7 @@ package com.fein91.rest;
 
 import com.fein91.InMarketApplication;
 import com.fein91.dao.InvoiceRepository;
+import com.fein91.service.HistoryOrderRequestService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +23,13 @@ public class CounterpartyControllerTest {
 
     private InvoiceRepository repoMock;
     private CounterpartyController controller;
+    private HistoryOrderRequestService historyOrderRequestService;
 
     @Before
     public void setUp() {
         repoMock = createMock(InvoiceRepository.class);
-        controller = new CounterpartyController(repoMock);
+        historyOrderRequestService = createMock(HistoryOrderRequestService.class);
+        controller = new CounterpartyController(repoMock, historyOrderRequestService);
     }
 
     @After

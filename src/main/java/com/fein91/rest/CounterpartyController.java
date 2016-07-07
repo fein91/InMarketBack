@@ -1,8 +1,12 @@
 package com.fein91.rest;
 
 import com.fein91.dao.InvoiceRepository;
+import com.fein91.model.HistoryOrderRequest;
 import com.fein91.model.Invoice;
+import com.fein91.model.OrderType;
+import com.fein91.service.HistoryOrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,10 +19,13 @@ import java.util.List;
 public class CounterpartyController {
 
     private final InvoiceRepository invoiceRepository;
+    private final HistoryOrderRequestService historyOrderRequestService;
 
     @Autowired
-    public CounterpartyController(InvoiceRepository invoiceRepository) {
+    public CounterpartyController(InvoiceRepository invoiceRepository,
+                                  @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService) {
         this.invoiceRepository = invoiceRepository;
+        this.historyOrderRequestService = historyOrderRequestService;
     }
 
 
@@ -30,5 +37,10 @@ public class CounterpartyController {
     @RequestMapping(method = RequestMethod.GET, value = "/{targetId}/invoicesByTarget")
     public List<Invoice> getByTargetId(@PathVariable Long targetId) {
         return invoiceRepository.findInvoicesByTargetId(targetId);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/transactionHistory")
+    public List<HistoryOrderRequest> getTransactionHistory(@PathVariable Long counterpartyId) {
+        return historyOrderRequestService.getByCounterpartyIdAndOrderType(counterpartyId, OrderType.MARKET);
     }
 }

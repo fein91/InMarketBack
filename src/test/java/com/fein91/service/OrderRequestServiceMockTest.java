@@ -7,10 +7,7 @@ import com.fein91.core.service.LimitOrderBookService;
 import com.fein91.core.service.OrderBookBuilder;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
-import com.fein91.model.Counterparty;
-import com.fein91.model.Invoice;
-import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderType;
+import com.fein91.model.*;
 import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.rest.exception.OrderRequestProcessingException;
 import com.google.common.collect.ImmutableList;
@@ -41,6 +38,8 @@ public class OrderRequestServiceMockTest {
     private OrderBookBuilder orderBookBuilder;
     private OrderRequestService orderRequestService;
     private CounterPartyService counterPartyService;
+    private HistoryOrderRequestService historyOrderRequestService;
+    private HistoryTradeService historyTradeService;
 
     @Before
     public void setUp() {
@@ -49,11 +48,13 @@ public class OrderRequestServiceMockTest {
         lobService = createMock(LimitOrderBookService.class);
         orderBookBuilder = createMock(OrderBookBuilder.class);
         counterPartyService = createMock(CounterPartyService.class);
+        historyOrderRequestService = createMock(HistoryOrderRequestService.class);
+        historyTradeService = createMock(HistoryTradeService.class);
         orderRequestService = new OrderRequestServiceImpl(
                 orderRequestRepository,
                 invoiceRepository,
                 lobService,
-                orderBookBuilder, counterPartyService);
+                orderBookBuilder, counterPartyService, historyOrderRequestService, historyTradeService);
     }
 
     @Test
@@ -74,7 +75,7 @@ public class OrderRequestServiceMockTest {
 
         replay(orderRequestRepository);
 
-        orderRequestService.saveOrderRequest(request);
+        orderRequestService.save(request);
 
         verify(orderRequestRepository);
     }
@@ -96,7 +97,7 @@ public class OrderRequestServiceMockTest {
 
         replay(orderRequestRepository, orderBookBuilder, invoiceRepository);
 
-        orderRequestService.processOrderRequest(request);
+        orderRequestService.process(request);
 
         verify(orderRequestRepository, orderBookBuilder, invoiceRepository);
     }
@@ -117,7 +118,7 @@ public class OrderRequestServiceMockTest {
 
         replay(orderRequestRepository, orderBookBuilder, invoiceRepository);
 
-        orderRequestService.calculateOrderRequest(request);
+        orderRequestService.calculate(request);
 
         verify(orderBookBuilder, invoiceRepository);
     }
@@ -166,7 +167,7 @@ public class OrderRequestServiceMockTest {
         expectLastCall();
 
         replay(orderRequestRepository);
-        orderRequestService.removeOrderRequest(1L);
+        orderRequestService.removeById(1L);
 
         verify(orderRequestRepository);
     }

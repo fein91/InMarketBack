@@ -57,3 +57,8 @@ values                  (115, 12,              19,    150,     SYSDATE, 0,      
 insert into order_request(id, counterparty_fk, price, quantity, date, order_type, order_side)
 values                  (116, 13,              18,    100,     SYSDATE, 0,         0);
 
+-- insert into history_order_request(id, counterparty_fk, price, quantity, date, order_type, order_side)
+-- values                           (111, 11,              15,    200,     SYSDATE, 0,         1);
+
+-- insert into history_trade(id, invoice_fk, processingOrderRequestFk, quantity, discountValue)
+-- values (111111, 1114, 111, 100, 5);

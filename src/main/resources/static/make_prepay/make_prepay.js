@@ -24,6 +24,7 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 					"quantity" : $scope.askQty,
 					"orderSide" : 0,
 					"orderType" : 1,
+					"date" : new Date(),
 					"counterparty" : {
 						"id" : 11,
 						"name" : "supplyer"
@@ -62,10 +63,12 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 							"quantity" : $scope.askQty,
 							"orderSide" : 0,
 							"orderType" : 1,
+							"date" : new Date(),
 							"counterparty" : {
 								"id" : 11,
 								"name" : "supplyer"
-							}
+							},
+							"invoicesChecked" :  invoices.supplierInvoicesCheckboxes.invoices
 						};
 					}
 				}
@@ -100,6 +103,7 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 					"quantity" : $scope.askQty,
 					"orderSide" : 0,
 					"orderType" : 0,
+					"date" : new Date(),
 					"counterparty" : {
 						"id" : 11,
 						"name" : "supplyer"
@@ -138,10 +142,12 @@ angular.module('inmarket.make_prepay', ['ngRoute', 'ui.bootstrap'])
 							"quantity" : $scope.askQty,
 							"orderSide" : 0,
 							"orderType" : 0,
+							"date" : new Date(),
 							"counterparty" : {
 								"id" : 11,
 								"name" : "supplyer"
-							}
+							},
+							"invoicesChecked" :  invoices.supplierInvoicesCheckboxes.invoices
 						};
 					}
 				}

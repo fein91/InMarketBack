@@ -12,6 +12,7 @@ angular.module('inmarket', [
   'inmarket.get_prepay',
   'inmarket.make_prepay',
   'inmarket.trans_history',
+  'inmarket.limit_orders',
   'inmarket.invoicesService',
   'inmarket.transHistoryService',
   'inmarket.orderRequestsService',

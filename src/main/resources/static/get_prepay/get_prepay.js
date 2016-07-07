@@ -23,6 +23,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 					"quantity" : $scope.bidQty,
 					"orderSide" : 1,
 					"orderType" : 1,
+					"date" : new Date(),
 					"counterparty" : {
 						"id" : 11,
 						"name" : "test"
@@ -64,10 +65,12 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 							"quantity" : $scope.bidQty,
 							"orderSide" : 1,
 							"orderType" : 1,
+							"date" : new Date(),
 							"counterparty" : {
 								"id" : 11,
 								"name" : "test"
-							}
+							},
+							"invoicesChecked" :  invoices.buyerInvoicesCheckboxes.invoices
 						};
 					}
 				}
@@ -146,6 +149,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 					"quantity" : $scope.bidQty,
 					"orderSide" : 1,
 					"orderType" : 0,
+					"date" : new Date(),
 					"counterparty" : {
 						"id" : 11,
 						"name" : "supplyer"
@@ -184,10 +188,12 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 							"quantity" : $scope.bidQty,
 							"orderSide" : 1,
 							"orderType" : 0,
+							"date" : new Date(),
 							"counterparty" : {
 								"id" : 11,
 								"name" : "supplyer"
-							}
+							},
+							"invoicesChecked" :  invoices.buyerInvoicesCheckboxes.invoices
 						};
 					}
 				}
