@@ -15,7 +15,7 @@ public class Counterparty {
     private Long id;
     private String name;
 
-    private String loginName;
+    private String login;
 
     public Counterparty() {
         //for JPA
@@ -45,11 +45,11 @@ public class Counterparty {
         this.name = name;
     }
 
-    public String getLoginName() {
-        return loginName;
+    public String getLogin() {
+        return login;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
+    public void setLogin(String login) {
+        this.login = login;
     }
 }

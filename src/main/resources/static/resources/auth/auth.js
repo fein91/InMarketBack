@@ -8,10 +8,11 @@ angular.module('inmarket.auth', [])
     }
 })
 
-.service('Session', function () {
+.service('session', function () {
     this.create = function (data) {
         this.id = data.id;
         this.login = data.login;
+        this.counterpartyId = data.counterpartyId;
         this.name = data.name;
         this.userRoles = [];
         angular.forEach(data.authorities, function (value, key) {
@@ -27,7 +28,7 @@ angular.module('inmarket.auth', [])
     return this;
 })
 
-.service('AuthSharedService', function($rootScope, $http, authService, Session) {
+.service('AuthSharedService', function($rootScope, $http, authService, session) {
     return {
         login: function(userName, password, rememberMe) {
             var config = {

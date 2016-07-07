@@ -3,6 +3,7 @@ angular.module('inmarket', [
     'ngTable',
     'chart.js',
     'ui.bootstrap',
+    'inmarket.auth',
     'inmarket.proposal',
     'inmarket.contragents',
     'inmarket.get_prepay',
@@ -37,7 +38,7 @@ angular.module('inmarket', [
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     })
 
-    .controller('loginCtrl', function ($rootScope, $http, $location, $route) {
+    .controller('loginCtrl', function ($rootScope, $http, $location, $route, session) {
         var self = this;
 
         self.tab = function (route) {
@@ -57,9 +58,14 @@ angular.module('inmarket', [
             }).success(function (data) {
                 if (data.name) {
                     $rootScope.authenticated = true;
+                    session.create({
+                        'login' : data.login,
+                        'counterpartyId' : data.id
+                    });
                 } else {
                     console.log('set auth to false')
                     $rootScope.authenticated = false;
+                    Session.invalidate();
                 }
                 callback && callback($rootScope.authenticated);
             }).error(function () {
