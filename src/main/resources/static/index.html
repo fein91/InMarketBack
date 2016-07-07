@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="inmarket" class="no-js">
-  <head>
+<html lang="en" class="no-js">
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,100 +9,116 @@
     <meta name="author" content="fein91">
     <title>INMARKET</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="bower_components/angular-chart.js/dist/angular-chart.css" rel="stylesheet">
-    <link href="app.css" rel="stylesheet">
-    <link href="components/ng-table.css" rel="stylesheet">
+    <style type="text/css">
+        [ng\:cloak], [ng-cloak], .ng-cloak {
+            display: none !important;
+        }
 
-  </head>
+    </style>
+</head>
 
-  <body>
-
-    <nav class="navbar navbar-fixed-top">
-      <div class="container-fluid navbar-inverse top-navbar">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">INMARKET</a>
+<body ng-app="inmarket" class="ng-cloak">
+<div ng-controller="loginCtrl as loginCtrl" class="container">
+    <nav ng-show="authenticated" class="navbar navbar-fixed-top">
+        <div class="container-fluid navbar-inverse top-navbar">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#/contragents">INMARKET</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">Profile <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-header">Nav header</li>
+                            <li><a href="#">Separated link</a></li>
+                            <li><a href="#">One more separated link</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Help</a></li>
+                    <li ng-show="authenticated"><a href="" ng-click="loginCtrl.logout()">logout</a></li>
+                </ul>
+            </div>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li role="separator" class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li>
-            <li><a href="#">Help</a></li>
-          </ul>
-        </div>                   
-      </div>
-      <div class="container-fluid proposal-bar">		     
-        <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
-            <div class="col-lg-3">Можно предоплатить поставщикам до: {{supplier_invoices_sum}} грн.;</div>
-            <div class="col-lg-3">Можно запросить у покупателей до: {{buyer_invoices_sum}} грн.;</div>
-            <div class="col-lg-3">Доступно к предоплате от покупателей до: {{asks_sum}} грн.;</div>
-            <div class="col-lg-3">Поставщикам срочно нужно до: {{bids_sum}} грн.</div>
+        <div class="container-fluid proposal-bar">
+            <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
+                <div class="col-lg-3">Можно предоплатить поставщикам до: {{supplier_invoices_sum}} грн.;</div>
+                <div class="col-lg-3">Можно запросить у покупателей до: {{buyer_invoices_sum}} грн.;</div>
+                <div class="col-lg-3">Доступно к предоплате от покупателей до: {{asks_sum}} грн.;</div>
+                <div class="col-lg-3">Поставщикам срочно нужно до: {{bids_sum}} грн.</div>
+            </div>
         </div>
-      </div>
     </nav>
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar" ng-controller="HeaderController">
-            <li ng-class="{ active: isActive('/contragents')}"><a href="#">Мои контракты <span class="sr-only">(current)</span></a></li>
-            <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a></li>
-            <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить предоплату</a></li>
-            <li ng-class="{ active: isActive('/limit_orders')}"><a href="#/limit_orders">Отложенные заявки</a></li>
-            <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История транзакций</a></li>
-            <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
-            <li ng-class="{ active: isActive('/importExcelFile')}"><a href="#/importExcelFile">Импортнуть файл</a></li>
-          </ul>
+<div class="container-fluid">
+    <div class="row">
+        <div ng-show="authenticated" class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar" ng-controller="HeaderController">
+                <li ng-class="{ active: isActive('/contragents')}"><a href="#/contragents">Мои контракты <span
+                        class="sr-only">(current)</span></a></li>
+                <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a>
+                </li>
+                <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить
+                    предоплату</a></li>
+                <li ng-class="{ active: isActive('/limit_orders')}"><a href="#/limit_orders">Отложенные заявки</a></li>
+                <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История
+                    транзакций</a></li>
+                <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
+                <li ng-class="{ active: isActive('/importExcelFile')}"><a href="#/importExcelFile">Импортнуть файл</a>
+                </li>
+            </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <div ng-view></div>
+            <div ng-view></div>
         </div>
-      </div>
     </div>
+</div>
+</div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-	<script src="bower_components/Chart.js/Chart.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-    <script src="bower_components/angular-route/angular-route.js"></script>
-	  <script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>	
-    <script src="app.js"></script>
-    <script src="components/ng-table.js"></script>
-    <script src="proposal/invoices.js"></script>
-    <script src="proposal/proposal.js"></script>
-    <script src="contragents/contragents.js"></script>
-    <script src="contragents/invoices_service.js"></script>
-    <script src="contragents/counterparty_service.js"></script>
-    <script src="make_prepay/orderRequestConfirmPopup.js"></script>
-    <script src="make_prepay/make_prepay.js"></script>
-    <script src="get_prepay/get_prepay.js"></script>
-    <script src="get_prepay/orderRequests_service.js"></script>
-    <script src="trans_history/trans_history.js"></script>
-    <script src="trans_history/trans_history_service.js"></script>
-    <script src="limit_orders/limit_orders.js"></script>
-  </body>
+
+<!--Bootstrap core CSS-->
+<link href="resources/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="resources/bower_components/angular-chart.js/dist/angular-chart.css" rel="stylesheet">
+<link href="resources/app.css" rel="stylesheet">
+<link href="resources/components/ng-table.css" rel="stylesheet">
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="resources/bower_components/Chart.js/Chart.js"></script>
+<script src="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="resources/bower_components/angular/angular.js"></script>
+<script src="resources/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+<script src="resources/bower_components/angular-route/angular-route.js"></script>
+<script src="resources/bower_components/angular-chart.js/dist/angular-chart.js"></script>
+<script src="resources/components/ng-table.js"></script>
+<script src="resources/proposal/invoices.js"></script>
+<script src="resources/proposal/proposal.js"></script>
+<script src="resources/contragents/contragents.js"></script>
+<script src="resources/contragents/invoices_service.js"></script>
+<script src="resources/contragents/counterparty_service.js"></script>
+<script src="resources/make_prepay/orderRequestConfirmPopup.js"></script>
+<script src="resources/make_prepay/make_prepay.js"></script>
+<script src="resources/get_prepay/get_prepay.js"></script>
+<script src="resources/get_prepay/orderRequests_service.js"></script>
+<script src="resources/trans_history/trans_history.js"></script>
+<script src="resources/trans_history/trans_history_service.js"></script>
+<script src="resources/limit_orders/limit_orders.js"></script>
+<script src="resources/auth/auth.js"></script>
+<script src="resources/app.js"></script>
+</body>
 </html>

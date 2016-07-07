@@ -1,0 +1,101 @@
+<div class="row page-content">
+    <uib-tabset active="activeJustified" justified="false" type="pills">
+        <uib-tab index="0" heading="История рынка">
+            <div class="row" ng-controller="MakePrepayHistoryChartCtrl">
+                <div class="col-xs-8">
+                    <canvas id="line" class="chart chart-line" chart-data="line_data"
+                            chart-labels="line_labels" chart-legend="true" chart-series="line_series"
+                            chart-click="onClick">
+                    </canvas>
+                    <canvas id="bar" class="chart chart-bar"
+                            chart-data="bar_data" chart-labels="bar_labels" chart-series="bar_series">
+                    </canvas>
+                </div>
+                <div class="col-xs-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                                <a href="#" class="btn btn-default" role="button">История за неделю</a>
+                                <a href="#" class="btn btn-default" role="button">История за месяц</a>
+                            </div>
+                            <p>Максимальная цена: {{maxPrice}}</p>
+                            <p>Минимальная цена: {{minPrice}}</p>
+                            <p>Средняя цена: {{avgPrice}}</p>
+                            <p>Средний объем сделок: {{avgDeals}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-tab>
+        <uib-tab index="1" heading="Рыночная заявка">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form ng-controller="MarketAskCtrl">
+                        <div class="form-group form-inline">
+                            <label>Введите желаемую для заказа сумму предоплаты: </label>
+                            <input type="number" min="0" class="form-control" ng-model="askQty" placeholder="Сумма"
+                                   required>
+                        </div>
+                        <div>
+                            <p>В данный момент вы можете авансировать эту сумму под APR={{askApr}}</p>
+                        </div>
+                        <div class="alert alert-info alert-dismissable" ng-hide="demandSatisfied">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            В данный момент ваши поставщики готовы принять предоплаты только на
+                            сумму={{satisfiedAskQty}} грн.
+                            Остаток ({{askQty - satisfiedAskQty}} грн) будет размещен по APR={{askApr}}
+                        </div>
+                        <div class="alert alert-warning alert-dismissable"
+                             ng-show="calculationCalled && calculatedWithError">
+                            {{calculationErrorMsg}}
+                        </div>
+                        <button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError"
+                                class="btn btn-default">Подтвердить
+                        </button>
+                        <button type="reset" class="btn btn-default" ng-click="reset()">Сбросить</button>
+                        <button type="submit" ng-click="calculateAskMarketOrder()" class="btn btn-default">Пересчитать
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </uib-tab>
+        <uib-tab index="2" heading="Отложенная заявка">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form ng-controller="LimitAskCtrl">
+                        <div class="form-group form-inline">
+                            <label>Введите желаемый APR: </label>
+                            <input ng-model="askApr" type="number" min="0" max="99" class="form-control"
+                                   placeholder="Процент" required>
+                        </div>
+                        <div class="form-group form-inline">
+                            <label>Введите желаемую сумму для осуществления предоплаты: </label>
+                            <input ng-model="askQty" type="number" min="0" class="form-control" placeholder="Сумма"
+                                   required>
+                        </div>
+                        <div>
+                            <p>По заданному APR к моментальному исполнению подлежит сумма {{satisfiedAskQty}} грн.</p>
+                        </div>
+                        <div class="alert alert-warning alert-dismissable"
+                             ng-show="calculationCalled && calculatedWithError">
+                            {{calculationErrorMsg}}
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <canvas id="bar" class="chart chart-bar"
+                                        chart-data="bar_data" chart-labels="bar_labels" chart-series="bar_series">
+                                </canvas>
+                            </div>
+                        </div>
+                        <button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError"
+                                class="btn btn-default">Подтвердить
+                        </button>
+                        <button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>
+                        <button type="submit" ng-click="calculateLimitAskOrder()" class="btn btn-default">Пересчитать
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </uib-tab>
+    </uib-tabset>
+</div>

@@ -1,0 +1,52 @@
+{
+  "invoices": [
+    {
+      "company_name": "Giacomo Guilizzoni",
+      "invoice_id": 37,
+      "sum": 350,
+      "prepay_percent": 17
+    },
+    {
+      "company_name": "Founder & CEO",
+      "invoice_id": 34,
+      "sum": 500,
+      "prepay_percent": 25
+    },
+    {
+      "company_name": "Marco Botton",
+      "invoice_id": 35,
+      "sum": 1000,
+      "prepay_percent": 90
+    },
+    {
+      "company_name": "Tuttofare",
+      "invoice_id": 53,
+      "sum": 700,
+      "prepay_percent": 20
+    },
+    {
+      "company_name": "Mariah Maclachlan",
+      "invoice_id": 33,
+      "sum": 1500,
+      "prepay_percent": 10
+    },
+    {
+      "company_name": "Better Half",
+      "invoice_id": 56,
+      "sum": 360,
+      "prepay_percent": 16
+    },
+    {
+      "company_name": "Valeria Liberty",
+      "invoice_id": 52,
+      "sum": 1700,
+      "prepay_percent": 50
+    },
+    {
+      "company_name": "Head Chef",
+      "invoice_id": 6,
+      "sum": 250,
+      "prepay_percent": 19
+    }
+  ]
+}

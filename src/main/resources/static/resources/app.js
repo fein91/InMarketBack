@@ -1,0 +1,103 @@
+angular.module('inmarket', [
+    'ngRoute',
+    'ngTable',
+    'chart.js',
+    'ui.bootstrap',
+    'inmarket.auth',
+    'inmarket.proposal',
+    'inmarket.orderRequestConfirmPopup',
+    'inmarket.contragents',
+    'inmarket.get_prepay',
+    'inmarket.make_prepay',
+    'inmarket.trans_history',
+    'inmarket.limit_orders',
+    'inmarket.invoicesService',
+    'inmarket.transHistoryService',
+    'inmarket.orderRequestsService',
+    'inmarket.counterpartyService',
+    'inmarket.invoices'])
+
+    .config(function ($routeProvider, $httpProvider) {
+        $routeProvider
+            .when('/support', {
+                templateUrl: 'partials/support.html',
+                access: {
+                    loginRequired: true
+                }
+            })
+            .when('/login', {
+                templateUrl: 'login.html',
+                controller: 'loginCtrl',
+                controllerAs: 'controller'
+            })
+            .when('/', {
+                templateUrl: 'login.html',
+                controller: 'home',
+                controllerAs: 'controller'
+            })
+            .when('/importExcelFile', {
+                templateUrl: 'partials/import.html',
+                access: {
+                    loginRequired: true
+                }
+            })
+            .otherwise({redirectTo: '/'});
+
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    })
+
+    .controller('HeaderController', ['$scope', '$location', function ($scope, $location) {
+        $scope.isActive = function (viewLocation) {
+            return viewLocation === $location.path();
+        };
+    }])
+
+    .run(function ($rootScope, $location, session) {
+        $rootScope.$on('$routeChangeStart', function (event, next) {
+            if (next.originalPath === "/login" && $rootScope.authenticated) {
+                event.preventDefault();
+            } else if (next.access && next.access.loginRequired && !$rootScope.authenticated) {
+                event.preventDefault();
+                $rootScope.$broadcast("event:auth-loginRequired", {});
+            }
+        });
+
+        $rootScope.$on('event:auth-loginRequired', function (event, data) {
+            session.invalidate();
+            $rootScope.authenticated = false;
+            $location.path('/login');
+        });
+    })
+
+    .controller('uploadCtrl', ['$scope', '$http', function ($scope, $http) {
+        $scope.uploadFile = function (files) {
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append("file", files[0]);
+
+            $http.post('upload', fd, {
+                withCredentials: true,
+                headers: {'Content-Type': undefined},
+                transformRequest: angular.identity
+            });
+        }
+    }])
+
+    .controller('exportCtrl', ['$scope', '$http', function ($scope, $http) {
+
+        $scope.exportData = function () {
+            $http({
+                method: 'POST',
+                url: '/exportInvoices',
+                headers: {'Content-Type': 'text/csv'}
+
+            }).success(function (data, status, headers, config) {
+                var anchor = angular.element('<a/>');
+                anchor.attr({
+                    href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
+                    target: '_blank',
+                    download: 'export.xlsx'
+                })[0].click();
+            })
+        }
+    }]);

@@ -12,4 +12,5 @@ import java.util.List;
  */
 public interface CounterpartyRepository extends CrudRepository<Counterparty, Long> {
 
+    Counterparty findByLogin(String loginName);
 }

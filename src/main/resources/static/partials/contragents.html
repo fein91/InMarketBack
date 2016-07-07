@@ -1,0 +1,56 @@
+<div class="row page-content">
+    <button type="button" class="btn btn-default import-btn pull-right">Импорт</button>
+    <uib-tabset active="activeJustified" justified="false" type="pills">
+        <uib-tab index="0" heading="Мои покупатели">
+            <div class="table-responsive" ng-controller="MyBuyersCtrl as myBuyers">
+                <table ng-table="tableParams" class="table table-condensed table-bordered table-striped"
+                       show-filter="true">
+                    <tr ng-repeat="invoice in $data">
+                        <td header="'ng-table/headers/checkbox.html'">
+                            <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
+                        <td data-title="'Название компании'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
+                            {{invoice.target.name}}
+                        </td>
+                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
+                            {{invoice.id}}
+                        </td>
+                        <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                            {{invoice.value}}
+                        </td>
+                        <td data-title="'Дата платежа'" sortable="'paymentDate'">
+                            {{invoice.paymentDate | date:'dd/MM/yyyy'}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </uib-tab>
+        <uib-tab index="1" heading="Мои поставщики">
+            <div class="table-responsive" ng-controller="MySuppliersCtrl as mySuppliers">
+                <table ng-table="tableParams" class="table table-condensed table-bordered table-striped"
+                       show-filter="true">
+                    <tr ng-repeat="invoice in $data">
+                        <td header="'ng-table/headers/checkbox.html'">
+                            <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
+                        <td data-title="'Название компании'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
+                            {{invoice.source.name}}
+                        </td>
+                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
+                            {{invoice.id}}
+                        </td>
+                        <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                            {{invoice.value}}
+                        </td>
+                        <td data-title="'Дата платежа'" sortable="'paymentDate'">
+                            {{invoice.paymentDate | date:'dd/MM/yyyy'}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </uib-tab>
+    </uib-tabset>
+</div>
+
+<script type="text/ng-template" id="ng-table/headers/checkbox.html">
+    <input type="checkbox" ng-model="checkboxes.checked" ng-click="checkAll()" id="select_all" name="filter-checkbox"
+           value=""/>
+</script>
