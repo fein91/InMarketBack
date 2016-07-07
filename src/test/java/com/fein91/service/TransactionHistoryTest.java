@@ -4,6 +4,7 @@ import com.fein91.InMarketApplication;
 import com.fein91.builders.OrderRequestBuilder;
 import com.fein91.core.model.OrderSide;
 import com.fein91.model.*;
+import com.fein91.rest.exception.OrderRequestException;
 import com.google.common.collect.ImmutableMap;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -104,6 +105,41 @@ public class TransactionHistoryTest {
         HistoryOrderRequest limitOrder = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.LIMIT);
         Assert.assertNotNull(limitOrder);
         Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(limitOrder.getQuantity()));
+    }
+
+    @Test
+    public void test2() throws OrderRequestException {
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
+        Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
+        Counterparty supplier4 = counterPartyService.addCounterParty("supplier4");
+
+        Invoice invoiceS1B = invoiceService.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), ZERO, new Date()));
+        Invoice invoiceS2B= invoiceService.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, new Date()));
+        Invoice invoiceS3B = invoiceService.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(50), ZERO, new Date()));
+        Invoice invoiceS4B = invoiceService.addInvoice(new Invoice(supplier4, buyer, BigDecimal.valueOf(50), ZERO, new Date()));
+
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
+                .quantity(BigDecimal.valueOf(50))
+                .price(BigDecimal.valueOf(27d))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.LIMIT)
+                .build();
+        orderRequestService.process(bidOrderRequest1);
+
+        OrderRequest askOrderRequest = new OrderRequestBuilder(buyer)
+                .quantity(BigDecimal.valueOf(250))
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.MARKET)
+                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true, invoiceS3B.getId(), true, invoiceS4B.getId(), true))
+                .build();
+        orderRequestService.process(askOrderRequest);
+
+        List<HistoryOrderRequest> supplier1TransHistory = historyOrderRequestService.getByCounterparty(supplier1);
+        HistoryOrderRequest supplier1MarketOrderRequest = findHistoryOrderRequestByOrderSide(supplier1TransHistory, OrderType.MARKET);
+        Assert.assertEquals(OrderSide.BID, supplier1MarketOrderRequest.getOrderSide());
+        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1MarketOrderRequest.getQuantity()));
     }
 
     private HistoryOrderRequest findHistoryOrderRequestByOrderSide(List<HistoryOrderRequest> transHistory, OrderType orderType) {

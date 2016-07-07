@@ -4,6 +4,7 @@ import com.fein91.dao.HistoryOrderRequestRepository;
 import com.fein91.model.Counterparty;
 import com.fein91.model.HistoryOrderRequest;
 import com.fein91.model.OrderRequest;
+import com.fein91.model.OrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +41,8 @@ public class HistoryOrderRequestServiceStub implements HistoryOrderRequestServic
     }
 
     @Override
-    public List<HistoryOrderRequest> getByCounterpartyId(Long counterpartyId) {
-        return historyOrderRequestRepository.findByCounterpartyId(counterpartyId);
+    public List<HistoryOrderRequest> getByCounterpartyIdAndOrderType(Long counterpartyId, OrderType orderType) {
+        return historyOrderRequestRepository.findByCounterpartyIdAndOrderType(counterpartyId, orderType.getId());
     }
 
     @Override

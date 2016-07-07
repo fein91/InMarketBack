@@ -1,8 +1,10 @@
 package com.fein91.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fein91.core.model.OrderSide;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +16,7 @@ public class HistoryOrderRequest {
     @GeneratedValue
     Long id;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name="counterparty_fk")
     Counterparty counterparty;
@@ -28,6 +31,7 @@ public class HistoryOrderRequest {
 
     int orderType;
 
+    @JsonIgnore
     Long originOrderRequestId;
 
     @OneToMany(cascade = CascadeType.PERSIST)

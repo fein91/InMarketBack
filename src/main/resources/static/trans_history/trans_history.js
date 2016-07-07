@@ -17,9 +17,25 @@ angular.module('inmarket.trans_history', ['ngRoute'])
         self.init = function () {
             transHistoryService.getTransactionHistory(self.counterpartyId)
                 .then(function successCallback(response) {
-                    $scope.tableParams = new NgTableParams({}, {
+                    var bids = [];
+                    var asks = [];
+
+                    angular.forEach(response.data, function(historyMarketOrder) {
+                        if ('ASK' === historyMarketOrder.orderSide) {
+                            asks.push(historyMarketOrder);
+                        } else if ('BID' === historyMarketOrder.orderSide) {
+                            bids.push(historyMarketOrder);
+                        }
+                    });
+
+                    $scope.bidsTableParams = new NgTableParams({}, {
                         //filterOptions: { filterFn: priceRangeFilter },
-                        dataset: response.data
+                        dataset: bids
+                    });
+
+                    $scope.asksTableParams = new NgTableParams({}, {
+                        //filterOptions: { filterFn: priceRangeFilter },
+                        dataset: asks
                     });
                     console.log('init trans history from db: ' + JSON.stringify(response.data));
                 }, function errorCallback(response) {

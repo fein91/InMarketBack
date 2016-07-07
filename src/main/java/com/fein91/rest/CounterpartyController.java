@@ -3,6 +3,7 @@ package com.fein91.rest;
 import com.fein91.dao.InvoiceRepository;
 import com.fein91.model.HistoryOrderRequest;
 import com.fein91.model.Invoice;
+import com.fein91.model.OrderType;
 import com.fein91.service.HistoryOrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,6 +41,6 @@ public class CounterpartyController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/transactionHistory")
     public List<HistoryOrderRequest> getTransactionHistory(@PathVariable Long counterpartyId) {
-        return historyOrderRequestService.getByCounterpartyId(counterpartyId);
+        return historyOrderRequestService.getByCounterpartyIdAndOrderType(counterpartyId, OrderType.MARKET);
     }
 }

@@ -19,6 +19,7 @@ public class HistoryTrade {
     /**
      * ref to existed limit order request from order book which was affected in current trade
      */
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="affectedOrderRequestFk")
     HistoryOrderRequest affectedOrderRequest;
