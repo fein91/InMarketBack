@@ -18,74 +18,78 @@
 </head>
 
 <body ng-app="inmarket" class="ng-cloak">
-<div ng-controller="loginCtrl as loginCtrl" class="container">
-    <nav ng-show="authenticated" class="navbar navbar-fixed-top">
-        <div class="container-fluid navbar-inverse top-navbar">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                        aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#/contragents">INMARKET</a>
+<div ng-controller="loginCtrl as loginCtrl">
+    <div class="container">
+        <nav ng-show="authenticated" class="navbar navbar-fixed-top">
+            <div class="container-fluid navbar-inverse top-navbar">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                            aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#/contragents">INMARKET</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">Dashboard</a></li>
+                        <li><a href="#">Settings</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                               aria-expanded="false">Profile <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li class="dropdown-header">Nav header</li>
+                                <li><a href="#">Separated link</a></li>
+                                <li><a href="#">One more separated link</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Help</a></li>
+                        <li ng-show="authenticated"><a href="" ng-click="loginCtrl.logout()">logout</a></li>
+                    </ul>
+                </div>
             </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">Settings</a></li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">Profile <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li class="dropdown-header">Nav header</li>
-                            <li><a href="#">Separated link</a></li>
-                            <li><a href="#">One more separated link</a></li>
-                        </ul>
+            <div class="container-fluid proposal-bar">
+                <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
+                    <div class="col-lg-3">Можно предоплатить поставщикам до: {{supplier_invoices_sum}} грн.;</div>
+                    <div class="col-lg-3">Можно запросить у покупателей до: {{buyer_invoices_sum}} грн.;</div>
+                    <div class="col-lg-3">Доступно к предоплате от покупателей до: {{asks_sum}} грн.;</div>
+                    <div class="col-lg-3">Поставщикам срочно нужно до: {{bids_sum}} грн.</div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div ng-show="authenticated" class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar" ng-controller="HeaderController">
+                    <li ng-class="{ active: isActive('/contragents')}"><a href="#/contragents">Мои контракты <span
+                            class="sr-only">(current)</span></a></li>
+                    <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a>
                     </li>
-                    <li><a href="#">Help</a></li>
-                    <li ng-show="authenticated"><a href="" ng-click="loginCtrl.logout()">logout</a></li>
+                    <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить
+                        предоплату</a></li>
+                    <li ng-class="{ active: isActive('/limit_orders')}"><a href="#/limit_orders">Отложенные заявки</a>
+                    </li>
+                    <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История
+                        транзакций</a></li>
+                    <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
+                    <li ng-class="{ active: isActive('/importExcelFile')}"><a href="#/importExcelFile">Импортнуть
+                        файл</a>
+                    </li>
                 </ul>
             </div>
-        </div>
-        <div class="container-fluid proposal-bar">
-            <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
-                <div class="col-lg-3">Можно предоплатить поставщикам до: {{supplier_invoices_sum}} грн.;</div>
-                <div class="col-lg-3">Можно запросить у покупателей до: {{buyer_invoices_sum}} грн.;</div>
-                <div class="col-lg-3">Доступно к предоплате от покупателей до: {{asks_sum}} грн.;</div>
-                <div class="col-lg-3">Поставщикам срочно нужно до: {{bids_sum}} грн.</div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div ng-view></div>
             </div>
         </div>
-    </nav>
-
-<div class="container-fluid">
-    <div class="row">
-        <div ng-show="authenticated" class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar" ng-controller="HeaderController">
-                <li ng-class="{ active: isActive('/contragents')}"><a href="#/contragents">Мои контракты <span
-                        class="sr-only">(current)</span></a></li>
-                <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a>
-                </li>
-                <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить
-                    предоплату</a></li>
-                <li ng-class="{ active: isActive('/limit_orders')}"><a href="#/limit_orders">Отложенные заявки</a></li>
-                <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История
-                    транзакций</a></li>
-                <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
-                <li ng-class="{ active: isActive('/importExcelFile')}"><a href="#/importExcelFile">Импортнуть файл</a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <div ng-view></div>
-        </div>
     </div>
-</div>
 </div>
 
 
