@@ -14,6 +14,10 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 
         $scope.bidQty = '';
         $scope.bidApr = '';
+        $scope.satisfiedBidQty = '';
+        $scope.avgDaysToPayment = '';
+        $scope.avgDiscountPerc = '';
+        $scope.discountSum = '';
         $scope.demandSatisfied = true;
         $scope.calculationCalled = false;
         $scope.calculatedWithError = true;
@@ -83,6 +87,10 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
         $scope.reset = function () {
             $scope.bidQty = '';
             $scope.bidApr = '';
+            $scope.satisfiedBidQty = '';
+            $scope.avgDaysToPayment = '';
+            $scope.avgDiscountPerc = '';
+            $scope.discountSum = '';
             $scope.demandSatisfied = true;
             $scope.calculatedWithError = true;
             $scope.calculationErrorMsg = '';

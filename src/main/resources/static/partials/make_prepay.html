@@ -37,7 +37,13 @@
                                    required>
                         </div>
                         <div>
-                            <p>В данный момент вы можете авансировать эту сумму под APR={{askApr}}</p>
+                            <p>
+                                В данный момент вы можете авансировать эту сумму со следующими параметрами:
+                                APR={{askApr}}</br>
+                                средний % скидки={{avgDiscountPerc}}</br>
+                                общая сумму скидок будет составлять={{discountSum}}</br>
+                                средний срок оплаты={{avgDaysToPayment}} дней
+                            </p>
                         </div>
                         <div class="alert alert-info alert-dismissable" ng-hide="demandSatisfied">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
