@@ -108,8 +108,8 @@ public class OrderRequest {
                 ", price=" + price +
                 ", quantity=" + quantity +
                 ", date=" + date +
-                ", orderSide=" + orderSide +
-                ", orderType=" + orderType +
+                ", orderSide=" + getOrderSide() +
+                ", orderType=" + getOrderType() +
                 '}';
     }
 

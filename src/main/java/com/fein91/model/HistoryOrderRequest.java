@@ -118,8 +118,8 @@ public class HistoryOrderRequest {
                 ", price=" + price +
                 ", quantity=" + quantity +
                 ", date=" + date +
-                ", orderSide=" + orderSide +
-                ", orderType=" + orderType +
+                ", orderSide=" + getOrderSide() +
+                ", orderType=" + getOrderType() +
                 ", originOrderRequestId=" + originOrderRequestId +
                 ", historyTrades=" + historyTrades +
                 '}';

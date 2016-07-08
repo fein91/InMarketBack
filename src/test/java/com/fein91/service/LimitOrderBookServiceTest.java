@@ -139,7 +139,7 @@ public class LimitOrderBookServiceTest {
         Counterparty supplier4 = counterPartyService.addCounterParty("supplier4");
 
         Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), ZERO, NEW_DATE));
-        Invoice invoiceS2B= invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, NEW_DATE));
+        Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, NEW_DATE));
         Invoice invoiceS3B = invoiceServiceImpl.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(50), ZERO, NEW_DATE));
         Invoice invoiceS4B = invoiceServiceImpl.addInvoice(new Invoice(supplier4, buyer, BigDecimal.valueOf(50), ZERO, NEW_DATE));
 
@@ -589,7 +589,7 @@ public class LimitOrderBookServiceTest {
     * b1 ask market order == 350
     * */
     //TODO fix this NPE
-     @Test
+    @Test
     public void testOrderWithSomeUncheckedInvoices() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -636,15 +636,44 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals("Actual apr " + result.getApr(), BigDecimal.valueOf(25.55).compareTo(result.getApr()), 0);
     }
 
+    //TODO to fix this case
+    @Test
+    @Transactional
+    @Rollback
+    public void testToFix() throws Exception {
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+        Counterparty supplier = counterPartyService.addCounterParty("supplier");
+
+        Invoice invoice1SB = invoiceServiceImpl.addInvoice(new Invoice(supplier, buyer, BigDecimal.valueOf(100), ZERO, getCurrentDayPlusDays(30)));
+        Invoice invoice2SB = invoiceServiceImpl.addInvoice(new Invoice(supplier, buyer, BigDecimal.valueOf(100), ZERO, getCurrentDayPlusDays(50)));
+
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(buyer)
+                .quantity(BigDecimal.valueOf(150))
+                .price(BigDecimal.valueOf(27d))
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.LIMIT)
+                .build();
+        orderRequestServiceImpl.process(bidOrderRequest1);
+
+        OrderRequest askOrderRequest = new OrderRequestBuilder(supplier)
+                .quantity(BigDecimal.valueOf(200))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.MARKET)
+                .invoicesChecked(ImmutableMap.of(invoice1SB.getId(), true, invoice2SB.getId(), true))
+                .build();
+        orderRequestServiceImpl.process(askOrderRequest);
+
+    }
+
     /*
-    *   source  target  value paymentDate
-    *     s1      b1     200    70
-    *     s3      b1     100    70
-    *       BID
-    * s1 19 50
-    * s2 17 100
-    * b1 ask market order == 200
-    * */
+        *   source  target  value paymentDate
+        *     s1      b1     200    70
+        *     s3      b1     100    70
+        *       BID
+        * s1 19 50
+        * s2 17 100
+        * b1 ask market order == 200
+        * */
     @Test
     public void testLimitOrderCreatedAfterUnsatisfiedMarketOrder() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");

@@ -17,6 +17,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,7 +111,9 @@ public class TransactionHistoryTest {
     }
 
     @Test
-    public void test2() throws OrderRequestException {
+    @Transactional
+    @Rollback
+    public void testMarketAsk() throws OrderRequestException {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
@@ -137,10 +142,76 @@ public class TransactionHistoryTest {
         orderRequestService.process(askOrderRequest);
 
         List<HistoryOrderRequest> supplier1TransHistory = historyOrderRequestService.getByCounterparty(supplier1);
+        Assert.assertEquals(2, supplier1TransHistory.size());
+        HistoryOrderRequest supplier1LimitOrderRequest = findHistoryOrderRequestByOrderSide(supplier1TransHistory, OrderType.LIMIT);
+        Assert.assertEquals(OrderSide.BID, supplier1LimitOrderRequest.getOrderSide());
+        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1LimitOrderRequest.getQuantity()));
+
         HistoryOrderRequest supplier1MarketOrderRequest = findHistoryOrderRequestByOrderSide(supplier1TransHistory, OrderType.MARKET);
         Assert.assertEquals(OrderSide.BID, supplier1MarketOrderRequest.getOrderSide());
         Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1MarketOrderRequest.getQuantity()));
+
+        List<HistoryOrderRequest> buyerTransHistory = historyOrderRequestService.getByCounterparty(buyer);
+        Assert.assertEquals(2, buyerTransHistory.size());
+        HistoryOrderRequest buyerMarketOrderRequest = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.MARKET);
+        Assert.assertEquals(OrderSide.ASK, buyerMarketOrderRequest.getOrderSide());
+        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(buyerMarketOrderRequest.getQuantity()));
+
+        HistoryOrderRequest buyerLimitOrderRequest = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.LIMIT);
+        Assert.assertEquals(OrderSide.ASK, buyerLimitOrderRequest.getOrderSide());
+        Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(buyerLimitOrderRequest.getQuantity()));
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testMarketBid() throws OrderRequestException {
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+        Counterparty supplier = counterPartyService.addCounterParty("supplier");
+
+        Invoice invoice1SB = invoiceService.addInvoice(new Invoice(supplier, buyer, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(30)));
+
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(buyer)
+                .quantity(BigDecimal.valueOf(100))
+                .price(BigDecimal.valueOf(27d))
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.LIMIT)
+                .build();
+        orderRequestService.process(bidOrderRequest1);
+
+        OrderRequest askOrderRequest = new OrderRequestBuilder(supplier)
+                .quantity(BigDecimal.valueOf(200))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.MARKET)
+                .invoicesChecked(ImmutableMap.of(invoice1SB.getId(), true))
+                .build();
+        orderRequestService.process(askOrderRequest);
+
+        List<HistoryOrderRequest> supplierTransHistory = historyOrderRequestService.getByCounterparty(supplier);
+        Assert.assertEquals(2, supplierTransHistory.size());
+        HistoryOrderRequest supplierLimitOrderRequest = findHistoryOrderRequestByOrderSide(supplierTransHistory, OrderType.LIMIT);
+        Assert.assertEquals(OrderSide.BID, supplierLimitOrderRequest.getOrderSide());
+        Assert.assertEquals("Actual qty: " + supplierLimitOrderRequest.getQuantity(),
+                0, BigDecimal.valueOf(100).compareTo(supplierLimitOrderRequest.getQuantity()));
+
+        HistoryOrderRequest supplierMarketOrderRequest = findHistoryOrderRequestByOrderSide(supplierTransHistory, OrderType.MARKET);
+        Assert.assertEquals(OrderSide.BID, supplierMarketOrderRequest.getOrderSide());
+        Assert.assertEquals("Actual qty: " + supplierMarketOrderRequest.getQuantity(),
+                0, BigDecimal.valueOf(100).compareTo(supplierMarketOrderRequest.getQuantity()));
+
+        List<HistoryOrderRequest> buyerTransHistory = historyOrderRequestService.getByCounterparty(buyer);
+        Assert.assertEquals(2, buyerTransHistory.size());
+        HistoryOrderRequest buyerMarketOrderRequest = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.MARKET);
+        Assert.assertEquals(OrderSide.ASK, buyerMarketOrderRequest.getOrderSide());
+        Assert.assertEquals("Actual qty: " + buyerMarketOrderRequest.getQuantity(),
+                0, BigDecimal.valueOf(100).compareTo(buyerMarketOrderRequest.getQuantity()));
+
+        HistoryOrderRequest buyerLimitOrderRequest = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.LIMIT);
+        Assert.assertEquals(OrderSide.ASK, buyerLimitOrderRequest.getOrderSide());
+        Assert.assertEquals("Actual qty: " + buyerLimitOrderRequest.getQuantity(),
+                0, BigDecimal.valueOf(100).compareTo(buyerLimitOrderRequest.getQuantity()));
+    }
+
 
     private HistoryOrderRequest findHistoryOrderRequestByOrderSide(List<HistoryOrderRequest> transHistory, OrderType orderType) {
         return transHistory.stream()
@@ -154,6 +225,11 @@ public class TransactionHistoryTest {
                 .filter(trade -> target.equals(trade.getTarget()))
                 .findFirst()
                 .get();
+    }
+
+    private Date getCurrentDayPlusDays(int days) {
+        Instant instant = LocalDate.now().plusDays(days).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);
     }
 
 
