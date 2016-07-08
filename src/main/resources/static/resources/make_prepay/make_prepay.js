@@ -15,6 +15,9 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
         $scope.askQty = '';
         $scope.askApr = '';
         $scope.satisfiedAskQty = '';
+        $scope.avgDaysToPayment = '';
+        $scope.avgDiscountPerc = '';
+        $scope.discountSum = '';
         $scope.demandSatisfied = true;
         $scope.calculationCalled = false;
         $scope.calculatedWithError = true;
@@ -41,6 +44,9 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                         console.log('order result: ' + JSON.stringify(orderResult));
                         $scope.askApr = orderResult.apr;
                         $scope.satisfiedAskQty = orderResult.satisfiedDemand;
+                        $scope.avgDaysToPayment = orderResult.avgDaysToPayment;
+                        $scope.avgDiscountPerc = orderResult.avgDiscountPerc;
+                        $scope.discountSum = orderResult.avgDiscountPerc;
                         if ($scope.askQty > $scope.satisfiedAskQty) {
                             $scope.demandSatisfied = false;
                         }
@@ -82,6 +88,9 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
             $scope.askQty = '';
             $scope.askApr = '';
             $scope.satisfiedAskQty = '';
+            $scope.avgDaysToPayment = '';
+            $scope.avgDiscountPerc = '';
+            $scope.discountSum = '';
             $scope.demandSatisfied = true;
             $scope.calculatedWithError = true;
             $scope.calculationErrorMsg = '';
