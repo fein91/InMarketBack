@@ -9,7 +9,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
         });
     }])
 
-    .controller('MarketAskCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', function ($scope, $rootScope, $uibModal, orderRequestsService, invoices) {
+    .controller('MarketAskCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', 'session', function ($scope, $rootScope, $uibModal, orderRequestsService, invoices, session) {
         console.log('MarketAskCtrl inited');
 
         $scope.askQty = '';
@@ -32,7 +32,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                     "orderType": 1,
                     "date": new Date(),
                     "counterparty": {
-                        "id": 11,
+                        "id": session.counterpartyId,
                         "name": "supplyer"
                     },
                     "invoicesChecked": invoices.supplierInvoicesCheckboxes.invoices
@@ -74,7 +74,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                             "orderType": 1,
                             "date": new Date(),
                             "counterparty": {
-                                "id": 11,
+                                "id": session.counterpartyId,
                                 "name": "supplyer"
                             },
                             "invoicesChecked": invoices.supplierInvoicesCheckboxes.invoices
@@ -98,7 +98,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
         };
     }])
 
-    .controller('LimitAskCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'invoices', function ($scope, $uibModal, orderRequestsService, invoices) {
+    .controller('LimitAskCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'invoices', 'session', function ($scope, $uibModal, orderRequestsService, invoices, session) {
         console.log('LimitAskCtrl inited');
         $scope.askQty = '';
         $scope.askApr = '';
@@ -117,7 +117,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                     "orderType": 0,
                     "date": new Date(),
                     "counterparty": {
-                        "id": 11,
+                        "id": session.counterpartyId,
                         "name": "supplyer"
                     },
                     "invoicesChecked": invoices.supplierInvoicesCheckboxes.invoices
@@ -156,7 +156,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                             "orderType": 0,
                             "date": new Date(),
                             "counterparty": {
-                                "id": 11,
+                                "id": session.counterpartyId,
                                 "name": "supplyer"
                             },
                             "invoicesChecked": invoices.supplierInvoicesCheckboxes.invoices

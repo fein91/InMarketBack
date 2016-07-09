@@ -1,8 +1,8 @@
 angular.module('inmarket.proposal', ['ngRoute'])
 
 
-    .controller('ProposalCtrl', ['$scope', '$rootScope', 'counterpartyService', 'orderRequestsService', 'invoices',
-        function ($scope, $rootScope, counterpartyService, orderRequestsService, invoices) {
+    .controller('ProposalCtrl', ['$scope', '$rootScope', 'counterpartyService', 'orderRequestsService', 'invoices', 'session',
+        function ($scope, $rootScope, counterpartyService, orderRequestsService, invoices, session) {
             console.log('ProposalCtrl inited');
 
             self = this;
@@ -10,7 +10,6 @@ angular.module('inmarket.proposal', ['ngRoute'])
             $scope.supplier_invoices_sum = 0;
             $scope.asks_sum = 0;
             $scope.bids_sum = 0;
-            var counterpartyId = 11;
 
             // listen for the event in the relevant $scope
             $rootScope.$on('buyerProposalToChangeEvent', function (event, buyerInvoicesCheckboxes) {

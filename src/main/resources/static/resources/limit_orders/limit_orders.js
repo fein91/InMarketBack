@@ -11,14 +11,13 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
     }])
 
 
-    .controller('LimitOrdersCtrl', ['$scope', 'orderRequestsService', 'NgTableParams', function ($scope, orderRequestsService, NgTableParams) {
+    .controller('LimitOrdersCtrl', ['$scope', 'orderRequestsService', 'NgTableParams', 'session', function ($scope, orderRequestsService, NgTableParams, session) {
         console.log('LimitOrdersCtrl inited');
 
         var self = this;
-        self.counterpartyId = 11;
 
         self.init = function () {
-            orderRequestsService.getOrderRequests(self.counterpartyId)
+            orderRequestsService.getOrderRequests(session.counterpartyId)
                 .then(function successCallback(response) {
                     var bids = [];
                     var asks = [];

@@ -38,7 +38,7 @@
                         <li><a href="#">Settings</a></li>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                               aria-expanded="false">Profile <span class="caret"></span></a>
+                               aria-expanded="false">{{session.login}} Profile <span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#">Action</a></li>
                                 <li><a href="#">Another action</a></li>
@@ -72,8 +72,8 @@
                     <li ng-class="{ active: isActive('/contragents')}"><a href="#/contragents">Мои контракты <span class="sr-only">(current)</span></a></li>
                     <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a></li>
                     <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить предоплату</a></li>
-                    <li ng-class="{ active: isActive('/limit_orders')}"><a href="#/limit_orders">Отложенные заявки</a></li>
-                    <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История транзакций</a></li>
+                    <li ng-class="{ active: isActive('/limit_orders')}"><a href="#/limit_orders">Мои отложенные заявки</a></li>
+                    <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История рыночных сделок</a></li>
                     <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
                     <li ng-class="{ active: isActive('/importExcelFile')}"><a href="#/importExcelFile">Импорт/Экспорт</a></li>
                 </ul>

@@ -9,7 +9,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
         });
     }])
 
-    .controller('BidMarketCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', function ($scope, $rootScope, $uibModal, orderRequestsService, invoices) {
+    .controller('BidMarketCtrl', ['$scope', '$rootScope', '$uibModal', 'orderRequestsService', 'invoices', 'session', function ($scope, $rootScope, $uibModal, orderRequestsService, invoices, session) {
         console.log('BidMarketCtrl inited');
 
         $scope.bidQty = '';
@@ -32,7 +32,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     "orderType": 1,
                     "date": new Date(),
                     "counterparty": {
-                        "id": 11,
+                        "id": session.counterpartyId,
                         "name": "test"
                     },
                     "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
@@ -74,7 +74,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                             "orderType": 1,
                             "date": new Date(),
                             "counterparty": {
-                                "id": 11,
+                                "id": session.counterpartyId,
                                 "name": "test"
                             },
                             "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
@@ -141,7 +141,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 
     }])
 
-    .controller('BidLimitCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'invoices', function ($scope, $uibModal, orderRequestsService, invoices) {
+    .controller('BidLimitCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'invoices', 'session', function ($scope, $uibModal, orderRequestsService, invoices, session) {
         console.log('BidLimitCtrl inited');
 
         self = this;
@@ -162,7 +162,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     "orderType": 0,
                     "date": new Date(),
                     "counterparty": {
-                        "id": 11,
+                        "id": session.counterpartyId,
                         "name": "supplyer"
                     },
                     "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
@@ -201,7 +201,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                             "orderType": 0,
                             "date": new Date(),
                             "counterparty": {
-                                "id": 11,
+                                "id": session.counterpartyId,
                                 "name": "supplyer"
                             },
                             "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices

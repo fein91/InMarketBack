@@ -29,7 +29,7 @@ public class Invoice {
 
     private BigDecimal value;
 
-    private BigDecimal prepaidValue;
+    private BigDecimal prepaidValue = BigDecimal.ZERO;
 
     private Date paymentDate;
 

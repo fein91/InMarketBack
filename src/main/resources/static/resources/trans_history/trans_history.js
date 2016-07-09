@@ -11,14 +11,13 @@ angular.module('inmarket.trans_history', ['ngRoute'])
     }])
 
 
-    .controller('TransHistoryCtrl', ['$scope', 'transHistoryService', 'NgTableParams', function ($scope, transHistoryService, NgTableParams) {
+    .controller('TransHistoryCtrl', ['$scope', 'transHistoryService', 'NgTableParams', 'session', function ($scope, transHistoryService, NgTableParams, session) {
         console.log('TransHistoryCtrl inited');
 
         var self = this;
-        self.counterpartyId = 11;
 
         self.init = function () {
-            transHistoryService.getTransactionHistory(self.counterpartyId)
+            transHistoryService.getTransactionHistory(session.counterpartyId)
                 .then(function successCallback(response) {
                     var bids = [];
                     var asks = [];

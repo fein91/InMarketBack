@@ -10,11 +10,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
     }])
 
 
-    .controller('MyBuyersCtrl', ['$scope', '$rootScope', 'invoicesService', 'NgTableParams', 'invoices', function ($scope, $rootScope, invoicesService, NgTableParams, invoices) {
+    .controller('MyBuyersCtrl', ['$scope', '$rootScope', 'invoicesService', 'NgTableParams', 'invoices', 'session', function ($scope, $rootScope, invoicesService, NgTableParams, invoices, session) {
         console.log('MyBuyersCtrl inited');
 
         var self = this;
-        self.counterpartyId = 11;
 
         self.buyerInvoices = invoices.buyerInvoices;
 
@@ -52,13 +51,13 @@ angular.module('inmarket.contragents', ['ngRoute'])
 
         self.init = function () {
             if (invoices.buyerInvoices.length == 0) {
-                invoicesService.getBySourceId(self.counterpartyId)
+                invoicesService.getBySourceId(session.counterpartyId)
                     .then(function successCallback(response) {
-                        $scope.tableParams = new NgTableParams({}, {
+                        $scope.buyersTableParams = new NgTableParams({}, {
                             dataset: response.data
                         });
                         invoices.addAllBuyerInvoices(response.data);
-                        $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
+                        $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.buyersTableParams.page() - 1) * $scope.buyersTableParams.count(), $scope.buyersTableParams.page() * $scope.buyersTableParams.count());
 
 
                         angular.forEach(response.data, function (item) {
@@ -70,10 +69,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         console.log('got ' + response.status + ' error');
                     });
             } else {
-                $scope.tableParams = new NgTableParams({}, {
+                $scope.buyersTableParams = new NgTableParams({}, {
                     dataset: invoices.buyerInvoices
                 });
-                $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
+                $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.buyersTableParams.page() - 1) * $scope.buyersTableParams.count(), $scope.buyersTableParams.page() * $scope.buyersTableParams.count());
             }
             $scope.checkboxes = invoices.buyerInvoicesCheckboxes;
         };
@@ -81,11 +80,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
         self.init();
     }])
 
-    .controller('MySuppliersCtrl', ['$scope', '$rootScope', 'invoicesService', 'NgTableParams', 'invoices', function ($scope, $rootScope, invoicesService, NgTableParams, invoices) {
+    .controller('MySuppliersCtrl', ['$scope', '$rootScope', 'invoicesService', 'NgTableParams', 'invoices', 'session', function ($scope, $rootScope, invoicesService, NgTableParams, invoices, session) {
         console.log('MySuppliersCtrl inited');
 
         var self = this;
-        self.counterpartyId = 11;
         self.supplierInvoices = invoices.supplierInvoices;
 
         $scope.currentInvoicesPage = '';
@@ -121,14 +119,14 @@ angular.module('inmarket.contragents', ['ngRoute'])
 
         self.init = function () {
             if (invoices.supplierInvoices.length == 0) {
-                invoicesService.getByTargetId(self.counterpartyId)
+                invoicesService.getByTargetId(session.counterpartyId)
                     .then(function successCallback(response) {
-                        $scope.tableParams = new NgTableParams({}, {
+                        $scope.suppliersTableParams = new NgTableParams({}, {
                             dataset: response.data
                         });
 
                         invoices.addAllSupplierInvoices(response.data);
-                        $scope.currentInvoicesPage = self.supplierInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
+                        $scope.currentInvoicesPage = self.supplierInvoices.slice(($scope.suppliersTableParams.page() - 1) * $scope.suppliersTableParams.count(), $scope.suppliersTableParams.page() * $scope.suppliersTableParams.count());
 
 
                         angular.forEach(response.data, function (item) {
@@ -140,11 +138,11 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         console.log('got ' + response.status + ' error');
                     });
             } else {
-                $scope.tableParams = new NgTableParams({}, {
+                $scope.suppliersTableParams = new NgTableParams({}, {
                     dataset: invoices.supplierInvoices
                 });
 
-                $scope.currentInvoicesPage = self.supplierInvoices.slice(($scope.tableParams.page() - 1) * $scope.tableParams.count(), $scope.tableParams.page() * $scope.tableParams.count());
+                $scope.currentInvoicesPage = self.supplierInvoices.slice(($scope.suppliersTableParams.page() - 1) * $scope.suppliersTableParams.count(), $scope.suppliersTableParams.page() * $scope.suppliersTableParams.count());
             }
             $scope.checkboxes = invoices.supplierInvoicesCheckboxes;
 

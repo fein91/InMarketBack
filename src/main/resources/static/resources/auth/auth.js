@@ -16,8 +16,10 @@ angular.module('inmarket.auth', [])
         }
     })
 
-    .controller('loginCtrl', function ($rootScope, $http, $location, $route, session) {
+    .controller('loginCtrl', function ($rootScope, $scope, $http, $location, $route, session) {
         var self = this;
+
+        $scope.session = session;
 
         self.tab = function (route) {
             return $route.current && route === $route.current.controller;
