@@ -70,12 +70,15 @@ angular.module('inmarket', [
     })
 
     .controller('uploadCtrl', ['$scope', '$http', function ($scope, $http) {
+
+        var counterpartyId = 11;
+
         $scope.uploadFile = function (files) {
             var fd = new FormData();
             //Take the first selected file
             fd.append("file", files[0]);
 
-            $http.post('upload', fd, {
+            $http.post('counterparties/' + counterpartyId + '/importInvoices', fd, {
                 withCredentials: true,
                 headers: {'Content-Type': undefined},
                 transformRequest: angular.identity
@@ -85,10 +88,12 @@ angular.module('inmarket', [
 
     .controller('exportCtrl', ['$scope', '$http', function ($scope, $http) {
 
+        var counterpartyId = 11;
+
         $scope.exportData = function () {
             $http({
                 method: 'POST',
-                url: '/exportInvoices',
+                url: 'counterparties/' + counterpartyId + '/exportInvoices',
                 headers: {'Content-Type': 'text/csv'}
 
             }).success(function (data, status, headers, config) {
@@ -96,7 +101,7 @@ angular.module('inmarket', [
                 anchor.attr({
                     href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
                     target: '_blank',
-                    download: 'export.xlsx'
+                    download: 'export.csv'
                 })[0].click();
             })
         }

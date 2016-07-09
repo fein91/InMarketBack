@@ -34,4 +34,14 @@ public class InvoicesServiceStub implements InvoiceService {
     public Invoice getById(Long invoiceId) {
         return null;
     }
+
+    @Override
+    public List<Invoice> getBySourceId(Long sourceId) {
+        return null;
+    }
+
+    @Override
+    public List<Invoice> getByTargetId(Long targetId) {
+        return null;
+    }
 }

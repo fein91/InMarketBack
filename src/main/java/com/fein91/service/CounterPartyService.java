@@ -10,4 +10,8 @@ public interface CounterPartyService {
     Counterparty addCounterParty(String name);
 
     Counterparty getById(long id);
+
+    Counterparty getByName(String name);
+
+    Counterparty getByNameOrAdd(String name);
 }

@@ -14,4 +14,8 @@ public interface InvoiceService {
     List<Invoice> findBySourceAndTarget(Long sourceId, Long targetId);
 
     Invoice getById(Long invoiceId);
+
+    List<Invoice> getBySourceId(Long sourceId);
+
+    List<Invoice> getByTargetId(Long targetId);
 }

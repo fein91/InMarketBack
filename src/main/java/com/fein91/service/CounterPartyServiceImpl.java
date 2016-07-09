@@ -28,4 +28,18 @@ public class CounterPartyServiceImpl implements CounterPartyService {
         return counterpartyRepository.findOne(id);
     }
 
+    @Override
+    public Counterparty getByName(String name) {
+        return counterpartyRepository.findByName(name);
+    }
+
+    @Override
+    public Counterparty getByNameOrAdd(String name) {
+        Counterparty counterparty = getByName(name);
+        if (counterparty != null) {
+            return counterparty;
+        }
+        return addCounterParty(name);
+    }
+
 }
