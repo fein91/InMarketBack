@@ -22,12 +22,19 @@ angular.module('inmarket.invoices', []).factory('invoices', function () {
 
     invoices.getBuyerInvoices = function () {
         return invoices.buyerInvoices;
-    }
+    };
 
     invoices.addAllSupplierInvoices = function (toAdd) {
         angular.forEach(toAdd, function (item) {
             invoices.supplierInvoices.push(item);
         });
+    };
+
+    invoices.cleanUp = function() {
+        invoices.buyerInvoices = [];
+        invoices.supplierInvoices = [];
+        invoices.buyerInvoicesCheckboxes = {'checked': false, invoices: {}};
+        invoices.supplierInvoicesCheckboxes = {'checked': false, invoices: {}};
     };
 
     return invoices;

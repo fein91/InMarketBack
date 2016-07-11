@@ -1,6 +1,7 @@
 angular.module('inmarket', [
     'ngRoute',
     'ngTable',
+    'ngStorage',
     'chart.js',
     'ui.bootstrap',
     'inmarket.auth',
@@ -52,11 +53,11 @@ angular.module('inmarket', [
         };
     }])
 
-    .run(function ($rootScope, $location, session) {
+    .run(function ($rootScope, $location, $sessionStorage, session) {
         $rootScope.$on('$routeChangeStart', function (event, next) {
-            if (next.originalPath === "/login" && $rootScope.authenticated) {
+            if (next.originalPath === "/login" && $sessionStorage.authenticated) {
                 event.preventDefault();
-            } else if (next.access && next.access.loginRequired && !$rootScope.authenticated) {
+            } else if (next.access && next.access.loginRequired && !$sessionStorage.authenticated) {
                 event.preventDefault();
                 $rootScope.$broadcast("event:auth-loginRequired", {});
             }
@@ -64,7 +65,9 @@ angular.module('inmarket', [
 
         $rootScope.$on('event:auth-loginRequired', function (event, data) {
             session.invalidate();
-            $rootScope.authenticated = false;
+            $sessionStorage.authenticated = false;
+            $rootScope.authenticated = $sessionStorage.authenticated;
+
             $location.path('/login');
         });
     })
