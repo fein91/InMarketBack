@@ -590,6 +590,8 @@ public class LimitOrderBookServiceTest {
     * */
     //TODO fix this NPE
     @Test
+    @Transactional
+    @Rollback
     public void testOrderWithSomeUncheckedInvoices() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -675,6 +677,8 @@ public class LimitOrderBookServiceTest {
         * b1 ask market order == 200
         * */
     @Test
+    @Transactional
+    @Rollback
     public void testLimitOrderCreatedAfterUnsatisfiedMarketOrder() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -745,6 +749,8 @@ public class LimitOrderBookServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     public void testWithDiscountsOneInvoicePerBuyer() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -785,6 +791,8 @@ public class LimitOrderBookServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     public void testWithDiscountsTwoInvoicesPerBuyer() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -822,7 +830,8 @@ public class LimitOrderBookServiceTest {
         Trade trade = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade);
         Assert.assertEquals(bid1Price.doubleValue(), trade.getPrice(), 0d);
-        Assert.assertEquals(BigDecimal.valueOf(350).compareTo(trade.getQty()), 0);
+        Assert.assertEquals("Actual trade qty: " + trade.getQty(),
+                BigDecimal.valueOf(350).compareTo(trade.getQty()), 0);
 
         invoice1S1B = invoiceServiceImpl.getById(invoice1S1B.getId());
         Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(invoice1S1B.getPrepaidValue()));
