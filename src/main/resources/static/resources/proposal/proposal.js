@@ -27,77 +27,93 @@ angular.module('inmarket.proposal', ['ngRoute'])
             recalculateBuyerProposal = function (buyerInvoicesCheckboxes) {
                 var invoices_sum = 0;
                 var orders_sum = 0;
-                var processedBuyers = [];
 
-                angular.forEach(invoices.buyerInvoices, function (buyerInvoice) {
+                var invoicesSumByTarget = groupAndSumInvoicesByTarget(invoices.buyerInvoices, buyerInvoicesCheckboxes);
+
+                angular.forEach(invoicesSumByTarget, function (invoiceValue, invoiceTarget) {
                     //calculate invoices sum
-                    if (buyerInvoicesCheckboxes[buyerInvoice.id]) {
-                        invoices_sum = invoices_sum + buyerInvoice.value;
+                    invoices_sum += invoiceValue;
 
-                        console.log('buyer invoice: ' + JSON.stringify(buyerInvoice));
+                    orderRequestsService.getOrderRequests(invoiceTarget)
+                        .then(function successCallback(response) {
+                            var orderRequests = response.data;
+                            console.log('order: ' + JSON.stringify(orderRequests));
 
-                        if (processedBuyers.indexOf(buyerInvoice.source.id) < 0) {
-                            processedBuyers.push(buyerInvoice.source.id);
+                            angular.forEach(orderRequests, function (orderRequest) {
+                                if (orderRequest.orderSide == 'ASK') {
+                                    orders_sum += Math.min(orderRequest.quantity, invoiceValue);
+                                    console.log('asks sum increased: ' + orders_sum);
+                                }
+                            });
 
-                            orderRequestsService.getOrderRequests(buyerInvoice.target.id)
-                                .then(function successCallback(response) {
-                                    var orderRequests = response.data;
-                                    console.log('order: ' + JSON.stringify(orderRequests));
-
-                                    angular.forEach(orderRequests, function (orderRequest) {
-                                        if (orderRequest.orderSide == 'ASK') {
-                                            orders_sum = orders_sum + Math.min(orderRequest.quantity, buyerInvoice.value);
-                                            console.log('asks sum increased: ' + orders_sum);
-                                        }
-                                    });
-
-                                    //TODO remove it from here
-                                    $scope.asks_sum = orders_sum;
-                                }, function errorCallback(response) {
-                                    console.log('got ' + response.status + ' error');
-                                });
-                        }
-                    }
+                            //TODO remove it from here
+                            $scope.asks_sum = orders_sum;
+                        }, function errorCallback(response) {
+                            console.log('got ' + response.status + ' error');
+                        });
                 });
                 $scope.buyer_invoices_sum = invoices_sum;
+                if (invoicesSumByTarget.length === 0) {
+                    $scope.asks_sum = 0;
+                }
             };
 
             recalculateSupplierProposal = function (supplierInvoicesCheckboxes) {
                 var invoices_sum = 0;
                 var orders_sum = 0;
-                var processedSuppliers = [];
+
+                var invoicesSumBySource = groupAndSumInvoicesBySource(invoices.supplierInvoices, supplierInvoicesCheckboxes);
 
                 //calculate invoices sum
-                angular.forEach(invoices.supplierInvoices, function (supplierInvoice) {
-                    if (supplierInvoicesCheckboxes[supplierInvoice.id]) {
-                        invoices_sum = invoices_sum + supplierInvoice.value;
+                angular.forEach(invoicesSumBySource, function (invoiceValue, invoiceSource) {
+                    invoices_sum += invoiceValue;
 
-                        console.log('supplier invoice: ' + JSON.stringify(supplierInvoice));
+                    orderRequestsService.getOrderRequests(invoiceSource)
+                        .then(function successCallback(response) {
+                            var orderRequests = response.data;
+                            console.log('order: ' + JSON.stringify(orderRequests));
 
-                        if (processedSuppliers.indexOf(supplierInvoice.source.id) < 0) {
-                            processedSuppliers.push(supplierInvoice.source.id);
+                            angular.forEach(orderRequests, function (orderRequest) {
+                                if (orderRequest.orderSide == 'BID') {
+                                    orders_sum += Math.min(orderRequest.quantity, invoiceValue);
+                                    console.log('bids sum increased: ' + orders_sum);
+                                }
+                            });
 
-                            orderRequestsService.getOrderRequests(supplierInvoice.source.id)
-                                .then(function successCallback(response) {
-                                    var orderRequests = response.data;
-                                    console.log('order: ' + JSON.stringify(orderRequests));
-
-                                    angular.forEach(orderRequests, function (orderRequest) {
-                                        if (orderRequest.orderSide == 'BID') {
-                                            orders_sum = orders_sum + Math.min(orderRequest.quantity, supplierInvoice.value);
-                                            console.log('bids sum increased: ' + orders_sum);
-                                        }
-                                    });
-
-                                    //TODO remove it from here
-                                    $scope.bids_sum = orders_sum;
-                                }, function errorCallback(response) {
-                                    console.log('got ' + response.status + ' error');
-                                });
-                        }
-                    }
+                            //TODO remove it from here
+                            $scope.bids_sum = orders_sum;
+                        }, function errorCallback(response) {
+                            console.log('got ' + response.status + ' error');
+                        });
                 });
                 $scope.supplier_invoices_sum = invoices_sum;
+                if (invoicesSumBySource.length === 0) {
+                    $scope.bids_sum = 0;
+                }
+            };
+
+            //invoice.target must be the same
+            groupAndSumInvoicesBySource = function (invoices, invoicesCheckboxes) {
+                var result = [];
+                angular.forEach(invoices, function (invoice) {
+                        if (invoicesCheckboxes[invoice.id]) {
+                            result[invoice.source.id] = (result[invoice.source.id] || 0) + invoice.value - invoice.prepaidValue;
+                        }
+                    }
+                );
+                return result;
+            };
+
+            //invoice.source must be the same
+            groupAndSumInvoicesByTarget = function (invoices, invoicesCheckboxes) {
+                var result = [];
+                angular.forEach(invoices, function (invoice) {
+                        if (invoicesCheckboxes[invoice.id]) {
+                            result[invoice.target.id] = (result[invoice.target.id] || 0) + invoice.value - invoice.prepaidValue;
+                        }
+                    }
+                );
+                return result;
             };
 
             self.init = function () {
