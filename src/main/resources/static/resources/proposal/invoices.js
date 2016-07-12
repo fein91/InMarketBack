@@ -20,10 +20,6 @@ angular.module('inmarket.invoices', []).factory('invoices', function () {
         });
     };
 
-    invoices.getBuyerInvoices = function () {
-        return invoices.buyerInvoices;
-    };
-
     invoices.addAllSupplierInvoices = function (toAdd) {
         angular.forEach(toAdd, function (item) {
             invoices.supplierInvoices.push(item);

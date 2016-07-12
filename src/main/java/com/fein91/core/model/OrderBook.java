@@ -199,7 +199,9 @@ public class OrderBook {
 
             //TODO how to define first invoice to calculate
             for (Invoice currentInvoice : invoices) {
-                if (currentInvoice.isProcessed()) {
+                if (currentInvoice.isProcessed()
+                        || (OrderSide.ASK == side && this.bids.length() <= 0)
+                        || (OrderSide.BID == side && this.asks.length() <= 0)) {
                     continue;
                 }
                 log.info("Invoice is processing: " + currentInvoice);
@@ -257,13 +259,9 @@ public class OrderBook {
 
                         if (side == OrderSide.ASK) {
                             this.bids.removeOrderByID(headOrder.getqId());
-                            //TODO implement
-                            //ordersIter.remove();
                             orderRequestService.removeById(headOrder.getId());
                         } else {
                             this.asks.removeOrderByID(headOrder.getqId());
-                            //TODO implement 
-                            //ordersIter.remove();
                             orderRequestService.removeById(headOrder.getId());
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
