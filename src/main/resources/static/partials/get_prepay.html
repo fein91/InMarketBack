@@ -47,12 +47,12 @@
                                 средний срок оплаты={{avgDaysToPayment}} дней
                             </p>
                         </div>
-                        <div ng-hide="demandSatisfied" class="alert alert-info alert-dismissable">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            В данный момент ваши покупатели готовы сделать предоплату только на
-                            сумму={{satisfiedBidQty}} грн.
-                            Остаток ({{bidQty - satisfiedBidQty}} грн) будет размещен по APR={{bidApr}}
-                        </div>
+                        <!--<div ng-hide="demandSatisfied" class="alert alert-info alert-dismissable">-->
+                            <!--<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>-->
+                            <!--В данный момент ваши покупатели готовы сделать предоплату только на-->
+                            <!--сумму={{satisfiedBidQty}} грн.-->
+                            <!--Остаток ({{bidQty - satisfiedBidQty}} грн) будет размещен по APR={{bidApr}}-->
+                        <!--</div>-->
                         <div class="alert alert-warning alert-dismissable"
                              ng-show="calculationCalled && calculatedWithError">
                             {{calculationErrorMsg}}

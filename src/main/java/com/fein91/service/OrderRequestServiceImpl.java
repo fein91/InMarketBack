@@ -147,19 +147,20 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             limitOrderRequest = orderRequest;
             limitOrderRequest.setQuantity(unsatisfiedDemand);
             limitOrderRequest = save(limitOrderRequest);
+            historyOrderRequestService.save(historyOrderRequestService.convertFrom(limitOrderRequest));
         } else {
-            limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
-                    .date(orderRequest.getDate())
-                    .orderSide(orderRequest.getOrderSide())
-                    .orderType(OrderType.LIMIT)
-                    .price(result.getApr())
-                    .quantity(unsatisfiedDemand)
-                    .build();
-            //it's needed here to validate if we can add this order
-            findLimitOrderRequestsToTrade(limitOrderRequest);
-            limitOrderRequest = save(limitOrderRequest);
+            //currently removing logic of processing limit order with unsatisfied demand after market order
+//            limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+//                    .date(orderRequest.getDate())
+//                    .orderSide(orderRequest.getOrderSide())
+//                    .orderType(OrderType.LIMIT)
+//                    .price(result.getApr())
+//                    .quantity(unsatisfiedDemand)
+//                    .build();
+//            //it's needed here to validate if we can add this order
+//            findLimitOrderRequestsToTrade(limitOrderRequest);
+//            limitOrderRequest = save(limitOrderRequest);
         }
-        historyOrderRequestService.save(historyOrderRequestService.convertFrom(limitOrderRequest));
     }
 
     @Override
@@ -177,14 +178,17 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 orderRequest.setQuantity(unsatisfiedDemand);
                 findLimitOrderRequestsToTrade(orderRequest);
             } else {
-                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
-                        .date(orderRequest.getDate())
-                        .orderSide(orderRequest.getOrderSide())
-                        .orderType(OrderType.LIMIT)
-                        .price(result.getApr())
-                        .quantity(unsatisfiedDemand)
-                        .build();
-                findLimitOrderRequestsToTrade(limitOrderRequest);
+                throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity() + " cannot be satisfied. "
+                        + "Please process unsatisfied quantity: " + unsatisfiedDemand + " as limit order.");
+                //currently removing logic of processing limit order with unsatisfied demand after market order
+//                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
+//                        .date(orderRequest.getDate())
+//                        .orderSide(orderRequest.getOrderSide())
+//                        .orderType(OrderType.LIMIT)
+//                        .price(result.getApr())
+//                        .quantity(unsatisfiedDemand)
+//                        .build();
+//                findLimitOrderRequestsToTrade(limitOrderRequest);
             }
         }
         return result;
@@ -204,9 +208,10 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         }
 
         Set<Counterparty> counterparties = new HashSet<>();
-        Set<OrderRequest> orderRequests = new HashSet<>();
+        Set<OrderRequest> orderRequestsToTrade = new HashSet<>();
         BigDecimal invoicesSum = BigDecimal.ZERO;
         BigDecimal discountsSum = BigDecimal.ZERO;
+        BigDecimal orderRequestsToTradeSum = BigDecimal.ZERO;
         for (Invoice invoice : invoices) {
             boolean invoiceUnchecked = Boolean.FALSE.equals(orderRequest.getInvoicesChecked().get(invoice.getId()));
             if (invoiceUnchecked) {
@@ -219,7 +224,11 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                     : invoice.getSource();
 
             if (counterparties.add(giver)) {
-                orderRequests.addAll(orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId()));
+                List<OrderRequest> orderRequests = orderRequestRepository.findByCounterpartyAndOrderSide(giver, orderSide.oppositeSide().getId());
+                orderRequestsToTradeSum = orderRequests.stream()
+                            .map(OrderRequest :: getQuantity)
+                            .reduce(orderRequestsToTradeSum, BigDecimal::add);
+                orderRequestsToTrade.addAll(orderRequests);
             }
             invoicesSum = invoicesSum.add(invoice.getValue());
             if (OrderType.LIMIT == orderRequest.getOrderType()) {
@@ -227,16 +236,23 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             }
         }
 
-        if (OrderType.MARKET == orderRequest.getOrderType() && CollectionUtils.isEmpty(orderRequests)) {
-            throw new OrderRequestProcessingException("No suitable order requests were found");
+        if (OrderType.MARKET == orderRequest.getOrderType()) {
+            if (CollectionUtils.isEmpty(orderRequestsToTrade)) {
+                throw new OrderRequestProcessingException("No suitable order requests were found");
+            } else if (orderRequest.getQuantity().compareTo(orderRequestsToTradeSum) > 0) {
+                throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity()
+                        + " is greater than available orders sum: " + orderRequestsToTradeSum
+                        + ". Please process unsatisfied quantity: " + orderRequest.getQuantity().subtract(orderRequestsToTradeSum) + " as limit order.");
+            }
         }
+
         BigDecimal availableOrderAmount = invoicesSum.subtract(discountsSum);
         if (orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
             throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity()
                     + " is greater than available quantity = invoices - discounts: " + availableOrderAmount);
         }
 
-        return orderRequests;
+        return orderRequestsToTrade;
     }
 
     private BigDecimal calculateDiscount(BigDecimal apr, int daysToPayment) {
