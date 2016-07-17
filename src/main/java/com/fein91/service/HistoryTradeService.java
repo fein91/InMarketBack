@@ -3,6 +3,7 @@ package com.fein91.service;
 import com.fein91.core.model.Trade;
 import com.fein91.model.HistoryTrade;
 import com.fein91.dao.HistoryTradeRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,17 @@ public class HistoryTradeService {
         for (Trade trade : trades) {
             result.add(convertFrom(trade));
         }
+        return result;
+    }
+
+    public List<HistoryTrade> copy(List<HistoryTrade> historyTrades) {
+        List<HistoryTrade> result = new ArrayList<>();
+        for (HistoryTrade historyTrade : historyTrades) {
+            HistoryTrade historyTradeCopy = new HistoryTrade();
+            BeanUtils.copyProperties(historyTrade, historyTradeCopy);
+            result.add(historyTradeCopy);
+        }
+
         return result;
     }
 }

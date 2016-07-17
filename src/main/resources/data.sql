@@ -22,8 +22,10 @@ INSERT INTO counterparty(id, name, login)
 values (22, 'supplier2', 'supplier2');
 INSERT INTO counterparty(id, name, login)
 values (23, 'supplier3', 'supplier3');
-INSERT INTO counterparty(id, name)
-values (24, 'supplier4');
+INSERT INTO counterparty(id, name, login)
+values (24, 'supplier4', 'supplier4');
+INSERT INTO counterparty(id, name, login)
+values (25, 'supplier5', 'supplier5');
 
 --
 -- insert into invoice(id, counterparty_from_fk, counterparty_to_fk, value, prepaid_value, payment_date)

@@ -133,8 +133,8 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         targetHor.setQuantity(qty);
         targetHor.setCounterparty(target);
         targetHor.setDate(new Date());
-        //TODO fix it
-        //targetHor.setHistoryTrades(trades);
+        //TODO check it!!! should we change trade source and target
+        targetHor.setHistoryTrades(historyTradeService.copy(trades));
         targetHor.setOrderType(OrderType.MARKET);
         targetHor.setOrderSide(orderSide);
         historyOrderRequestService.save(targetHor);
