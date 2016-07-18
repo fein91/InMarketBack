@@ -1,6 +1,7 @@
 package com.fein91.service;
 
 import com.fein91.core.model.Trade;
+import com.fein91.model.Counterparty;
 import com.fein91.model.HistoryTrade;
 import com.fein91.dao.HistoryTradeRepository;
 import org.springframework.beans.BeanUtils;
@@ -58,11 +59,18 @@ public class HistoryTradeService {
         return result;
     }
 
-    public List<HistoryTrade> copy(List<HistoryTrade> historyTrades) {
+    /**
+     * this method is needed to copy history trades which will be saved to target counterparty transaction history
+     * @param counterparty
+     * @param historyTrades history trades which were saved for source counterparty which inited market order
+     * @return list of copied counterparties which will be saved to affected in market order counterparties
+     */
+    public List<HistoryTrade> copyAndUpdateTarget(Counterparty counterparty, List<HistoryTrade> historyTrades) {
         List<HistoryTrade> result = new ArrayList<>();
         for (HistoryTrade historyTrade : historyTrades) {
             HistoryTrade historyTradeCopy = new HistoryTrade();
             BeanUtils.copyProperties(historyTrade, historyTradeCopy);
+            historyTradeCopy.setTarget(counterparty);
             result.add(historyTradeCopy);
         }
 

@@ -113,28 +113,32 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 .collect(Collectors.groupingBy(HistoryTrade :: getTarget));
 
         for (Map.Entry<Counterparty, List<HistoryTrade>> entry : tradesByTargetCounterparty.entrySet()) {
-            writeHistoryOrderRequestToTargetCounterpartyTransactionHistory(entry.getKey(), entry.getValue(), orderRequest.getOrderSide().oppositeSide());
+            writeHistoryOrderRequestToTargetCounterpartyTransactionHistory(entry.getKey(), orderRequest.getCounterparty(),
+                    entry.getValue(), orderRequest.getOrderSide().oppositeSide());
         }
     }
 
-    private HistoryOrderRequest writeHistoryOrderRequestToCurrentCounterpartyTransactionHistory(OrderRequest orderRequest, OrderBook lob, OrderResult result) {
+    private HistoryOrderRequest writeHistoryOrderRequestToCurrentCounterpartyTransactionHistory(OrderRequest orderRequest,
+                                                                                                OrderBook lob,
+                                                                                                OrderResult result) {
         HistoryOrderRequest executedHor = historyOrderRequestService.convertFrom(orderRequest);
         executedHor.setQuantity(result.getSatisfiedDemand());
         executedHor.setHistoryTrades(historyTradeService.convertFrom(lob.getTape()));
         return historyOrderRequestService.save(executedHor);
     }
 
-    private void writeHistoryOrderRequestToTargetCounterpartyTransactionHistory(Counterparty target, List<HistoryTrade> trades, OrderSide orderSide) {
+    private void writeHistoryOrderRequestToTargetCounterpartyTransactionHistory(Counterparty counterparty, Counterparty target,
+                                                                                List<HistoryTrade> trades, OrderSide orderSide) {
         HistoryOrderRequest targetHor = new HistoryOrderRequest();
         BigDecimal qty = BigDecimal.ZERO;
         for (HistoryTrade historyTrade : trades) {
             qty = qty.add(historyTrade.getQuantity());
         }
         targetHor.setQuantity(qty);
-        targetHor.setCounterparty(target);
+        targetHor.setCounterparty(counterparty);
         targetHor.setDate(new Date());
         //TODO check it!!! should we change trade source and target
-        targetHor.setHistoryTrades(historyTradeService.copy(trades));
+        targetHor.setHistoryTrades(historyTradeService.copyAndUpdateTarget(target, trades));
         targetHor.setOrderType(OrderType.MARKET);
         targetHor.setOrderSide(orderSide);
         historyOrderRequestService.save(targetHor);

@@ -82,16 +82,17 @@ public class TransactionHistoryTest {
         orderRequestService.process(bidOrderRequest2);
 
         OrderRequest askOrderRequest = new OrderRequestBuilder(buyer)
-                .quantity(BigDecimal.valueOf(250))
+                .quantity(BigDecimal.valueOf(200))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true, invoiceS3B.getId(), true, invoiceS4B.getId(), true))
                 .build();
         orderRequestService.process(askOrderRequest);
 
+        //check buyer transaction history
         List<HistoryOrderRequest> buyerTransHistory = historyOrderRequestService.getByCounterparty(buyer);
 
-        Assert.assertEquals(2, buyerTransHistory.size());
+        Assert.assertEquals(1, buyerTransHistory.size());
         HistoryOrderRequest executedOrder = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.MARKET);
         Assert.assertEquals(2, executedOrder.getHistoryTrades().size());
         HistoryTrade supplier1Trade = findHistoryTradeByTarget(executedOrder.getHistoryTrades(), supplier1);
@@ -105,9 +106,30 @@ public class TransactionHistoryTest {
 
         Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(executedOrder.getQuantity()));
 
-        HistoryOrderRequest limitOrder = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.LIMIT);
-        Assert.assertNotNull(limitOrder);
-        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(limitOrder.getQuantity()));
+        //check supplier1 transaction history
+        supplier1TransHistory = historyOrderRequestService.getByCounterparty(supplier1);
+        Assert.assertEquals(2, supplier1TransHistory.size());
+        HistoryOrderRequest supplier1MarketOrder = findHistoryOrderRequestByOrderSide(supplier1TransHistory, OrderType.MARKET);
+        Assert.assertNotNull(supplier1MarketOrder);
+        Assert.assertEquals(OrderSide.BID, supplier1MarketOrder.getOrderSide());
+        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1MarketOrder.getQuantity()));
+
+        HistoryTrade supplier1BuyerHistoryTrade = findHistoryTradeByTarget(supplier1MarketOrder.getHistoryTrades(), buyer);
+        Assert.assertNotNull(supplier1BuyerHistoryTrade);
+        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1BuyerHistoryTrade.getQuantity()));
+
+        //check supplier2 transaction history
+        List<HistoryOrderRequest> supplier2TransHistory = historyOrderRequestService.getByCounterparty(supplier2);
+        Assert.assertEquals(2, supplier2TransHistory.size());
+        HistoryOrderRequest supplier2MarketOrder = findHistoryOrderRequestByOrderSide(supplier2TransHistory, OrderType.MARKET);
+        Assert.assertNotNull(supplier2MarketOrder);
+        Assert.assertEquals(OrderSide.BID, supplier2MarketOrder.getOrderSide());
+        Assert.assertEquals(0, BigDecimal.valueOf(150).compareTo(supplier2MarketOrder.getQuantity()));
+
+        HistoryTrade supplier2BuyerHistoryTrade = findHistoryTradeByTarget(supplier2MarketOrder.getHistoryTrades(), buyer);
+        Assert.assertNotNull(supplier2BuyerHistoryTrade);
+        Assert.assertEquals(0, BigDecimal.valueOf(150).compareTo(supplier2BuyerHistoryTrade.getQuantity()));
+
     }
 
     @Test
@@ -180,7 +202,7 @@ public class TransactionHistoryTest {
         orderRequestService.process(bidOrderRequest1);
 
         OrderRequest askOrderRequest = new OrderRequestBuilder(supplier)
-                .quantity(BigDecimal.valueOf(200))
+                .quantity(BigDecimal.valueOf(100))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.MARKET)
                 .invoicesChecked(ImmutableMap.of(invoice1SB.getId(), true))
@@ -188,12 +210,7 @@ public class TransactionHistoryTest {
         orderRequestService.process(askOrderRequest);
 
         List<HistoryOrderRequest> supplierTransHistory = historyOrderRequestService.getByCounterparty(supplier);
-        Assert.assertEquals(2, supplierTransHistory.size());
-        HistoryOrderRequest supplierLimitOrderRequest = findHistoryOrderRequestByOrderSide(supplierTransHistory, OrderType.LIMIT);
-        Assert.assertEquals(OrderSide.BID, supplierLimitOrderRequest.getOrderSide());
-        Assert.assertEquals("Actual qty: " + supplierLimitOrderRequest.getQuantity(),
-                0, BigDecimal.valueOf(100).compareTo(supplierLimitOrderRequest.getQuantity()));
-
+        Assert.assertEquals(1, supplierTransHistory.size());
         HistoryOrderRequest supplierMarketOrderRequest = findHistoryOrderRequestByOrderSide(supplierTransHistory, OrderType.MARKET);
         Assert.assertEquals(OrderSide.BID, supplierMarketOrderRequest.getOrderSide());
         Assert.assertEquals("Actual qty: " + supplierMarketOrderRequest.getQuantity(),
@@ -201,15 +218,20 @@ public class TransactionHistoryTest {
 
         List<HistoryOrderRequest> buyerTransHistory = historyOrderRequestService.getByCounterparty(buyer);
         Assert.assertEquals(2, buyerTransHistory.size());
+        HistoryOrderRequest buyerLimitOrderRequest = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.LIMIT);
+        Assert.assertEquals(OrderSide.ASK, buyerLimitOrderRequest.getOrderSide());
+        Assert.assertEquals("Actual qty: " + buyerLimitOrderRequest.getQuantity(),
+                0, BigDecimal.valueOf(100).compareTo(buyerLimitOrderRequest.getQuantity()));
+
         HistoryOrderRequest buyerMarketOrderRequest = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.MARKET);
         Assert.assertEquals(OrderSide.ASK, buyerMarketOrderRequest.getOrderSide());
         Assert.assertEquals("Actual qty: " + buyerMarketOrderRequest.getQuantity(),
                 0, BigDecimal.valueOf(100).compareTo(buyerMarketOrderRequest.getQuantity()));
 
-        HistoryOrderRequest buyerLimitOrderRequest = findHistoryOrderRequestByOrderSide(buyerTransHistory, OrderType.LIMIT);
-        Assert.assertEquals(OrderSide.ASK, buyerLimitOrderRequest.getOrderSide());
-        Assert.assertEquals("Actual qty: " + buyerLimitOrderRequest.getQuantity(),
-                0, BigDecimal.valueOf(100).compareTo(buyerLimitOrderRequest.getQuantity()));
+        HistoryTrade buyerSupplierTrade = findHistoryTradeByTarget(buyerMarketOrderRequest.getHistoryTrades(), supplier);
+        Assert.assertNotNull(buyerSupplierTrade);
+        Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(buyerSupplierTrade.getQuantity()));
+
     }
 
 
