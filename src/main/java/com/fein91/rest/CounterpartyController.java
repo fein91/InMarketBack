@@ -24,12 +24,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/counterparties")
 public class CounterpartyController {
 
     public static final SimpleDateFormat FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    private final static Logger LOGGER = Logger.getLogger(CounterpartyController.class.getName());
 
     private final InvoiceService invoiceService;
     private final HistoryOrderRequestService historyOrderRequestService;
@@ -47,11 +49,13 @@ public class CounterpartyController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{sourceId}/invoicesBySource")
     public List<Invoice> getBySourceId(@PathVariable Long sourceId) {
+        LOGGER.info("Looking for invoices by sourceId: " + sourceId);
         return invoiceService.getBySourceId(sourceId);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{targetId}/invoicesByTarget")
     public List<Invoice> getByTargetId(@PathVariable Long targetId) {
+        LOGGER.info("Looking for invoices by target: " + targetId);
         return invoiceService.getByTargetId(targetId);
     }
 

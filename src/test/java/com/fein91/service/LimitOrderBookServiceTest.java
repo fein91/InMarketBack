@@ -6,13 +6,12 @@ import com.fein91.core.model.OrderSide;
 import com.fein91.core.model.Trade;
 import com.fein91.model.*;
 import com.fein91.rest.exception.OrderRequestProcessingException;
-import com.fein91.service.CounterPartyService;
-import com.fein91.service.InvoiceService;
-import com.fein91.service.OrderRequestService;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,90 +42,6 @@ public class LimitOrderBookServiceTest {
     @Autowired
     @Qualifier("OrderRequestServiceImpl")
     OrderRequestService orderRequestServiceImpl;
-
-    /*
-    *     b1  b2  b3
-    * s1 100 200  50
-    *    ASK
-    * b3 100 29
-    * b2 150 28
-    * b1 50 27
-    * s1 BID market order == 350
-    * */
-    @Test
-    @Transactional
-    @Rollback
-    public void marketOrderTest1() throws Exception {
-        Counterparty supplier = counterPartyService.addCounterParty("supplier");
-        Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
-        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
-        Counterparty buyer3 = counterPartyService.addCounterParty("buyer3");
-
-        Invoice invoiceSB1 = invoiceServiceImpl.addInvoice(new Invoice(supplier, buyer1, BigDecimal.valueOf(100), ZERO, getCurrentDayPlusDays(40)));
-        Invoice invoiceSB2 = invoiceServiceImpl.addInvoice(new Invoice(supplier, buyer2, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(60)));
-        Invoice invoiceSB3 = invoiceServiceImpl.addInvoice(new Invoice(supplier, buyer3, BigDecimal.valueOf(50), ZERO, getCurrentDayPlusDays(60)));
-
-        double buyer1AskPrice = 27d;
-        OrderRequest askOrderRequest1 = new OrderRequestBuilder(buyer1)
-                .quantity(BigDecimal.valueOf(50))
-                .price(BigDecimal.valueOf(buyer1AskPrice))
-                .orderSide(OrderSide.ASK)
-                .orderType(OrderType.LIMIT)
-                .build();
-        orderRequestServiceImpl.process(askOrderRequest1);
-
-        double buyer2AskPrice = 28d;
-        OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
-                .quantity(BigDecimal.valueOf(150))
-                .price(BigDecimal.valueOf(buyer2AskPrice))
-                .orderSide(OrderSide.ASK)
-                .orderType(OrderType.LIMIT)
-                .build();
-        orderRequestServiceImpl.process(askOrderRequest2);
-
-        double buyer3AskPrice = 29d;
-        OrderRequest askOrderRequest3 = new OrderRequestBuilder(buyer3)
-                .quantity(BigDecimal.valueOf(45))
-                .price(BigDecimal.valueOf(buyer3AskPrice))
-                .orderSide(OrderSide.ASK)
-                .orderType(OrderType.LIMIT)
-                .build();
-        orderRequestServiceImpl.process(askOrderRequest3);
-
-        OrderRequest marketOrderRequest1 = new OrderRequestBuilder(supplier)
-                .quantity(BigDecimal.valueOf(350))
-                .orderSide(OrderSide.BID)
-                .orderType(OrderType.MARKET)
-                .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true, invoiceSB3.getId(), true))
-                .build();
-        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
-
-        Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer1.getId());
-        Assert.assertNotNull(trade1);
-        Assert.assertEquals(trade1.getPrice(), buyer1AskPrice, 0d);
-        Assert.assertEquals(BigDecimal.valueOf(50).compareTo(trade1.getQty()), 0);
-        Trade trade2 = findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer2.getId());
-        Assert.assertNotNull(trade2);
-        Assert.assertEquals(trade2.getPrice(), buyer2AskPrice, 0d);
-        Assert.assertEquals(BigDecimal.valueOf(150).compareTo(trade2.getQty()), 0);
-        Trade trade3 = findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer3.getId());
-        Assert.assertNotNull(trade3);
-        Assert.assertEquals(trade3.getPrice(), buyer3AskPrice, 0d);
-        Assert.assertEquals("Actual qty: " + trade3.getQty(), BigDecimal.valueOf(45).compareTo(trade3.getQty()), 0);
-
-        Assert.assertEquals("Actual satisfied demand: " + result.getSatisfiedDemand(), BigDecimal.valueOf(245).compareTo(result.getSatisfiedDemand()), 0);
-        Assert.assertEquals("Actual APR: " + result.getApr(), 0, BigDecimal.valueOf(27.98).compareTo(result.getApr()));
-
-        invoiceSB1 = invoiceServiceImpl.getById(invoiceSB1.getId());
-        Assert.assertEquals("Actual invoice prepaid value: " + invoiceSB1.getPrepaidValue(),
-                0, BigDecimal.valueOf(51.479452055000).compareTo(invoiceSB1.getPrepaidValue()));
-        invoiceSB2 = invoiceServiceImpl.getById(invoiceSB2.getId());
-        Assert.assertEquals("Actual invoice prepaid value: " + invoiceSB2.getPrepaidValue(),
-                0, BigDecimal.valueOf(156.904109595).compareTo(invoiceSB2.getPrepaidValue()));
-        invoiceSB3 = invoiceServiceImpl.getById(invoiceSB3.getId());
-        Assert.assertEquals("Actual invoice prepaid value: " + invoiceSB3.getPrepaidValue(),
-                0, BigDecimal.valueOf(47.1452054805).compareTo(invoiceSB3.getPrepaidValue()));
-    }
 
     @Test
     @Transactional
@@ -588,8 +503,9 @@ public class LimitOrderBookServiceTest {
     * s2 25 300
     * b1 ask market order == 350
     * */
-    //TODO fix this NPE
     @Test
+    @Transactional
+    @Rollback
     public void testOrderWithSomeUncheckedInvoices() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -626,21 +542,25 @@ public class LimitOrderBookServiceTest {
         Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(26d, trade1.getPrice(), 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(191.8).compareTo(trade1.getQty()));
+        Assert.assertEquals("Actual trade qty: " + trade1.getQty(),
+                0, BigDecimal.valueOf(100).compareTo(trade1.getQty()));
 
         Trade trade2 = findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
         Assert.assertNotNull(trade2);
         Assert.assertEquals(25d, trade2.getPrice(), 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(158.2).compareTo(trade2.getQty()));
+        Assert.assertEquals("Actual trade qty: " + trade2.getQty(),
+                0, BigDecimal.valueOf(250).compareTo(trade2.getQty()));
 
-        Assert.assertEquals("Actual apr " + result.getApr(), BigDecimal.valueOf(25.55).compareTo(result.getApr()), 0);
+        Assert.assertEquals("Actual apr " + result.getApr(), BigDecimal.valueOf(25.29).compareTo(result.getApr()), 0);
     }
 
-    //TODO to fix this case
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     @Test
     @Transactional
     @Rollback
-    public void testToFix() throws Exception {
+    public void testExceptionThrownAfterMarketOrderBiggerThanOrdersSum() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier = counterPartyService.addCounterParty("supplier");
 
@@ -655,6 +575,9 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.process(bidOrderRequest1);
 
+        thrown.expect(OrderRequestProcessingException.class);
+        thrown.expectMessage("Requested order quantity: 200 is greater than available orders sum: 150.00. Please process unsatisfied quantity: 50.00 as limit order.");
+
         OrderRequest askOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(200))
                 .orderSide(OrderSide.BID)
@@ -665,86 +588,9 @@ public class LimitOrderBookServiceTest {
 
     }
 
-    /*
-        *   source  target  value paymentDate
-        *     s1      b1     200    70
-        *     s3      b1     100    70
-        *       BID
-        * s1 19 50
-        * s2 17 100
-        * b1 ask market order == 200
-        * */
     @Test
-    public void testLimitOrderCreatedAfterUnsatisfiedMarketOrder() throws Exception {
-        Counterparty buyer = counterPartyService.addCounterParty("buyer");
-        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
-        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
-
-        Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, getCurrentDayPlusDays(70)));
-        Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(100), ZERO, getCurrentDayPlusDays(70)));
-
-        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
-                .quantity(BigDecimal.valueOf(50))
-                .price(BigDecimal.valueOf(19))
-                .orderSide(OrderSide.BID)
-                .orderType(OrderType.LIMIT)
-                .build();
-        orderRequestServiceImpl.process(bidOrderRequest1);
-
-        OrderRequest bidOrderRequest3 = new OrderRequestBuilder(supplier2)
-                .quantity(BigDecimal.valueOf(95))
-                .price(BigDecimal.valueOf(17))
-                .orderSide(OrderSide.BID)
-                .orderType(OrderType.LIMIT)
-                .build();
-        orderRequestServiceImpl.process(bidOrderRequest3);
-
-        OrderRequest marketOrderRequest1 = new OrderRequestBuilder(buyer)
-                .quantity(BigDecimal.valueOf(200))
-                .orderSide(OrderSide.ASK)
-                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true))
-                .orderType(OrderType.MARKET)
-                .build();
-
-        OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
-        Trade trade1 = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
-        Assert.assertNotNull(trade1);
-        Assert.assertEquals(19d, trade1.getPrice(), 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(trade1.getQty()));
-
-        Trade trade2 = findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
-        Assert.assertNotNull(trade2);
-        Assert.assertEquals(17d, trade2.getPrice(), 0d);
-        Assert.assertEquals("Actual qty: " + trade2.getQty(), 0, BigDecimal.valueOf(95).compareTo(trade2.getQty()));
-
-        invoiceS1B = invoiceServiceImpl.getById(invoiceS1B.getId());
-        Assert.assertEquals(BigDecimal.valueOf(51.82), invoiceS1B.getPrepaidValue());
-        invoiceS2B = invoiceServiceImpl.getById(invoiceS2B.getId());
-        Assert.assertEquals("Actual invoice prepaid value: " + invoiceS2B.getPrepaidValue(),
-                BigDecimal.valueOf(98.10).compareTo(invoiceS2B.getPrepaidValue()), 0);
-
-        Assert.assertEquals(70, result.getAvgDaysToPayment().intValue());
-        BigDecimal expectedApr = BigDecimal.valueOf(17.69);
-        Assert.assertEquals("Actual APR " + result.getApr(), expectedApr.compareTo(result.getApr()), 0);
-        Assert.assertEquals("Actual avg discount perc: " + result.getAvgDiscountPerc(), BigDecimal.valueOf(1.64).compareTo(result.getAvgDiscountPerc()), 0);
-
-        List<OrderRequest> supplier1Orders = orderRequestServiceImpl.getByCounterpartyId(supplier1.getId());
-        Assert.assertEquals(0, supplier1Orders.size());
-
-        List<OrderRequest> supplier2Orders = orderRequestServiceImpl.getByCounterpartyId(supplier2.getId());
-        Assert.assertEquals(0, supplier2Orders.size());
-
-        List<OrderRequest> buyerOrders = orderRequestServiceImpl.getByCounterpartyId(buyer.getId());
-        Assert.assertEquals(1, buyerOrders.size());
-        OrderRequest buyerLimitOrder = buyerOrders.iterator().next();
-        Assert.assertEquals(OrderSide.ASK, buyerLimitOrder.getOrderSide());
-        Assert.assertEquals(OrderType.LIMIT, buyerLimitOrder.getOrderType());
-        Assert.assertEquals(0, expectedApr.compareTo(buyerLimitOrder.getPrice()));
-        Assert.assertEquals(0, BigDecimal.valueOf(55).compareTo(buyerLimitOrder.getQuantity()));
-
-    }
-
-    @Test
+    @Transactional
+    @Rollback
     public void testWithDiscountsOneInvoicePerBuyer() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -785,6 +631,8 @@ public class LimitOrderBookServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     public void testWithDiscountsTwoInvoicesPerBuyer() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
@@ -822,7 +670,8 @@ public class LimitOrderBookServiceTest {
         Trade trade = findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade);
         Assert.assertEquals(bid1Price.doubleValue(), trade.getPrice(), 0d);
-        Assert.assertEquals(BigDecimal.valueOf(350).compareTo(trade.getQty()), 0);
+        Assert.assertEquals("Actual trade qty: " + trade.getQty(),
+                BigDecimal.valueOf(350).compareTo(trade.getQty()), 0);
 
         invoice1S1B = invoiceServiceImpl.getById(invoice1S1B.getId());
         Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(invoice1S1B.getPrepaidValue()));

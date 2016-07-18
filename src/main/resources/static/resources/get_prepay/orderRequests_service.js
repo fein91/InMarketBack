@@ -1,6 +1,6 @@
 angular
     .module('inmarket.orderRequestsService', [])
-    .service('orderRequestsService', function ($http, $rootScope, invoices) {
+    .service('orderRequestsService', function ($http, $rootScope, $location, invoices) {
         this.process = function (orderRequest) {
             var url = "/orderRequests/process";
             console.log("post request produced: " + url);
@@ -27,8 +27,12 @@ angular
                     .then(function successCallback(response) {
                         var orderResult = response.data;
                         console.log('order result: ' + JSON.stringify(orderResult));
-                        $rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
-                        $rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
+
+                        invoices.cleanUp();
+                        $location.path("/contragents");
+
+                        //$rootScope.$broadcast('buyerProposalToChangeEvent', invoices.buyerInvoicesCheckboxes.invoices);
+                        //$rootScope.$broadcast('supplierProposalToChangeEvent', invoices.supplierInvoicesCheckboxes.invoices);
 
                     }, function errorCallback(response) {
                         console.log('got ' + response.status + ' error');

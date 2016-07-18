@@ -47,9 +47,9 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                         $scope.avgDaysToPayment = orderResult.avgDaysToPayment;
                         $scope.avgDiscountPerc = orderResult.avgDiscountPerc;
                         $scope.discountSum = orderResult.avgDiscountPerc;
-                        if ($scope.askQty > $scope.satisfiedAskQty) {
-                            $scope.demandSatisfied = false;
-                        }
+                        //if ($scope.askQty > $scope.satisfiedAskQty) {
+                        //    $scope.demandSatisfied = false;
+                        //}
 
                         $scope.calculatedWithError = false;
                     }, function errorCallback(response) {

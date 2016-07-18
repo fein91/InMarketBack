@@ -1,4 +1,4 @@
-angular.module('inmarket.auth', [])
+angular.module('inmarket.auth', ['ngStorage'])
 
     //.controller('LoginController', function ($rootScope, $scope, AuthSharedService) {
     //    $scope.rememberMe = true;
@@ -8,15 +8,17 @@ angular.module('inmarket.auth', [])
     //    }
     //})
 
-    .controller('home', function ($http, $rootScope, $location) {
-        if (!$rootScope.authenticated) {
+    .controller('home', function ($http, $rootScope, $location, $sessionStorage) {
+        if (!$sessionStorage.authenticated) {
             $location.path("/login");
         } else {
             $location.path("/contragents");
         }
     })
 
-    .controller('loginCtrl', function ($rootScope, $scope, $http, $location, $route, session) {
+    .controller('loginCtrl', function ($rootScope, $scope, $http, $location, $route, $sessionStorage, session) {
+        console.log('loginCtrl inited');
+
         var self = this;
 
         $scope.session = session;
@@ -37,20 +39,25 @@ angular.module('inmarket.auth', [])
                 headers: headers
             }).success(function (data) {
                 if (data.name) {
-                    $rootScope.authenticated = true;
+                    $sessionStorage.authenticated = true;
                     session.create({
                         'login': data.login,
                         'counterpartyId': data.id
                     });
                 } else {
                     console.log('set auth to false')
-                    $rootScope.authenticated = false;
-                    Session.invalidate();
+                    $sessionStorage.authenticated = false;
+                    session.invalidate();
                 }
-                callback && callback($rootScope.authenticated);
+
+                $rootScope.authenticated = $sessionStorage.authenticated;
+                callback && callback($sessionStorage.authenticated);
             }).error(function () {
                 console.log('set auth to false due to error')
-                $rootScope.authenticated = false;
+                $sessionStorage.authenticated = false;
+                $rootScope.authenticated = $sessionStorage.authenticated;
+
+                session.invalidate();
                 callback && callback(false);
             });
 
@@ -65,19 +72,24 @@ angular.module('inmarket.auth', [])
                     console.log("Login succeeded")
                     $location.path("/");
                     self.error = false;
-                    $rootScope.authenticated = true;
+                    $sessionStorage.authenticated = true;
+                    $rootScope.authenticated = $sessionStorage.authenticated;
                 } else {
                     console.log("Login failed")
                     $location.path("/login");
                     self.error = true;
-                    $rootScope.authenticated = false;
+                    $sessionStorage.authenticated = false;
+                    $rootScope.authenticated = $sessionStorage.authenticated;
                 }
             })
         };
 
         self.logout = function () {
             $http.post('logout', {}).finally(function () {
-                $rootScope.authenticated = false;
+                session.invalidate();
+                $sessionStorage.authenticated = false;
+                $rootScope.authenticated = $sessionStorage.authenticated;
+
                 console.log('turn off user');
                 $location.path("/login");
             });
@@ -85,7 +97,7 @@ angular.module('inmarket.auth', [])
 
     })
 
-    .service('session', function () {
+    .service('session', function (invoices) {
         this.create = function (data) {
             this.id = data.id;
             this.login = data.login;
@@ -99,8 +111,10 @@ angular.module('inmarket.auth', [])
         this.invalidate = function () {
             this.id = null;
             this.login = null;
+            this.counterpartyId = null;
             this.name = null;
             this.userRoles = null;
+            invoices.cleanUp();
         };
         return this;
     });
