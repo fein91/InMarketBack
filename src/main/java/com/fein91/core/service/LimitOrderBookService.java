@@ -82,7 +82,7 @@ public class LimitOrderBookService {
     private BigDecimal calculateTotalInvoicesSum(OrderBook lob) {
         BigDecimal result = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
-            result = result.add(trade.getInvoiceValue());
+            result = result.add(trade.getUnpaidInvoiceValue());
         }
         return result;
     }

@@ -28,7 +28,7 @@
                         <td header="'ng-table/headers/checkbox.html'">
                             <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
                         <td data-title="'Покупатель'" filter="{ 'target.name': 'text'}" sortable="'target.name'"></td>
-                        <td data-title="'Исходная сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                        <td data-title="'Сумма инвойса'" filter="{ 'value': 'number'}" sortable="'value'">
                             {{invoice.value}}</td>
                         <td data-title="'Предоплаты'" filter="{ 'prepaidValue': 'number'}" sortable="'prepaidValue'">
                             {{invoice.prepaidValue}}</td>
@@ -38,7 +38,7 @@
                             {{invoice.daysToPayment}}</td>
                         <td data-title="'Дата платежа'" sortable="'paymentDate'">
                             {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
-                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
+                        <td data-title="'# Инвойса'" filter="{ 'id': 'number'}" sortable="'id'">
                             {{invoice.id}}</td>
                     </tr>
                 </table>
@@ -70,8 +70,8 @@
                     <tr ng-hide="group.$hideRows" ng-repeat="invoice in group.data" ng-repeat-end>
                         <td header="'ng-table/headers/checkbox.html'">
                             <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
-                        <td data-title="'Покупатель'" filter="{ 'source.name': 'text'}" sortable="'source.name'"></td>
-                        <td data-title="'Исходная сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                        <td data-title="'Поставщик'" filter="{ 'source.name': 'text'}" sortable="'source.name'"></td>
+                        <td data-title="'Сумма инвойса'" filter="{ 'value': 'number'}" sortable="'value'">
                             {{invoice.value}}</td>
                         <td data-title="'Предоплаты'" filter="{ 'prepaidValue': 'number'}" sortable="'prepaidValue'">
                             {{invoice.prepaidValue}}</td>
@@ -81,7 +81,7 @@
                             {{invoice.daysToPayment}}</td>
                         <td data-title="'Дата платежа'" sortable="'paymentDate'">
                             {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
-                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
+                        <td data-title="'# Инвойса'" filter="{ 'id': 'number'}" sortable="'id'">
                             {{invoice.id}}</td>
                     </tr>
                 </table>

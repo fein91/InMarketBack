@@ -23,6 +23,10 @@ angular.module('inmarket.trans_history', ['ngRoute'])
                     var asks = [];
 
                     angular.forEach(response.data, function (historyMarketOrder) {
+                        angular.forEach(historyMarketOrder.historyTrades, function (trade) {
+                            trade.toPay = trade.unpaidInvoiceValue - trade.quantity - trade.discountValue;
+                        });
+
                         if ('ASK' === historyMarketOrder.orderSide) {
                             asks.push(historyMarketOrder);
                         } else if ('BID' === historyMarketOrder.orderSide) {

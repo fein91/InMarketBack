@@ -25,6 +25,8 @@ public class HistoryOrderRequest {
 
     BigDecimal quantity;
 
+    BigDecimal avgDiscountPerc;
+
     Date date;
 
     int orderSide;
@@ -68,6 +70,14 @@ public class HistoryOrderRequest {
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
+    }
+
+    public BigDecimal getAvgDiscountPerc() {
+        return avgDiscountPerc;
+    }
+
+    public void setAvgDiscountPerc(BigDecimal avgDiscountPerc) {
+        this.avgDiscountPerc = avgDiscountPerc;
     }
 
     public Date getDate() {

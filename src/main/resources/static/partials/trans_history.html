@@ -4,29 +4,51 @@
             <div class="table-responsive">
                 <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
-                    <tr ng-repeat-start="record in $data">
+                    <tr class="ng-table-group" ng-repeat-start="record in $data">
                         <td>
                             <a href="" ng-click="record.$hideRows = !record.$hideRows">
                                 <span class="glyphicon"
-                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"></span>
+                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }">{{record.date | date:'dd/MM/yyyy'}}</span>
                             </a></td>
-                        <td data-title="'Сумма'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                            {{record.quantity}}
-                        </td>
-                        <td data-title="'APR'" filter="{ 'price': 'number'}" sortable="'price'">
-                            {{record.price}}
-                        </td>
-                        <td data-title="'Дата'" sortable="'date'">
-                            {{record.date | date:'dd/MM/yyyy'}}
-                        </td>
+                        <td></td>
+                        <td>
+                            {{record.price}}</td>
+                        <td>
+                            {{record.avgDiscountPerc}}</td>
+                        <td></td>
+                        <td>
+                            {{record.historyTrades.sum('unpaidInvoiceValue')}}</td>
+                        <td>
+                            {{record.historyTrades.sum('quantity')}}</td>
+                        <td>
+                            {{record.historyTrades.sum('discountValue')}}</td>
+                        <td>
+                            {{record.historyTrades.sum('toPay')}}</td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
-                        <td colspan="4">
-                            <b>Название компании:</b> {{trade.invoice.source.name}};
-                            <b>#Платежа:</b> {{trade.invoice.id}};
-                            <b>Сумма:</b> {{trade.quantity}};
-                            <b>Скидка:</b> {{trade.discountValue}}
-                        </td>
+                        <td data-title="'Дата сделки'"></td>
+                        <td data-title="'Тип сделки'">
+                            </td>
+                        <td data-title="'Годовая доходность'" filter="{ 'price': 'number'}" sortable="'price'">
+                            {{trade.price}}</td>
+                        <td data-title="'Доходность за период'">
+                            </td>
+                        <td data-title="'Средний % скидки'">
+                            </td>
+                        <td data-title="'Исходная сумма'" filter="{ 'unpaidInvoiceValue': 'number'}" sortable="'unpaidInvoiceValue'">
+                            {{trade.unpaidInvoiceValue}}</td>
+                        <td data-title="'Предоплата'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
+                            {{trade.quantity}}</td>
+                        <td data-title="'Скидка'" filter="{ 'discountValue': 'number'}" sortable="'discountValue'">
+                            {{trade.discountValue}}</td>
+                        <td data-title="'Остаток  к оплате'" filter="{ 'toPay': 'number'}" sortable="'toPay'">
+                            {{trade.toPay}}</td>
+                        <td data-title="'Поставщик'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
+                            {{trade.target.name}}</td>
+                        <td data-title="'# инвойса'" filter="{ 'target.invoice.id': 'number'}" sortable="'invoice.id'">
+                            {{trade.invoice.id}}</td>
                     </tr>
                 </table>
             </div>
@@ -35,29 +57,52 @@
             <div class="table-responsive">
                 <table ng-table="bidsTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
-                    <tr ng-repeat-start="record in $data">
+                    <tr class="ng-table-group" ng-repeat-start="record in $data">
                         <td>
                             <a href="" ng-click="record.$hideRows = !record.$hideRows">
                                 <span class="glyphicon"
                                       ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"></span>
+                                <strong>{{record.date | date:'dd/MM/yyyy'}}</strong>
                             </a></td>
-                        <td data-title="'Сумма'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                            {{record.quantity}}
-                        </td>
-                        <td data-title="'APR'" filter="{ 'price': 'number'}" sortable="'price'">
-                            {{record.price}}
-                        </td>
-                        <td data-title="'Дата'" sortable="'date'">
-                            {{record.date | date:'dd/MM/yyyy'}}
-                        </td>
+                        <td></td>
+                        <td>
+                            {{record.price}}</td>
+                        <td>
+                            {{record.avgDiscountPerc}}</td>
+                        <td></td>
+                        <td>
+                            {{record.historyTrades.sum('unpaidInvoiceValue')}}</td>
+                        <td>
+                            {{record.historyTrades.sum('quantity')}}</td>
+                        <td>
+                            {{record.historyTrades.sum('discountValue')}}</td>
+                        <td>
+                            {{record.historyTrades.sum('toPay')}}</td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
-                        <td colspan="4">
-                            <b>Название компании:</b> {{trade.invoice.target.name}};
-                            <b>#Платежа:</b> {{trade.invoice.id}};
-                            <b>Сумма:</b> {{trade.quantity}};
-                            <b>Скидка:</b> {{trade.discountValue}}
+                        <td data-title="'Дата сделки'"></td>
+                        <td data-title="'Тип сделки'">
                         </td>
+                        <td data-title="'Годовая доходность'" filter="{ 'price': 'number'}" sortable="'price'">
+                            {{trade.price}}</td>
+                        <td data-title="'Доходность за период'">
+                        </td>
+                        <td data-title="'Средний % скидки'">
+                        </td>
+                        <td data-title="'Исходная сумма'" filter="{ 'unpaidInvoiceValue': 'number'}" sortable="'unpaidInvoiceValue'">
+                            {{trade.unpaidInvoiceValue}}</td>
+                        <td data-title="'Предоплата'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
+                            {{trade.quantity}}</td>
+                        <td data-title="'Скидка'" filter="{ 'discountValue': 'number'}" sortable="'discountValue'">
+                            {{trade.discountValue}}</td>
+                        <td data-title="'Остаток  к оплате'" filter="{ 'toPay': 'number'}" sortable="'toPay'">
+                            {{trade.toPay}}</td>
+                        <td data-title="'Покупатель'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
+                            {{trade.target.name}}</td>
+                        <td data-title="'# инвойса'" filter="{ 'target.invoice.id': 'number'}" sortable="'invoice.id'">
+                            {{trade.invoice.id}}</td>
                     </tr>
                 </table>
             </div>

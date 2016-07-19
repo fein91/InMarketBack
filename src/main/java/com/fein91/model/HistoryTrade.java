@@ -12,6 +12,7 @@ public class HistoryTrade {
     @GeneratedValue
     private Long id;
 
+    @Deprecated
     @OneToOne
     @JoinColumn(name="invoice_fk")
     Invoice invoice;
@@ -33,16 +34,22 @@ public class HistoryTrade {
 
     BigDecimal quantity;
 
+    BigDecimal price;
+
     BigDecimal discountValue;
+
+    BigDecimal unpaidInvoiceValue;
 
     public Long getId() {
         return id;
     }
 
+    @Deprecated
     public Invoice getInvoice() {
         return invoice;
     }
 
+    @Deprecated
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
@@ -63,12 +70,28 @@ public class HistoryTrade {
         this.quantity = quantity;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     public BigDecimal getDiscountValue() {
         return discountValue;
     }
 
     public void setDiscountValue(BigDecimal discountValue) {
         this.discountValue = discountValue;
+    }
+
+    public BigDecimal getUnpaidInvoiceValue() {
+        return unpaidInvoiceValue;
+    }
+
+    public void setUnpaidInvoiceValue(BigDecimal unpaidInvoiceValue) {
+        this.unpaidInvoiceValue = unpaidInvoiceValue;
     }
 
     public void setTarget(Counterparty target) {
@@ -87,6 +110,7 @@ public class HistoryTrade {
                 ", affectedOrderRequest=" + affectedOrderRequest +
                 ", target=" + target +
                 ", quantity=" + quantity +
+                ", price=" + price +
                 ", discountValue=" + discountValue +
                 '}';
     }

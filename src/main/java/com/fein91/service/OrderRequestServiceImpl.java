@@ -123,6 +123,8 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                                                                                                 OrderResult result) {
         HistoryOrderRequest executedHor = historyOrderRequestService.convertFrom(orderRequest);
         executedHor.setQuantity(result.getSatisfiedDemand());
+        executedHor.setPrice(result.getApr());
+        executedHor.setAvgDiscountPerc(result.getAvgDiscountPerc());
         executedHor.setHistoryTrades(historyTradeService.convertFrom(lob.getTape()));
         return historyOrderRequestService.save(executedHor);
     }
