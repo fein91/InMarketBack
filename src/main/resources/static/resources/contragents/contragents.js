@@ -64,7 +64,7 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         });
 
                         $scope.buyersTableParams = new NgTableParams({
-                            group : "target"
+                            group : "target.name"
                         }, {
                             dataset: response.data
                         });
@@ -139,7 +139,7 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         });
 
                         $scope.suppliersTableParams = new NgTableParams({
-                            group: 'source'
+                            group: 'source.name'
                         }, {
                             dataset: response.data
                         });

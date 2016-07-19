@@ -11,7 +11,7 @@
                         <td>
                             <a href="" ng-click="group.$hideRows = !group.$hideRows">
                                 <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
-                                <strong>{{ group.value.name }}</strong>
+                                <strong>{{ group.value }}</strong>
                             </a></td>
                         <td>
                             <strong>{{ group.data.sum('value') }}</strong></td>
@@ -54,7 +54,7 @@
                         <td>
                             <a href="" ng-click="group.$hideRows = !group.$hideRows">
                                 <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
-                                <strong>{{ group.value.name }}</strong>
+                                <strong>{{ group.value }}</strong>
                             </a></td>
                         <td>
                             <strong>{{ group.data.sum('value') }}</strong></td>
