@@ -5,21 +5,41 @@
             <div class="table-responsive" ng-controller="MyBuyersCtrl as myBuyers">
                 <table ng-table="buyersTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
-                    <tr ng-repeat="invoice in $data">
+                    <tr class="ng-table-group" ng-repeat-start="group in $groups">
+                        <td>
+                            <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/> </td>
+                        <td>
+                            <a href="" ng-click="group.$hideRows = !group.$hideRows">
+                                <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
+                                <strong>{{ group.value }}</strong>
+                            </a></td>
+                        <td>
+                            <strong>{{ group.data.sum('value') }}</strong></td>
+                        <td>
+                            <strong>{{ group.data.sum('prepaidValue') }}</strong></td>
+                        <td>
+                            <strong>{{ group.data.sum('unpaidValue') }}</strong></td>
+                        <td>
+                            <strong>{{ myBuyers.calculateAvgDaysToPayment(group.data) }}</strong></td>
+                        <td/>
+                        <td/>
+                    </tr>
+                    <tr ng-hide="group.$hideRows" ng-repeat="invoice in group.data" ng-repeat-end>
                         <td header="'ng-table/headers/checkbox.html'">
                             <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
-                        <td data-title="'Название компании'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
-                            {{invoice.target.name}}
-                        </td>
-                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
-                            {{invoice.id}}
-                        </td>
-                        <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
-                            {{invoice.value}}
-                        </td>
+                        <td data-title="'Покупатель'" filter="{ 'target.name': 'text'}" sortable="'target.name'"></td>
+                        <td data-title="'Исходная сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                            {{invoice.value}}</td>
+                        <td data-title="'Предоплаты'" filter="{ 'prepaidValue': 'number'}" sortable="'prepaidValue'">
+                            {{invoice.prepaidValue}}</td>
+                        <td data-title="'Остаток к оплате'" filter="{ 'unpaidValue': 'number'}" sortable="'unpaidValue'">
+                            {{invoice.unpaidValue}}</td>
+                        <td data-title="'Срок, дней'" filter="{ 'daysToPayment': 'number'}" sortable="'daysToPayment'">
+                            {{invoice.daysToPayment}}</td>
                         <td data-title="'Дата платежа'" sortable="'paymentDate'">
-                            {{invoice.paymentDate | date:'dd/MM/yyyy'}}
-                        </td>
+                            {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
+                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
+                            {{invoice.id}}</td>
                     </tr>
                 </table>
             </div>
@@ -28,21 +48,41 @@
             <div class="table-responsive" ng-controller="MySuppliersCtrl as mySuppliers">
                 <table ng-table="suppliersTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
-                    <tr ng-repeat="invoice in $data">
+                    <tr class="ng-table-group" ng-repeat-start="group in $groups">
+                        <td>
+                            <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/> </td>
+                        <td>
+                            <a href="" ng-click="group.$hideRows = !group.$hideRows">
+                                <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
+                                <strong>{{ group.value }}</strong>
+                            </a></td>
+                        <td>
+                            <strong>{{ group.data.sum('value') }}</strong></td>
+                        <td>
+                            <strong>{{ group.data.sum('prepaidValue') }}</strong></td>
+                        <td>
+                            <strong>{{ group.data.sum('unpaidValue') }}</strong></td>
+                        <td>
+                            <strong>{{ mySuppliers.calculateAvgDaysToPayment(group.data) }}</strong></td>
+                        <td/>
+                        <td/>
+                    </tr>
+                    <tr ng-hide="group.$hideRows" ng-repeat="invoice in group.data" ng-repeat-end>
                         <td header="'ng-table/headers/checkbox.html'">
                             <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
-                        <td data-title="'Название компании'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
-                            {{invoice.source.name}}
-                        </td>
-                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
-                            {{invoice.id}}
-                        </td>
-                        <td data-title="'Сумма'" filter="{ 'value': 'number'}" sortable="'value'">
-                            {{invoice.value}}
-                        </td>
+                        <td data-title="'Покупатель'" filter="{ 'source.name': 'text'}" sortable="'source.name'"></td>
+                        <td data-title="'Исходная сумма'" filter="{ 'value': 'number'}" sortable="'value'">
+                            {{invoice.value}}</td>
+                        <td data-title="'Предоплаты'" filter="{ 'prepaidValue': 'number'}" sortable="'prepaidValue'">
+                            {{invoice.prepaidValue}}</td>
+                        <td data-title="'Остаток к оплате'" filter="{ 'unpaidValue': 'number'}" sortable="'unpaidValue'">
+                            {{invoice.unpaidValue}}</td>
+                        <td data-title="'Срок, дней'" filter="{ 'daysToPayment': 'number'}" sortable="'daysToPayment'">
+                            {{invoice.daysToPayment}}</td>
                         <td data-title="'Дата платежа'" sortable="'paymentDate'">
-                            {{invoice.paymentDate | date:'dd/MM/yyyy'}}
-                        </td>
+                            {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
+                        <td data-title="'# Платежа'" filter="{ 'id': 'number'}" sortable="'id'">
+                            {{invoice.id}}</td>
                     </tr>
                 </table>
             </div>

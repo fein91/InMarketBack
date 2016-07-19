@@ -19,6 +19,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
 
         $scope.currentInvoicesPage = '';
 
+        self.calculateAvgDaysToPayment = function(invoices) {
+            return invoicesService.calculateAvgDaysToPayment(invoices);
+        };
+
         $scope.checkAll = function () {
             var isChecked = $scope.checkboxes.checked;
             console.log('check all ' + isChecked);
@@ -53,16 +57,19 @@ angular.module('inmarket.contragents', ['ngRoute'])
             if (invoices.buyerInvoices.length == 0) {
                 invoicesService.getBySourceId(session.counterpartyId)
                     .then(function successCallback(response) {
-                        $scope.buyersTableParams = new NgTableParams({}, {
+                        angular.forEach(response.data, function (item) {
+                            $scope.checkboxes.invoices[item.id] = true;
+                            item.unpaidValue = item.value - item.prepaidValue;
+                            item.daysToPayment = invoicesService.dateDiffInDays(new Date(), new Date(item.paymentDate));
+                        });
+
+                        $scope.buyersTableParams = new NgTableParams({
+                            group : "target.name"
+                        }, {
                             dataset: response.data
                         });
                         invoices.addAllBuyerInvoices(response.data);
                         $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.buyersTableParams.page() - 1) * $scope.buyersTableParams.count(), $scope.buyersTableParams.page() * $scope.buyersTableParams.count());
-
-
-                        angular.forEach(response.data, function (item) {
-                            $scope.checkboxes.invoices[item.id] = true;
-                        });
 
                         console.log('init invoices from db');
                     }, function errorCallback(response) {
@@ -87,6 +94,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
         self.supplierInvoices = invoices.supplierInvoices;
 
         $scope.currentInvoicesPage = '';
+
+        self.calculateAvgDaysToPayment = function(invoices) {
+            return invoicesService.calculateAvgDaysToPayment(invoices);
+        };
 
         $scope.checkAll = function () {
             var isChecked = $scope.checkboxes.checked;
@@ -121,7 +132,15 @@ angular.module('inmarket.contragents', ['ngRoute'])
             if (invoices.supplierInvoices.length == 0) {
                 invoicesService.getByTargetId(session.counterpartyId)
                     .then(function successCallback(response) {
-                        $scope.suppliersTableParams = new NgTableParams({}, {
+                        angular.forEach(response.data, function (item) {
+                            $scope.checkboxes.invoices[item.id] = true;
+                            item.unpaidValue = item.value - item.prepaidValue;
+                            item.daysToPayment = invoicesService.dateDiffInDays(new Date(), new Date(item.paymentDate));
+                        });
+
+                        $scope.suppliersTableParams = new NgTableParams({
+                            group: 'source.name'
+                        }, {
                             dataset: response.data
                         });
 
@@ -129,9 +148,6 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         $scope.currentInvoicesPage = self.supplierInvoices.slice(($scope.suppliersTableParams.page() - 1) * $scope.suppliersTableParams.count(), $scope.suppliersTableParams.page() * $scope.suppliersTableParams.count());
 
 
-                        angular.forEach(response.data, function (item) {
-                            $scope.checkboxes.invoices[item.id] = true;
-                        });
 
                         console.log('init invoices from db');
                     }, function errorCallback(response) {
