@@ -12,7 +12,6 @@ public class HistoryTrade {
     @GeneratedValue
     private Long id;
 
-    @Deprecated
     @OneToOne
     @JoinColumn(name="invoice_fk")
     Invoice invoice;
@@ -38,18 +37,18 @@ public class HistoryTrade {
 
     BigDecimal discountValue;
 
+    BigDecimal discountPercent;
+
     BigDecimal unpaidInvoiceValue;
 
     public Long getId() {
         return id;
     }
 
-    @Deprecated
     public Invoice getInvoice() {
         return invoice;
     }
 
-    @Deprecated
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
@@ -84,6 +83,14 @@ public class HistoryTrade {
 
     public void setDiscountValue(BigDecimal discountValue) {
         this.discountValue = discountValue;
+    }
+
+    public BigDecimal getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent;
     }
 
     public BigDecimal getUnpaidInvoiceValue() {

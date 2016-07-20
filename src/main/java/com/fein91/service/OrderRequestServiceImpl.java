@@ -124,7 +124,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         HistoryOrderRequest executedHor = historyOrderRequestService.convertFrom(orderRequest);
         executedHor.setQuantity(result.getSatisfiedDemand());
         executedHor.setPrice(result.getApr());
-        executedHor.setAvgDiscountPerc(result.getAvgDiscountPerc());
+        executedHor.setWeightedDiscountPerc(result.getWeightedDiscountPerc());
         executedHor.setHistoryTrades(historyTradeService.convertFrom(lob.getTape()));
         return historyOrderRequestService.save(executedHor);
     }
@@ -141,7 +141,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         targetHor.setDate(new Date());
         //TODO check it!!! should we change trade source and target
         targetHor.setHistoryTrades(historyTradeService.copyAndUpdateTarget(target, trades));
-        targetHor.setOrderType(OrderType.MARKET);
+        targetHor.setHistoryOrderType(HistoryOrderType.EXECUTED_LIMIT);
         targetHor.setOrderSide(orderSide);
         historyOrderRequestService.save(targetHor);
 

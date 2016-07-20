@@ -10,20 +10,14 @@
                                 <span class="glyphicon"
                                       ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }">{{record.date | date:'dd/MM/yyyy'}}</span>
                             </a></td>
-                        <td></td>
-                        <td>
-                            {{record.price}}</td>
-                        <td>
-                            {{record.avgDiscountPerc}}</td>
-                        <td></td>
-                        <td>
-                            {{record.historyTrades.sum('unpaidInvoiceValue')}}</td>
-                        <td>
-                            {{record.historyTrades.sum('quantity')}}</td>
-                        <td>
-                            {{record.historyTrades.sum('discountValue')}}</td>
-                        <td>
-                            {{record.historyTrades.sum('toPay')}}</td>
+                        <td>{{record.historyOrderType}}</td>
+                        <td>{{record.price | number : 2}}</td>
+                        <td>{{record.weightedDiscountPerc | number : 2}}</td>
+                        <td>{{record.historyTrades.avg('avgDiscountPerc') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('quantity') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('discountValue') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('toPay') | number : 2}}</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -32,19 +26,19 @@
                         <td data-title="'Тип сделки'">
                             </td>
                         <td data-title="'Годовая доходность'" filter="{ 'price': 'number'}" sortable="'price'">
-                            {{trade.price}}</td>
-                        <td data-title="'Доходность за период'">
-                            </td>
-                        <td data-title="'Средний % скидки'">
-                            </td>
+                            {{trade.price | number : 2}}</td>
+                        <td data-title="'Доходность за период'" filter="{ 'discountPercent': 'number'}" sortable="'discountPercent'">
+                            {{trade.discountPercent | number : 2}}</td>
+                        <td data-title="'Средний % скидки'" filter="{ 'avgDiscountPerc': 'number'}" sortable="'avgDiscountPerc'">
+                            {{trade.avgDiscountPerc | number : 2}}</td>
                         <td data-title="'Исходная сумма'" filter="{ 'unpaidInvoiceValue': 'number'}" sortable="'unpaidInvoiceValue'">
-                            {{trade.unpaidInvoiceValue}}</td>
+                            {{trade.unpaidInvoiceValue | number : 2}}</td>
                         <td data-title="'Предоплата'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                            {{trade.quantity}}</td>
+                            {{trade.quantity | number : 2}}</td>
                         <td data-title="'Скидка'" filter="{ 'discountValue': 'number'}" sortable="'discountValue'">
-                            {{trade.discountValue}}</td>
+                            {{trade.discountValue | number : 2}}</td>
                         <td data-title="'Остаток  к оплате'" filter="{ 'toPay': 'number'}" sortable="'toPay'">
-                            {{trade.toPay}}</td>
+                            {{trade.toPay | number : 2}}</td>
                         <td data-title="'Поставщик'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
                             {{trade.target.name}}</td>
                         <td data-title="'# инвойса'" filter="{ 'target.invoice.id': 'number'}" sortable="'invoice.id'">
@@ -61,23 +55,16 @@
                         <td>
                             <a href="" ng-click="record.$hideRows = !record.$hideRows">
                                 <span class="glyphicon"
-                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"></span>
-                                <strong>{{record.date | date:'dd/MM/yyyy'}}</strong>
+                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }">{{record.date | date:'dd/MM/yyyy'}}</span>
                             </a></td>
-                        <td></td>
-                        <td>
-                            {{record.price}}</td>
-                        <td>
-                            {{record.avgDiscountPerc}}</td>
-                        <td></td>
-                        <td>
-                            {{record.historyTrades.sum('unpaidInvoiceValue')}}</td>
-                        <td>
-                            {{record.historyTrades.sum('quantity')}}</td>
-                        <td>
-                            {{record.historyTrades.sum('discountValue')}}</td>
-                        <td>
-                            {{record.historyTrades.sum('toPay')}}</td>
+                        <td>{{record.historyOrderType}}</td>
+                        <td>{{record.price | number : 2}}</td>
+                        <td>{{record.weightedDiscountPerc | number : 2}}</td>
+                        <td>{{record.historyTrades.avg('avgDiscountPerc') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('quantity') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('discountValue') | number : 2}}</td>
+                        <td>{{record.historyTrades.sum('toPay') | number : 2}}</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -86,19 +73,19 @@
                         <td data-title="'Тип сделки'">
                         </td>
                         <td data-title="'Годовая доходность'" filter="{ 'price': 'number'}" sortable="'price'">
-                            {{trade.price}}</td>
-                        <td data-title="'Доходность за период'">
-                        </td>
-                        <td data-title="'Средний % скидки'">
-                        </td>
+                            {{trade.price | number : 2}}</td>
+                        <td data-title="'Доходность за период'" filter="{ 'discountPercent': 'number'}" sortable="'discountPercent'">
+                            {{trade.discountPercent | number : 2}}</td>
+                        <td data-title="'Средний % скидки'" filter="{ 'avgDiscountPerc': 'number'}" sortable="'avgDiscountPerc'">
+                            {{trade.avgDiscountPerc | number : 2}}</td>
                         <td data-title="'Исходная сумма'" filter="{ 'unpaidInvoiceValue': 'number'}" sortable="'unpaidInvoiceValue'">
-                            {{trade.unpaidInvoiceValue}}</td>
+                            {{trade.unpaidInvoiceValue | number : 2}}</td>
                         <td data-title="'Предоплата'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                            {{trade.quantity}}</td>
+                            {{trade.quantity | number : 2}}</td>
                         <td data-title="'Скидка'" filter="{ 'discountValue': 'number'}" sortable="'discountValue'">
-                            {{trade.discountValue}}</td>
+                            {{trade.discountValue | number : 2}}</td>
                         <td data-title="'Остаток  к оплате'" filter="{ 'toPay': 'number'}" sortable="'toPay'">
-                            {{trade.toPay}}</td>
+                            {{trade.toPay | number : 2}}</td>
                         <td data-title="'Покупатель'" filter="{ 'target.name': 'text'}" sortable="'target.name'">
                             {{trade.target.name}}</td>
                         <td data-title="'# инвойса'" filter="{ 'target.invoice.id': 'number'}" sortable="'invoice.id'">

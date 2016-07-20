@@ -1,9 +1,6 @@
 package com.fein91.service;
 
-import com.fein91.model.Counterparty;
-import com.fein91.model.HistoryOrderRequest;
-import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderType;
+import com.fein91.model.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,7 +15,7 @@ public interface HistoryOrderRequestService {
 
     List<HistoryOrderRequest> getByCounterparty(Counterparty counterparty);
 
-    List<HistoryOrderRequest> getByCounterpartyIdAndOrderType(Long counterpartyId, OrderType orderType);
+    List<HistoryOrderRequest> getByCounterpartyIdAndHistoryOrderType(Long counterpartyId, List<HistoryOrderType> historyOrderTypes);
 
     HistoryOrderRequest getByOriginOrderRequestId(Long originOrderRequestId);
 }

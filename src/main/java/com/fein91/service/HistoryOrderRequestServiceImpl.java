@@ -1,16 +1,14 @@
 package com.fein91.service;
 
 import com.fein91.dao.HistoryOrderRequestRepository;
-import com.fein91.model.Counterparty;
-import com.fein91.model.HistoryOrderRequest;
-import com.fein91.model.OrderRequest;
-import com.fein91.model.OrderType;
+import com.fein91.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service("HistoryOrderRequestServiceImpl")
 public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestService {
@@ -44,7 +42,7 @@ public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestServic
         historyOrderRequest.setQuantity(orderRequest.getQuantity());
         historyOrderRequest.setDate(orderRequest.getDate());
         historyOrderRequest.setOrderSide(orderRequest.getOrderSide());
-        historyOrderRequest.setOrderType(orderRequest.getOrderType());
+        historyOrderRequest.setHistoryOrderType(HistoryOrderType.valueOf(orderRequest.getOrderType().name()));
         historyOrderRequest.setOriginOrderRequestId(orderRequest.getId());
         return historyOrderRequest;
     }
@@ -55,8 +53,11 @@ public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestServic
     }
 
     @Override
-    public List<HistoryOrderRequest> getByCounterpartyIdAndOrderType(Long counterpartyId, OrderType orderType) {
-        return historyOrderRequestRepository.findByCounterpartyIdAndOrderType(counterpartyId, orderType.getId());
+    public List<HistoryOrderRequest> getByCounterpartyIdAndHistoryOrderType(Long counterpartyId, List<HistoryOrderType> historyOrderTypes) {
+        return historyOrderRequestRepository.findByCounterpartyIdAndHistoryOrderType(counterpartyId,
+                historyOrderTypes.stream()
+                        .map(HistoryOrderType :: name)
+                        .collect(Collectors.toList()));
 
     }
 

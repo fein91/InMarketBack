@@ -3,25 +3,24 @@ package com.fein91.model;
 import com.fein91.core.model.Trade;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrderResult {
     final BigDecimal apr;
     final BigDecimal satisfiedDemand;
     final BigDecimal discountSum;
-    final BigDecimal avgDiscountPerc;
+    final BigDecimal weightedDiscountPerc;
     final BigDecimal avgDaysToPayment;
     @Deprecated
     final List<Trade> trades;
 
-    public OrderResult(BigDecimal apr, BigDecimal satisfiedDemand, BigDecimal discountSum, BigDecimal avgDiscountPerc,
+    public OrderResult(BigDecimal apr, BigDecimal satisfiedDemand, BigDecimal discountSum, BigDecimal weightedDiscountPerc,
                        BigDecimal avgDaysToPayment, List<Trade> trades) {
         this.apr = apr;
         this.satisfiedDemand = satisfiedDemand;
         this.trades = trades;
         this.discountSum = discountSum;
-        this.avgDiscountPerc = avgDiscountPerc;
+        this.weightedDiscountPerc = weightedDiscountPerc;
         this.avgDaysToPayment = avgDaysToPayment;
     }
 
@@ -46,8 +45,8 @@ public class OrderResult {
         return discountSum;
     }
 
-    public BigDecimal getAvgDiscountPerc() {
-        return avgDiscountPerc;
+    public BigDecimal getWeightedDiscountPerc() {
+        return weightedDiscountPerc;
     }
 
     public BigDecimal getAvgDaysToPayment() {

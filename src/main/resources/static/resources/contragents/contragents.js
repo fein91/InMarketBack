@@ -76,7 +76,9 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         console.log('got ' + response.status + ' error');
                     });
             } else {
-                $scope.buyersTableParams = new NgTableParams({}, {
+                $scope.buyersTableParams = new NgTableParams({
+                    group : "target.name"
+                }, {
                     dataset: invoices.buyerInvoices
                 });
                 $scope.currentInvoicesPage = self.buyerInvoices.slice(($scope.buyersTableParams.page() - 1) * $scope.buyersTableParams.count(), $scope.buyersTableParams.page() * $scope.buyersTableParams.count());
@@ -154,7 +156,9 @@ angular.module('inmarket.contragents', ['ngRoute'])
                         console.log('got ' + response.status + ' error');
                     });
             } else {
-                $scope.suppliersTableParams = new NgTableParams({}, {
+                $scope.suppliersTableParams = new NgTableParams({
+                    group: 'source.name'
+                }, {
                     dataset: invoices.supplierInvoices
                 });
 
