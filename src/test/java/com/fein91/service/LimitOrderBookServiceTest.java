@@ -363,7 +363,6 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback
-    @Ignore
     public void testLimitOrderRequestWithTwoOrdersPerPrice() throws Exception {
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
         Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
@@ -377,6 +376,7 @@ public class LimitOrderBookServiceTest {
                 .price(BigDecimal.valueOf(28d))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
+                .date(new Date())
                 .build();
         orderRequestServiceImpl.process(askOrderRequest1);
 
@@ -385,6 +385,7 @@ public class LimitOrderBookServiceTest {
                 .price(BigDecimal.valueOf(28d))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
+                .date(new Date())
                 .build();
         orderRequestServiceImpl.process(askOrderRequest2);
 
@@ -395,6 +396,7 @@ public class LimitOrderBookServiceTest {
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
                 .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
+                .date(new Date())
                 .build();
         OrderResult result = orderRequestServiceImpl.process(bidOrderRequest);
 

@@ -23,12 +23,20 @@ public class OrderList implements Iterable<Order>{
 	}
 	
 	public void appendOrder(Order incomingOrder) {
+		Order current;
 		if (length == 0) {
 			incomingOrder.setNextOrder(null);
 			incomingOrder.setPrevOrder(null);
 			headOrder = incomingOrder;
 			tailOrder = incomingOrder;
-		} else{
+		} else {
+			current = headOrder;
+
+			while (current.getNextOrder() != null
+					&& current.getTimestamp() < incomingOrder.getTimestamp()) {
+				current = current.getNextOrder();
+			}
+
 			incomingOrder.setPrevOrder(tailOrder);
 			incomingOrder.setNextOrder(null);
 			tailOrder.setNextOrder(incomingOrder);

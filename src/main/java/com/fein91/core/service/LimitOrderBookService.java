@@ -31,9 +31,8 @@ public class LimitOrderBookService {
             checkArgument(price.signum() > 0, "Price can't be 0");
         }
 
-        long time = System.nanoTime();
         Order order = new OrderBuilder(orderRequest.getId())
-                .timestamp(time)
+                .timestamp(orderRequest.getDate().getTime())
                 .orderSide(orderRequest.getOrderSide())
                 .orderType(orderRequest.getOrderType())
                 .quantity(quantity)
