@@ -3,9 +3,11 @@ package com.fein91.rest;
 import com.fein91.model.HistoryOrderRequest;
 import com.fein91.model.HistoryOrderType;
 import com.fein91.model.Invoice;
+import com.fein91.model.OrderRequest;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.HistoryOrderRequestService;
 import com.fein91.service.InvoiceService;
+import com.fein91.service.OrderRequestService;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -35,14 +37,17 @@ public class CounterpartyController {
     private final InvoiceService invoiceService;
     private final HistoryOrderRequestService historyOrderRequestService;
     private final CounterPartyService counterPartyService;
+    private final OrderRequestService orderRequestService;
 
     @Autowired
     public CounterpartyController(@Qualifier("InvoiceServiceImpl") InvoiceService invoiceService,
                                   @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService,
-                                  CounterPartyService counterPartyService) {
+                                  CounterPartyService counterPartyService,
+                                  @Qualifier("OrderRequestServiceImpl") OrderRequestService orderRequestService) {
         this.invoiceService = invoiceService;
         this.historyOrderRequestService = historyOrderRequestService;
         this.counterPartyService = counterPartyService;
+        this.orderRequestService = orderRequestService;
     }
 
 
@@ -62,6 +67,11 @@ public class CounterpartyController {
     public List<HistoryOrderRequest> getTransactionHistory(@PathVariable Long counterpartyId) {
         return historyOrderRequestService.getByCounterpartyIdAndHistoryOrderType(counterpartyId,
                 Arrays.asList(HistoryOrderType.MARKET, HistoryOrderType.EXECUTED_LIMIT));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/orderRequests")
+    public List<OrderRequest> getByCounterpartyId(@PathVariable Long counterpartyId) {
+        return orderRequestService.getByCounterpartyId(counterpartyId);
     }
 
     @RequestMapping(value = "/{counterpartyId}/importInvoices", method = RequestMethod.POST)
@@ -92,7 +102,7 @@ public class CounterpartyController {
         return new ResponseEntity<>("{}", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{counterpartyId}//exportInvoices", method = RequestMethod.POST, produces = "text/csv")
+    @RequestMapping(value = "/{counterpartyId}/exportInvoices", method = RequestMethod.POST, produces = "text/csv")
     @ResponseBody
     public ResponseEntity<String> exportInvoices(@PathVariable Long counterpartyId,
                                                  final HttpServletResponse response) throws IOException {

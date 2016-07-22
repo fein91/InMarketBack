@@ -16,6 +16,9 @@ public interface OrderRequestService {
 
     OrderRequest getById(Long id);
 
+    @Transactional
+    OrderRequest update(OrderRequest orderRequest);
+
     OrderRequest save(OrderRequest orderRequest);
 
     OrderRequest saveOrder(Order order);
@@ -33,5 +36,5 @@ public interface OrderRequestService {
     void removeById(Long orderId);
 
     @Transactional
-    OrderRequest updateOrderRequest(Long orderId, BigDecimal qty);
+    OrderRequest update(Long orderId, BigDecimal qty);
 }

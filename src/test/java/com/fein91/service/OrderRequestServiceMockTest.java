@@ -181,7 +181,7 @@ public class OrderRequestServiceMockTest {
         expect(orderRequestRepository.findOne(1L)).andReturn(request);
 
         replay(orderRequestRepository);
-        orderRequestService.updateOrderRequest(1L, ONE);
+        orderRequestService.update(1L, ONE);
 
         verify(orderRequestRepository);
     }

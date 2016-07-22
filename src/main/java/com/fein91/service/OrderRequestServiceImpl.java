@@ -66,6 +66,13 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
+    public OrderRequest update(OrderRequest orderRequest) {
+        calculate(orderRequest);
+        return orderRequestRepository.save(orderRequest);
+    }
+
+    @Override
+    @Transactional
     public OrderRequest save(OrderRequest orderRequest) {
         LOGGER.info("Order request to save: " + orderRequest);
         return orderRequestRepository.save(orderRequest);
@@ -110,7 +117,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         HistoryOrderRequest currentCounterpartyHOR = writeHistoryOrderRequestToCurrentCounterpartyTransactionHistory(orderRequest, lob, result);
 
         Map<Counterparty, List<HistoryTrade>> tradesByTargetCounterparty = currentCounterpartyHOR.getHistoryTrades().stream()
-                .collect(Collectors.groupingBy(HistoryTrade :: getTarget));
+                .collect(Collectors.groupingBy(HistoryTrade::getTarget));
 
         for (Map.Entry<Counterparty, List<HistoryTrade>> entry : tradesByTargetCounterparty.entrySet()) {
             writeHistoryOrderRequestToTargetCounterpartyTransactionHistory(entry.getKey(), orderRequest.getCounterparty(),
@@ -286,7 +293,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public OrderRequest updateOrderRequest(Long orderId, BigDecimal qty) {
+    public OrderRequest update(Long orderId, BigDecimal qty) {
         OrderRequest orderRequest = orderRequestRepository.findOne(orderId);
         LOGGER.info(orderRequest + " quantity will be updated to: " + qty);
         orderRequest.setQuantity(qty);

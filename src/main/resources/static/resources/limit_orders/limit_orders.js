@@ -45,5 +45,46 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
                 });
         };
 
+        $scope.saveAsk = function(record, recordForm) {
+            orderRequestsService.updateOrder(record)
+                .then(function successCallback(response) {
+                    self.resetRow(record, recordForm);
+                    console.log("successful update");
+                }, function errorCallback(response) {
+                    console.log('got ' + response.status + ' error, msg=' + response.data.message);
+                })
+        };
+
+        $scope.cancelAsk = function(record, recordForm) {
+            orderRequestsService.getById(record.id)
+                .then(function successCallback(response) {
+                    self.resetRow(record, recordForm);
+                    var originalRecord = response.data;
+                    angular.extend(record, originalRecord);
+                }, function errorCallback(response) {
+                    console.log('got ' + response.status + ' error');
+                });
+        };
+
+        $scope.delAsk = function(record) {
+            _.remove(self.asksTableParams.settings().dataset, function(item) {
+                return record === item;
+            });
+
+            //also remove from db
+
+            self.asksTableParams.reload().then(function(data) {
+                if (data.length === 0 && self.asksTableParams.total() > 0) {
+                    self.asksTableParams.page(self.asksTableParams.page() - 1);
+                    self.asksTableParams.reload();
+                }
+            });
+        };
+
+        self.resetRow = function(record, recordForm){
+            record.isEditing = false;
+            recordForm.$setPristine();
+        };
+
         self.init();
     }]);

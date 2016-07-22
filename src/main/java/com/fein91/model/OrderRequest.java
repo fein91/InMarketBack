@@ -34,7 +34,7 @@ public class OrderRequest {
     int orderType;
 
     @Transient
-    Map<Long, Boolean> invoicesChecked;
+    Map<Long, Boolean> invoicesChecked = new HashMap<>();
 
     public Long getId() {
         return id;
