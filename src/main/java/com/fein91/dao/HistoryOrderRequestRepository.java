@@ -14,9 +14,9 @@ public interface HistoryOrderRequestRepository extends CrudRepository<HistoryOrd
 
     List<HistoryOrderRequest> findByCounterparty(Counterparty counterparty);
 
-    @Query("SELECT hor FROM HistoryOrderRequest hor where hor.counterparty.id = :counterPartyId and hor.orderType = :orderType")
-    List<HistoryOrderRequest> findByCounterpartyIdAndOrderType(@Param("counterPartyId") Long counterPartyId,
-                                                               @Param("orderType") int orderType);
+    @Query("SELECT hor FROM HistoryOrderRequest hor where hor.counterparty.id = :counterPartyId and hor.historyOrderType in :historyOrderTypes")
+    List<HistoryOrderRequest> findByCounterpartyIdAndHistoryOrderType(@Param("counterPartyId") Long counterPartyId,
+                                                                      @Param("historyOrderTypes") List<String> historyOrderTypes);
 
     HistoryOrderRequest findByOriginOrderRequestId(Long originOrderRequestId);
 }

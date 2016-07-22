@@ -33,7 +33,13 @@ public class HistoryTrade {
 
     BigDecimal quantity;
 
+    BigDecimal price;
+
     BigDecimal discountValue;
+
+    BigDecimal discountPercent;
+
+    BigDecimal unpaidInvoiceValue;
 
     public Long getId() {
         return id;
@@ -63,12 +69,36 @@ public class HistoryTrade {
         this.quantity = quantity;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     public BigDecimal getDiscountValue() {
         return discountValue;
     }
 
     public void setDiscountValue(BigDecimal discountValue) {
         this.discountValue = discountValue;
+    }
+
+    public BigDecimal getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public BigDecimal getUnpaidInvoiceValue() {
+        return unpaidInvoiceValue;
+    }
+
+    public void setUnpaidInvoiceValue(BigDecimal unpaidInvoiceValue) {
+        this.unpaidInvoiceValue = unpaidInvoiceValue;
     }
 
     public void setTarget(Counterparty target) {
@@ -87,6 +117,7 @@ public class HistoryTrade {
                 ", affectedOrderRequest=" + affectedOrderRequest +
                 ", target=" + target +
                 ", quantity=" + quantity +
+                ", price=" + price +
                 ", discountValue=" + discountValue +
                 '}';
     }

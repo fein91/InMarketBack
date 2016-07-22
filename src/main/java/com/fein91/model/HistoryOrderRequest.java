@@ -25,11 +25,13 @@ public class HistoryOrderRequest {
 
     BigDecimal quantity;
 
+    BigDecimal weightedDiscountPerc;
+
     Date date;
 
     int orderSide;
 
-    int orderType;
+    String historyOrderType;
 
     @JsonIgnore
     Long originOrderRequestId;
@@ -70,6 +72,14 @@ public class HistoryOrderRequest {
         this.quantity = quantity;
     }
 
+    public BigDecimal getWeightedDiscountPerc() {
+        return weightedDiscountPerc;
+    }
+
+    public void setWeightedDiscountPerc(BigDecimal weightedDiscountPerc) {
+        this.weightedDiscountPerc = weightedDiscountPerc;
+    }
+
     public Date getDate() {
         return date;
     }
@@ -86,12 +96,12 @@ public class HistoryOrderRequest {
         this.orderSide = orderSide.getId();
     }
 
-    public OrderType getOrderType() {
-        return OrderType.valueOf(orderType);
+    public HistoryOrderType getHistoryOrderType() {
+        return HistoryOrderType.valueOf(historyOrderType);
     }
 
-    public void setOrderType(OrderType orderType) {
-        this.orderType = orderType.getId();
+    public void setHistoryOrderType(HistoryOrderType historyOrderType) {
+        this.historyOrderType = historyOrderType.name();
     }
 
     public Long getOriginOrderRequestId() {
@@ -117,9 +127,10 @@ public class HistoryOrderRequest {
                 ", counterparty=" + counterparty +
                 ", price=" + price +
                 ", quantity=" + quantity +
+                ", weightedDiscountPerc=" + weightedDiscountPerc +
                 ", date=" + date +
-                ", orderSide=" + getOrderSide() +
-                ", orderType=" + getOrderType() +
+                ", orderSide=" + orderSide +
+                ", historyOrderType='" + historyOrderType + '\'' +
                 ", originOrderRequestId=" + originOrderRequestId +
                 ", historyTrades=" + historyTrades +
                 '}';
@@ -130,15 +141,21 @@ public class HistoryOrderRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OrderRequest that = (OrderRequest) o;
+        HistoryOrderRequest that = (HistoryOrderRequest) o;
 
         if (orderSide != that.orderSide) return false;
-        if (orderType != that.orderType) return false;
         if (counterparty != null ? !counterparty.equals(that.counterparty) : that.counterparty != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
+        if (historyTrades != null ? !historyTrades.equals(that.historyTrades) : that.historyTrades != null)
+            return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (historyOrderType != null ? !historyOrderType.equals(that.historyOrderType) : that.historyOrderType != null) return false;
+        if (originOrderRequestId != null ? !originOrderRequestId.equals(that.originOrderRequestId) : that.originOrderRequestId != null)
+            return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;
         if (quantity != null ? !quantity.equals(that.quantity) : that.quantity != null) return false;
+        if (weightedDiscountPerc != null ? !weightedDiscountPerc.equals(that.weightedDiscountPerc) : that.weightedDiscountPerc != null)
+            return false;
 
         return true;
     }
@@ -149,9 +166,12 @@ public class HistoryOrderRequest {
         result = 31 * result + (counterparty != null ? counterparty.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
+        result = 31 * result + (weightedDiscountPerc != null ? weightedDiscountPerc.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + orderSide;
-        result = 31 * result + orderType;
+        result = 31 * result + (historyOrderType != null ? historyOrderType.hashCode() : 0);
+        result = 31 * result + (originOrderRequestId != null ? originOrderRequestId.hashCode() : 0);
+        result = 31 * result + (historyTrades != null ? historyTrades.hashCode() : 0);
         return result;
     }
 }

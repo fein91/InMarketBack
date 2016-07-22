@@ -1,10 +1,8 @@
 package com.fein91.rest;
 
-import com.fein91.dao.InvoiceRepository;
-import com.fein91.model.Counterparty;
 import com.fein91.model.HistoryOrderRequest;
+import com.fein91.model.HistoryOrderType;
 import com.fein91.model.Invoice;
-import com.fein91.model.OrderType;
 import com.fein91.service.CounterPartyService;
 import com.fein91.service.HistoryOrderRequestService;
 import com.fein91.service.InvoiceService;
@@ -23,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -61,7 +60,8 @@ public class CounterpartyController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/transactionHistory")
     public List<HistoryOrderRequest> getTransactionHistory(@PathVariable Long counterpartyId) {
-        return historyOrderRequestService.getByCounterpartyIdAndOrderType(counterpartyId, OrderType.MARKET);
+        return historyOrderRequestService.getByCounterpartyIdAndHistoryOrderType(counterpartyId,
+                Arrays.asList(HistoryOrderType.MARKET, HistoryOrderType.EXECUTED_LIMIT));
     }
 
     @RequestMapping(value = "/{counterpartyId}/importInvoices", method = RequestMethod.POST)

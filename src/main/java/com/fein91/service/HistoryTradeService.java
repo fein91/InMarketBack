@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,10 +45,13 @@ public class HistoryTradeService {
     public HistoryTrade convertFrom(Trade trade) {
         HistoryTrade historyTrade = new HistoryTrade();
         historyTrade.setQuantity(trade.getQty());
+        historyTrade.setPrice(BigDecimal.valueOf(trade.getPrice()));
         historyTrade.setDiscountValue(trade.getDiscountValue());
-        historyTrade.setInvoice(invoiceService.getById(trade.getInvoiceId()));
+        historyTrade.setDiscountPercent(trade.getDiscountPercent());
+        historyTrade.setUnpaidInvoiceValue(trade.getUnpaidInvoiceValue());
         historyTrade.setTarget(counterPartyService.getById(trade.getProvider()));
         historyTrade.setAffectedOrderRequest(historyOrderRequestService.getByOriginOrderRequestId(trade.getOrderHit()));
+        historyTrade.setInvoice(invoiceService.getById(trade.getInvoiceId()));
         return historyTrade;
     }
 

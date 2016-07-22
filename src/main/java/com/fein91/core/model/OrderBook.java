@@ -294,7 +294,7 @@ public class OrderBook {
                     buyer = takerId;
                     seller = headOrder.getTakerId();
                 }
-                Trade trade = new Trade(headOrder.getPrice(), qtyTraded, discountValue, currentInvoice.getValue(), daysToPaymentMultQtyTraded,
+                Trade trade = new Trade(headOrder.getPrice(), qtyTraded, discountValue, discountPercent, unpaidInvoiceValue, daysToPaymentMultQtyTraded,
                         headOrder.getTakerId(), takerId, buyer, seller,
                         headOrder.getId(), currentInvoice.getId());
                 trades.add(trade);
