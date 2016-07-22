@@ -52,4 +52,10 @@ angular
             console.log("body: " + JSON.stringify(orderRequest));
             return $http.put(url, orderRequest);
         };
+
+        this.removeOrder = function(orderId) {
+            var url = "/orderRequests?orderId=" + orderId;
+            console.log("delete request produced: " + url);
+            return $http.delete(url);
+        };
     });

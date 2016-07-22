@@ -55,6 +55,12 @@ public class OrderRequestController {
         return new ResponseEntity<>(orderRequestServiceImpl.update(orderRequest), HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.DELETE)
+    public ResponseEntity delete(@RequestParam(value = "orderId", required = true) Long orderId) {
+        orderRequestServiceImpl.removeById(orderId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     private void checkOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
         if (orderRequest.getCounterparty() == null) {
             throw new OrderRequestException("Order request counterparty isn't filled");

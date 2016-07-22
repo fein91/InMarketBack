@@ -67,18 +67,22 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
 
         $scope.delAsk = function(record) {
-            _.remove(self.asksTableParams.settings().dataset, function(item) {
-                return record === item;
-            });
+            orderRequestsService.removeOrder(record.id)
+                .then(function successCallback(response) {
+                    _.remove($scope.asksTableParams.settings().dataset, function(item) {
+                        return record === item;
+                    });
 
-            //also remove from db
+                    $scope.asksTableParams.reload().then(function(data) {
+                        if (data.length === 0 && $scope.asksTableParams.total() > 0) {
+                            $scope.asksTableParams.page($scope.asksTableParams.page() - 1);
+                            $scope.asksTableParams.reload();
+                        }
+                    });
 
-            self.asksTableParams.reload().then(function(data) {
-                if (data.length === 0 && self.asksTableParams.total() > 0) {
-                    self.asksTableParams.page(self.asksTableParams.page() - 1);
-                    self.asksTableParams.reload();
-                }
-            });
+                }, function errorCallback(response) {
+                    console.log('got ' + response.status + ' error');
+                });
         };
 
         self.resetRow = function(record, recordForm){
