@@ -45,17 +45,17 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
                 });
         };
 
-        $scope.saveAsk = function(record, recordForm) {
+        $scope.save = function(record, recordForm) {
             orderRequestsService.updateOrder(record)
                 .then(function successCallback(response) {
                     self.resetRow(record, recordForm);
                     console.log("successful update");
                 }, function errorCallback(response) {
                     console.log('got ' + response.status + ' error, msg=' + response.data.message);
-                })
+                });
         };
 
-        $scope.cancelAsk = function(record, recordForm) {
+        $scope.cancel = function(record, recordForm) {
             orderRequestsService.getById(record.id)
                 .then(function successCallback(response) {
                     self.resetRow(record, recordForm);
@@ -67,16 +67,24 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
 
         $scope.delAsk = function(record) {
+            self.del(record, $scope.asksTableParams);
+        };
+
+        $scope.delBid = function(record) {
+            self.del(record, $scope.bidsTableParams);
+        };
+
+        self.del = function(record, tableParams) {
             orderRequestsService.removeOrder(record.id)
                 .then(function successCallback(response) {
-                    _.remove($scope.asksTableParams.settings().dataset, function(item) {
+                    _.remove(tableParams.settings().dataset, function(item) {
                         return record === item;
                     });
 
-                    $scope.asksTableParams.reload().then(function(data) {
-                        if (data.length === 0 && $scope.asksTableParams.total() > 0) {
-                            $scope.asksTableParams.page($scope.asksTableParams.page() - 1);
-                            $scope.asksTableParams.reload();
+                    tableParams.reload().then(function(data) {
+                        if (data.length === 0 && tableParams.total() > 0) {
+                            tableParams.page(tableParams.page() - 1);
+                            tableParams.reload();
                         }
                     });
 
