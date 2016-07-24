@@ -85,15 +85,4 @@ public class OrderRequestControllerTest {
 
         controller.calculate(new OrderRequest());
     }
-
-    @Test
-    public void getByCounterpartyId() {
-        expect(serviceMock.getByCounterpartyId(1L)).andReturn(new ArrayList<>());
-
-        replay(serviceMock);
-
-        controller.getByCounterpartyId(1L);
-
-        verify(serviceMock);
-    }
 }

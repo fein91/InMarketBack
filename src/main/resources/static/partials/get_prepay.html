@@ -2,31 +2,32 @@
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="История рынка">
             <div class="row" ng-controller="GetPrepayHistoryChartCtrl as gpHistoryChart">
-                <div class="col-xs-8">
-                    <canvas id="line" class="chart chart-line" chart-data="line_data"
-                            chart-labels="line_labels" chart-legend="true"
-                            chart-click="gpHistoryChart.onClick">
-                    </canvas>
-                    <canvas id="bar" class="chart chart-bar"
-                            chart-data="bar_data" chart-labels="bar_labels">
-                    </canvas>
-                </div>
-                <div class="col-xs-4">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                <a href ng-click="gpHistoryChart.drawWeekChart()" class="btn btn-default" role="button">История
-                                    за неделю</a>
-                                <a href ng-click="gpHistoryChart.drawMonthChart()" class="btn btn-default"
-                                   role="button">История за месяц</a>
-                            </div>
-                            <p>Максимальная цена: {{maxPrice}}</p>
-                            <p>Минимальная цена: {{minPrice}}</p>
-                            <p>Средняя цена: {{avgPrice}}</p>
-                            <p>Средний объем сделок: {{avgDeals}}</p>
-                        </div>
-                    </div>
-                </div>
+                Функция в beta версии не доступна
+                <!--<div class="col-xs-8">-->
+                    <!--<canvas id="line" class="chart chart-line" chart-data="line_data"-->
+                            <!--chart-labels="line_labels" chart-legend="true"-->
+                            <!--chart-click="gpHistoryChart.onClick">-->
+                    <!--</canvas>-->
+                    <!--<canvas id="bar" class="chart chart-bar"-->
+                            <!--chart-data="bar_data" chart-labels="bar_labels">-->
+                    <!--</canvas>-->
+                <!--</div>-->
+                <!--<div class="col-xs-4">-->
+                    <!--<div class="panel panel-default">-->
+                        <!--<div class="panel-body">-->
+                            <!--<div class="btn-group btn-group-justified" role="group" aria-label="...">-->
+                                <!--<a href ng-click="gpHistoryChart.drawWeekChart()" class="btn btn-default" role="button">История-->
+                                    <!--за неделю</a>-->
+                                <!--<a href ng-click="gpHistoryChart.drawMonthChart()" class="btn btn-default"-->
+                                   <!--role="button">История за месяц</a>-->
+                            <!--</div>-->
+                            <!--<p>Максимальная цена: {{maxPrice}}</p>-->
+                            <!--<p>Минимальная цена: {{minPrice}}</p>-->
+                            <!--<p>Средняя цена: {{avgPrice}}</p>-->
+                            <!--<p>Средний объем сделок: {{avgDeals}}</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
         </uib-tab>
         <uib-tab index="1" heading="Рыночная заявка">

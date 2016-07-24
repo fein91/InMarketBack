@@ -32,8 +32,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     "orderType": 1,
                     "date": new Date(),
                     "counterparty": {
-                        "id": session.counterpartyId,
-                        "name": "test"
+                        "id": session.counterpartyId
                     },
                     "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
                 };
@@ -45,8 +44,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                         $scope.bidApr = orderResult.apr;
                         $scope.satisfiedBidQty = orderResult.satisfiedDemand;
                         $scope.avgDaysToPayment = orderResult.avgDaysToPayment;
-                        $scope.avgDiscountPerc = orderResult.avgDiscountPerc;
-                        $scope.discountSum = orderResult.avgDiscountPerc;
+                        $scope.avgDiscountPerc = orderResult.weightedDiscountPerc;
+                        $scope.discountSum = orderResult.discountSum;
                         //if ($scope.bidQty > $scope.satisfiedBidQty) {
                         //    $scope.demandSatisfied = false;
                         //}
@@ -74,8 +73,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                             "orderType": 1,
                             "date": new Date(),
                             "counterparty": {
-                                "id": session.counterpartyId,
-                                "name": "test"
+                                "id": session.counterpartyId
                             },
                             "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
                         };
@@ -162,8 +160,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     "orderType": 0,
                     "date": new Date(),
                     "counterparty": {
-                        "id": session.counterpartyId,
-                        "name": "supplyer"
+                        "id": session.counterpartyId
                     },
                     "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
                 };
@@ -201,8 +198,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                             "orderType": 0,
                             "date": new Date(),
                             "counterparty": {
-                                "id": session.counterpartyId,
-                                "name": "supplyer"
+                                "id": session.counterpartyId
                             },
                             "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
                         };

@@ -1,18 +1,12 @@
 package com.fein91.rest;
 
 import com.fein91.InMarketApplication;
-import com.fein91.dao.InvoiceRepository;
-import com.fein91.service.CounterPartyService;
-import com.fein91.service.HistoryOrderRequestService;
-import com.fein91.service.InvoiceService;
+import com.fein91.service.*;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.ArrayList;
 
 import static org.easymock.EasyMock.*;
 
@@ -27,13 +21,15 @@ public class CounterpartyControllerTest {
     private CounterpartyController controller;
     private HistoryOrderRequestService historyOrderRequestService;
     private CounterPartyService counterPartyService;
+    private OrderRequestService orderRequestService;
 
     @Before
     public void setUp() {
         invoiceService = createMock(InvoiceService.class);
         historyOrderRequestService = createMock(HistoryOrderRequestService.class);
         counterPartyService = createMock(CounterPartyService.class);
-        controller = new CounterpartyController(invoiceService, historyOrderRequestService, counterPartyService);
+        orderRequestService = createMock(OrderRequestService.class);
+        controller = new CounterpartyController(invoiceService, historyOrderRequestService, counterPartyService, orderRequestService);
     }
 
     @After

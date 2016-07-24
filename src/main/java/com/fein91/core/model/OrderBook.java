@@ -228,10 +228,10 @@ public class OrderBook {
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
                         if (side == OrderSide.ASK) {
                             this.bids.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
+                            orderRequestService.update(headOrder.getId(), newQty);
                         } else {
                             this.asks.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
+                            orderRequestService.update(headOrder.getId(), newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
                     } else {
@@ -243,10 +243,10 @@ public class OrderBook {
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
                         if (side == OrderSide.ASK) {
                             this.bids.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
+                            orderRequestService.update(headOrder.getId(), newQty);
                         } else {
                             this.asks.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
+                            orderRequestService.update(headOrder.getId(), newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
                     }
@@ -274,10 +274,10 @@ public class OrderBook {
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
                         if (side == OrderSide.ASK) {
                             this.bids.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
+                            orderRequestService.update(headOrder.getId(), newQty);
                         } else {
                             this.asks.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.updateOrderRequest(headOrder.getId(), newQty);
+                            orderRequestService.update(headOrder.getId(), newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded) ;
                     }
@@ -294,7 +294,7 @@ public class OrderBook {
                     buyer = takerId;
                     seller = headOrder.getTakerId();
                 }
-                Trade trade = new Trade(headOrder.getPrice(), qtyTraded, discountValue, discountPercent, unpaidInvoiceValue, daysToPaymentMultQtyTraded,
+                Trade trade = new Trade(headOrder.getPrice(), qtyTraded, discountValue, BigDecimal.valueOf(100).multiply(discountPercent), unpaidInvoiceValue, daysToPaymentMultQtyTraded,
                         headOrder.getTakerId(), takerId, buyer, seller,
                         headOrder.getId(), currentInvoice.getId());
                 trades.add(trade);

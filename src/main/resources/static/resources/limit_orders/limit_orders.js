@@ -45,5 +45,58 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
                 });
         };
 
+        $scope.save = function(record, recordForm) {
+            orderRequestsService.updateOrder(record)
+                .then(function successCallback(response) {
+                    self.resetRow(record, recordForm);
+                    console.log("successful update");
+                }, function errorCallback(response) {
+                    console.log('got ' + response.status + ' error, msg=' + response.data.message);
+                });
+        };
+
+        $scope.cancel = function(record, recordForm) {
+            orderRequestsService.getById(record.id)
+                .then(function successCallback(response) {
+                    self.resetRow(record, recordForm);
+                    var originalRecord = response.data;
+                    angular.extend(record, originalRecord);
+                }, function errorCallback(response) {
+                    console.log('got ' + response.status + ' error');
+                });
+        };
+
+        $scope.delAsk = function(record) {
+            self.del(record, $scope.asksTableParams);
+        };
+
+        $scope.delBid = function(record) {
+            self.del(record, $scope.bidsTableParams);
+        };
+
+        self.del = function(record, tableParams) {
+            orderRequestsService.removeOrder(record.id)
+                .then(function successCallback(response) {
+                    _.remove(tableParams.settings().dataset, function(item) {
+                        return record === item;
+                    });
+
+                    tableParams.reload().then(function(data) {
+                        if (data.length === 0 && tableParams.total() > 0) {
+                            tableParams.page(tableParams.page() - 1);
+                            tableParams.reload();
+                        }
+                    });
+
+                }, function errorCallback(response) {
+                    console.log('got ' + response.status + ' error');
+                });
+        };
+
+        self.resetRow = function(record, recordForm){
+            record.isEditing = false;
+            recordForm.$setPristine();
+        };
+
         self.init();
     }]);

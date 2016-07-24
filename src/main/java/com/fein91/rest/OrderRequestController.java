@@ -1,5 +1,6 @@
 package com.fein91.rest;
 
+import com.fein91.core.model.Order;
 import com.fein91.model.ErrorResponse;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
@@ -40,8 +41,24 @@ public class OrderRequestController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<OrderRequest> getByCounterpartyId(@RequestParam(value = "counterpartyId", required = true) Long counterpartyId) {
-        return orderRequestServiceImpl.getByCounterpartyId(counterpartyId);
+    public OrderRequest getById(@RequestParam(value = "orderId", required = true) Long orderId) {
+        return orderRequestServiceImpl.getById(orderId);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/update")
+    public ResponseEntity<OrderRequest> update(@RequestBody OrderRequest orderRequest) throws OrderRequestException {
+        checkOrderRequest(orderRequest);
+        if (OrderType.LIMIT != orderRequest.getOrderType()) {
+            throw new OrderRequestException("Only limit order request can be updated");
+        }
+
+        return new ResponseEntity<>(orderRequestServiceImpl.update(orderRequest), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    public ResponseEntity delete(@RequestParam(value = "orderId", required = true) Long orderId) {
+        orderRequestServiceImpl.removeById(orderId);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     private void checkOrderRequest(OrderRequest orderRequest) throws OrderRequestException {

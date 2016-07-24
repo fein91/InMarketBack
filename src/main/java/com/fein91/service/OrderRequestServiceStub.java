@@ -24,6 +24,11 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
+    public OrderRequest update(OrderRequest orderRequest) {
+        return null;
+    }
+
+    @Override
     public OrderRequest save(OrderRequest orderRequest) {
         return null;
     }
@@ -54,7 +59,7 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public OrderRequest updateOrderRequest(Long orderId, BigDecimal qty) {
+    public OrderRequest update(Long orderId, BigDecimal qty) {
         return null;
     }
 }

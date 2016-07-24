@@ -16,8 +16,14 @@ angular
         };
 
         this.getOrderRequests = function (counterpartyId) {
-            var url = "/orderRequests?counterpartyId=" + counterpartyId;
-            console.log("post request produced: " + url);
+            var url = "/counterparties/" + counterpartyId + "/orderRequests";
+            console.log("get request produced: " + url);
+            return $http.get(url);
+        };
+
+        this.getById = function(orderId) {
+            var url = "/orderRequests?orderId=" + orderId;
+            console.log("get request produced: " + url);
             return $http.get(url);
         };
 
@@ -38,5 +44,18 @@ angular
                         console.log('got ' + response.status + ' error');
                     });
             }
+        };
+
+        this.updateOrder = function(orderRequest) {
+            var url = "/orderRequests/update";
+            console.log("post request produced: " + url);
+            console.log("body: " + JSON.stringify(orderRequest));
+            return $http.put(url, orderRequest);
+        };
+
+        this.removeOrder = function(orderId) {
+            var url = "/orderRequests?orderId=" + orderId;
+            console.log("delete request produced: " + url);
+            return $http.delete(url);
         };
     });

@@ -2,17 +2,35 @@
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="Осуществление предоплаты">
             <div class="table-responsive">
-                <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped"
-                       show-filter="true">
-                    <tr ng-repeat="record in $data">
-                        <td data-title="'Сумма'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                            {{record.quantity}}
-                        </td>
-                        <td data-title="'APR'" filter="{ 'price': 'number'}" sortable="'price'">
-                            {{record.price}}
-                        </td>
-                        <td data-title="'Дата'" sortable="'date'">
+                <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped editable-table"
+                       show-filter="true" ng-form="asksTableForm">
+                    <tr ng-repeat="record in $data" ng-form="recordForm">
+                        <td data-title="'Дата размещения заявки'" sortable="'date'">
                             {{record.date | date:'dd/MM/yyyy'}}
+                        </td>
+                        <td data-title="'Сумма'" sortable="'quantity'"
+                            ng-switch="record.isEditing" ng-class="quantity.$dirty ? 'bg-warning' : ''" ng-form="quantity">
+                            <span ng-switch-default class="editable-text">{{record.quantity}}</span>
+                            <div class="controls" ng-class="quantity.$invalid && quantity.$dirty ? 'has-error' : ''" ng-switch-when="true">
+                                <input type="number" name="quantity" ng-model="record.quantity" class="editable-input form-control input-sm" required/>
+                            </div>
+                        </td>
+                        <td data-title="'Годовая доходность'" sortable="'price'"
+                            ng-switch="record.isEditing" ng-class="price.$dirty ? 'bg-warning' : ''" ng-form="price">
+                            <span ng-switch-default class="editable-text">{{record.price}}</span>
+                            <div class="controls" ng-class="money.$invalid && money.$dirty ? 'has-error' : ''" ng-switch-when="true">
+                                <input type="number" name="price" ng-model="record.price" class="editable-input form-control input-sm" required/>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" ng-click="save(record, recordForm)" ng-if="record.isEditing" ng-disabled="recordForm.$pristine || recordForm.$invalid">
+                                <span class="glyphicon glyphicon-ok"></span></button>
+                            <button class="btn btn-default btn-sm" ng-click="cancel(record, recordForm)" ng-if="record.isEditing">
+                                <span class="glyphicon glyphicon-remove"></span></button>
+                            <button class="btn btn-default btn-sm" ng-click="record.isEditing = true" ng-if="!record.isEditing">
+                                <span class="glyphicon glyphicon-pencil"></span></button>
+                            <button class="btn btn-danger btn-sm" ng-click="delAsk(record)" ng-if="!record.isEditing">
+                                <span class="glyphicon glyphicon-trash"></span></button>
                         </td>
                     </tr>
                 </table>
@@ -22,15 +40,33 @@
             <div class="table-responsive">
                 <table ng-table="bidsTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
-                    <tr ng-repeat="record in $data">
-                        <td data-title="'Сумма'" filter="{ 'quantity': 'number'}" sortable="'quantity'">
-                            {{record.quantity}}
-                        </td>
-                        <td data-title="'APR'" filter="{ 'price': 'number'}" sortable="'price'">
-                            {{record.price}}
-                        </td>
-                        <td data-title="'Дата'" sortable="'date'">
+                    <tr ng-repeat="record in $data" ng-form="recordForm">
+                        <td data-title="'Дата размещения заявки'" sortable="'date'">
                             {{record.date | date:'dd/MM/yyyy'}}
+                        </td>
+                        <td data-title="'Сумма'" sortable="'quantity'"
+                            ng-switch="record.isEditing" ng-class="quantity.$dirty ? 'bg-warning' : ''" ng-form="quantity">
+                            <span ng-switch-default class="editable-text">{{record.quantity}}</span>
+                            <div class="controls" ng-class="quantity.$invalid && quantity.$dirty ? 'has-error' : ''" ng-switch-when="true">
+                                <input type="number" name="quantity" ng-model="record.quantity" class="editable-input form-control input-sm" required/>
+                            </div>
+                        </td>
+                        <td data-title="'Годовая доходность'" sortable="'price'"
+                            ng-switch="record.isEditing" ng-class="price.$dirty ? 'bg-warning' : ''" ng-form="price">
+                            <span ng-switch-default class="editable-text">{{record.price}}</span>
+                            <div class="controls" ng-class="money.$invalid && money.$dirty ? 'has-error' : ''" ng-switch-when="true">
+                                <input type="number" name="price" ng-model="record.price" class="editable-input form-control input-sm" required/>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" ng-click="save(record, recordForm)" ng-if="record.isEditing" ng-disabled="recordForm.$pristine || recordForm.$invalid">
+                                <span class="glyphicon glyphicon-ok"></span></button>
+                            <button class="btn btn-default btn-sm" ng-click="cancel(record, recordForm)" ng-if="record.isEditing">
+                                <span class="glyphicon glyphicon-remove"></span></button>
+                            <button class="btn btn-default btn-sm" ng-click="record.isEditing = true" ng-if="!record.isEditing">
+                                <span class="glyphicon glyphicon-pencil"></span></button>
+                            <button class="btn btn-danger btn-sm" ng-click="delBid(record)" ng-if="!record.isEditing">
+                                <span class="glyphicon glyphicon-trash"></span></button>
                         </td>
                     </tr>
                 </table>
