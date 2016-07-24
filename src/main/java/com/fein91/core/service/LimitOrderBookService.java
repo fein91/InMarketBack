@@ -82,6 +82,7 @@ public class LimitOrderBookService {
     private BigDecimal calculateTotalInvoicesSum(OrderBook lob) {
         BigDecimal result = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
+            //TODO take invoice imported value
             result = result.add(trade.getUnpaidInvoiceValue());
         }
         return result;

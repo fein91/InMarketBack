@@ -25,7 +25,7 @@ angular.module('inmarket.trans_history', ['ngRoute'])
                     angular.forEach(response.data, function (historyMarketOrder) {
                         angular.forEach(historyMarketOrder.historyTrades, function (trade) {
                             trade.toPay = trade.unpaidInvoiceValue - trade.quantity - trade.discountValue;
-                            trade.avgDiscountPerc = trade.discountValue / trade.unpaidInvoiceValue * 100;
+                            trade.avgDiscountPerc = trade.discountValue / trade.invoice.value * 100;
                         });
 
                         if ('ASK' === historyMarketOrder.orderSide) {
