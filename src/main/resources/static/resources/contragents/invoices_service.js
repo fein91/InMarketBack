@@ -19,7 +19,7 @@ angular
             return $http.get(url);
         };
 
-        this.calculateAvgDaysToPayment = function(invoices) {
+        this.calculateAvgDaysToPayment = function (invoices) {
             var daysMultUnpaidValueSum = 0;
             var unpaidValuesSum = 0;
             angular.forEach(invoices, function (item) {
@@ -28,6 +28,18 @@ angular
             });
             return daysMultUnpaidValueSum / unpaidValuesSum;
         };
+
+        this.import = function (counterpartyId, files) {
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append("file", files[0]);
+
+            return $http.post('counterparties/' + counterpartyId + '/importInvoices', fd, {
+                withCredentials: true,
+                headers: {'Content-Type': undefined},
+                transformRequest: angular.identity
+            });
+        }
 
         var _MS_PER_DAY = 1000 * 60 * 60 * 24;
         this.dateDiffInDays =  function (a, b) {

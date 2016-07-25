@@ -1,4 +1,4 @@
-angular.module('inmarket.contragents', ['ngRoute'])
+angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/contragents', {
@@ -110,6 +110,10 @@ angular.module('inmarket.contragents', ['ngRoute'])
                     $scope.checkboxes.invoices[item.id] = isChecked;
                 }
             });
+        };
+
+        $scope.import = function(files) {
+            $scope.importPromise = invoicesService.import(session.counterpartyId, files);
         };
 
         // watch for data checkboxes
