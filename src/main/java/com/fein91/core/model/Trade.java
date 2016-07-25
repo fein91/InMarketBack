@@ -13,7 +13,7 @@ public class Trade {
 	private long orderHit;
 	private long invoiceId;
 	private BigDecimal discountValue;
-	private BigDecimal discountPercent;
+	private BigDecimal periodReturn;
 	private BigDecimal unpaidInvoiceValue;
 	//TODO maybe find more suitable name
 	/**
@@ -21,12 +21,12 @@ public class Trade {
 	 */
 	private BigDecimal daysToPaymentMultQtyTraded;
 	
-	public Trade(double price, BigDecimal qty, BigDecimal discountValue, BigDecimal discountPercent, BigDecimal unpaidInvoiceValue, BigDecimal daysToPaymentMultQtyTraded,
+	public Trade(double price, BigDecimal qty, BigDecimal discountValue, BigDecimal periodReturn, BigDecimal unpaidInvoiceValue, BigDecimal daysToPaymentMultQtyTraded,
 				 long provider, long taker, long buyer, long seller, long orderHit, long invoiceId) {
 		this.price = price;
 		this.qty = qty;
 		this.discountValue = discountValue;
-		this.discountPercent = discountPercent;
+		this.periodReturn = periodReturn;
 		this.unpaidInvoiceValue = unpaidInvoiceValue;
 		this.daysToPaymentMultQtyTraded = daysToPaymentMultQtyTraded;
 		this.provider = provider;
@@ -103,8 +103,8 @@ public class Trade {
 		return discountValue;
 	}
 
-	public BigDecimal getDiscountPercent() {
-		return discountPercent;
+	public BigDecimal getPeriodReturn() {
+		return periodReturn;
 	}
 
 	public BigDecimal getUnpaidInvoiceValue() {

@@ -5,8 +5,8 @@
                 <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped editable-table"
                        show-filter="true" ng-form="asksTableForm">
                     <tr ng-repeat="record in $data" ng-form="recordForm">
-                        <td data-title="'Дата размещения заявки'" sortable="'date'">
-                            {{record.date | date:'dd/MM/yyyy'}}
+                        <td data-title="'Время размещения заявки'" sortable="'date'">
+                            {{record.date | date:'dd/MM/yyyy hh:mm:ss'}}
                         </td>
                         <td data-title="'Сумма'" sortable="'quantity'"
                             ng-switch="record.isEditing" ng-class="quantity.$dirty ? 'bg-warning' : ''" ng-form="quantity">
@@ -41,8 +41,8 @@
                 <table ng-table="bidsTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
                     <tr ng-repeat="record in $data" ng-form="recordForm">
-                        <td data-title="'Дата размещения заявки'" sortable="'date'">
-                            {{record.date | date:'dd/MM/yyyy'}}
+                        <td data-title="'Время размещения заявки'" sortable="'date'">
+                            {{record.date | date:'dd/MM/yyyy hh:mm:ss'}}
                         </td>
                         <td data-title="'Сумма'" sortable="'quantity'"
                             ng-switch="record.isEditing" ng-class="quantity.$dirty ? 'bg-warning' : ''" ng-form="quantity">

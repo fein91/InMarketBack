@@ -29,7 +29,7 @@ public class CounterpartyControllerTest {
         historyOrderRequestService = createMock(HistoryOrderRequestService.class);
         counterPartyService = createMock(CounterPartyService.class);
         orderRequestService = createMock(OrderRequestService.class);
-        controller = new CounterpartyController(invoiceService, historyOrderRequestService, counterPartyService, orderRequestService);
+        controller = new CounterpartyController(invoiceService, historyOrderRequestService, counterPartyService, orderRequestService, importExportService);
     }
 
     @After
