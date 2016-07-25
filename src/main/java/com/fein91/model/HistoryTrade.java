@@ -39,6 +39,9 @@ public class HistoryTrade {
 
     BigDecimal periodReturn;
 
+    /**
+     * contains unpaid value before order
+     */
     BigDecimal unpaidInvoiceValue;
 
     public Long getId() {

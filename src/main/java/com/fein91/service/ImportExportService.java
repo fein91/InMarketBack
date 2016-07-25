@@ -6,9 +6,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,6 +25,7 @@ public class ImportExportService {
     final CounterPartyService counterPartyService;
     final InvoiceService invoiceService;
 
+    @Autowired
     public ImportExportService(CounterPartyService counterPartyService,
                                @Qualifier("InvoiceServiceImpl") InvoiceService invoiceService) {
         this.counterPartyService = counterPartyService;

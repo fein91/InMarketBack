@@ -15,19 +15,22 @@ public class Trade {
 	private BigDecimal discountValue;
 	private BigDecimal periodReturn;
 	private BigDecimal unpaidInvoiceValue;
+	private BigDecimal invoiceValue;
 	//TODO maybe find more suitable name
 	/**
 	 * its needed to calculate avg days left to payment date
 	 */
 	private BigDecimal daysToPaymentMultQtyTraded;
 	
-	public Trade(double price, BigDecimal qty, BigDecimal discountValue, BigDecimal periodReturn, BigDecimal unpaidInvoiceValue, BigDecimal daysToPaymentMultQtyTraded,
+	public Trade(double price, BigDecimal qty, BigDecimal discountValue, BigDecimal periodReturn, BigDecimal unpaidInvoiceValue,
+				 BigDecimal invoiceValue, BigDecimal daysToPaymentMultQtyTraded,
 				 long provider, long taker, long buyer, long seller, long orderHit, long invoiceId) {
 		this.price = price;
 		this.qty = qty;
 		this.discountValue = discountValue;
 		this.periodReturn = periodReturn;
 		this.unpaidInvoiceValue = unpaidInvoiceValue;
+		this.invoiceValue = invoiceValue;
 		this.daysToPaymentMultQtyTraded = daysToPaymentMultQtyTraded;
 		this.provider = provider;
 		this.taker = taker;
@@ -109,6 +112,10 @@ public class Trade {
 
 	public BigDecimal getUnpaidInvoiceValue() {
 		return unpaidInvoiceValue;
+	}
+
+	public BigDecimal getInvoiceValue() {
+		return invoiceValue;
 	}
 
 	public BigDecimal getDaysToPaymentMultQtyTraded() {

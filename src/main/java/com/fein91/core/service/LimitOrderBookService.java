@@ -49,7 +49,7 @@ public class LimitOrderBookService {
         BigDecimal apr = calculateAPR(lob, satisfiedDemand);
         BigDecimal totalDiscountSum = calculateTotalDiscountSum(lob);
         BigDecimal totalInvoicesSum = calculateTotalInvoicesSum(lob);
-        BigDecimal weightedDiscountPerc = totalInvoicesSum.signum() > 0
+        BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0
                 ? totalDiscountSum.divide(totalInvoicesSum, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100))
                 : BigDecimal.ZERO;
         BigDecimal avgDaysToPayment = calculateAvgDaysToPayment(lob);
@@ -57,7 +57,7 @@ public class LimitOrderBookService {
         return new OrderResult(apr.setScale(SCALE, RoundingMode.HALF_UP),
                 satisfiedDemand.setScale(SCALE, RoundingMode.HALF_UP),
                 totalDiscountSum.setScale(SCALE, RoundingMode.HALF_UP),
-                weightedDiscountPerc.setScale(SCALE, RoundingMode.HALF_UP),
+                avgDiscountPerc.setScale(SCALE, RoundingMode.HALF_UP),
                 avgDaysToPayment.setScale(SCALE, RoundingMode.HALF_UP),
                 orderReport.getTrades());
     }
@@ -82,8 +82,7 @@ public class LimitOrderBookService {
     private BigDecimal calculateTotalInvoicesSum(OrderBook lob) {
         BigDecimal result = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
-            //TODO take invoice imported value
-            result = result.add(trade.getUnpaidInvoiceValue());
+            result = result.add(trade.getInvoiceValue());
         }
         return result;
     }

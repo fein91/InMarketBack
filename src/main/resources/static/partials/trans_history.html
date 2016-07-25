@@ -13,7 +13,7 @@
                         <td>{{record.historyOrderType}}</td>
                         <td>{{record.price | number : 2}}</td>
                         <td>{{record.periodReturn | number : 2}}</td>
-                        <td>{{record.historyTrades.avg('avgDiscountPerc') | number : 2}}</td>
+                        <td>{{record.avgDiscountPerc | number : 2}}</td>
                         <td>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</td>
                         <td>{{record.historyTrades.sum('quantity') | number : 2}}</td>
                         <td>{{record.historyTrades.sum('discountValue') | number : 2}}</td>
@@ -60,7 +60,7 @@
                         <td>{{record.historyOrderType}}</td>
                         <td>{{record.price | number : 2}}</td>
                         <td>{{record.periodReturn | number : 2}}</td>
-                        <td>{{record.historyTrades.avg('avgDiscountPerc') | number : 2}}</td>
+                        <td>{{record.avgDiscountPerc | number : 2}}</td>
                         <td>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</td>
                         <td>{{record.historyTrades.sum('quantity') | number : 2}}</td>
                         <td>{{record.historyTrades.sum('discountValue') | number : 2}}</td>
