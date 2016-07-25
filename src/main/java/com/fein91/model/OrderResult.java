@@ -9,18 +9,18 @@ public class OrderResult {
     final BigDecimal apr;
     final BigDecimal satisfiedDemand;
     final BigDecimal discountSum;
-    final BigDecimal weightedDiscountPerc;
+    final BigDecimal avgDiscountPerc;
     final BigDecimal avgDaysToPayment;
     @Deprecated
     final List<Trade> trades;
 
-    public OrderResult(BigDecimal apr, BigDecimal satisfiedDemand, BigDecimal discountSum, BigDecimal weightedDiscountPerc,
+    public OrderResult(BigDecimal apr, BigDecimal satisfiedDemand, BigDecimal discountSum, BigDecimal avgDiscountPerc,
                        BigDecimal avgDaysToPayment, List<Trade> trades) {
         this.apr = apr;
         this.satisfiedDemand = satisfiedDemand;
         this.trades = trades;
         this.discountSum = discountSum;
-        this.weightedDiscountPerc = weightedDiscountPerc;
+        this.avgDiscountPerc = avgDiscountPerc;
         this.avgDaysToPayment = avgDaysToPayment;
     }
 
@@ -45,8 +45,8 @@ public class OrderResult {
         return discountSum;
     }
 
-    public BigDecimal getWeightedDiscountPerc() {
-        return weightedDiscountPerc;
+    public BigDecimal getAvgDiscountPerc() {
+        return avgDiscountPerc;
     }
 
     public BigDecimal getAvgDaysToPayment() {

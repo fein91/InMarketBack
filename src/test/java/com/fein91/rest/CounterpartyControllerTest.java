@@ -22,6 +22,7 @@ public class CounterpartyControllerTest {
     private HistoryOrderRequestService historyOrderRequestService;
     private CounterPartyService counterPartyService;
     private OrderRequestService orderRequestService;
+    private ImportExportService importExportService;
 
     @Before
     public void setUp() {
@@ -29,7 +30,8 @@ public class CounterpartyControllerTest {
         historyOrderRequestService = createMock(HistoryOrderRequestService.class);
         counterPartyService = createMock(CounterPartyService.class);
         orderRequestService = createMock(OrderRequestService.class);
-        controller = new CounterpartyController(invoiceService, historyOrderRequestService, counterPartyService, orderRequestService);
+        importExportService = createMock(ImportExportService.class);
+        controller = new CounterpartyController(invoiceService, historyOrderRequestService, counterPartyService, orderRequestService, importExportService);
     }
 
     @After

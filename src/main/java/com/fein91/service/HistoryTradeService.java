@@ -47,7 +47,7 @@ public class HistoryTradeService {
         historyTrade.setQuantity(trade.getQty());
         historyTrade.setPrice(BigDecimal.valueOf(trade.getPrice()));
         historyTrade.setDiscountValue(trade.getDiscountValue());
-        historyTrade.setDiscountPercent(trade.getDiscountPercent());
+        historyTrade.setPeriodReturn(trade.getPeriodReturn());
         historyTrade.setUnpaidInvoiceValue(trade.getUnpaidInvoiceValue());
         historyTrade.setTarget(counterPartyService.getById(trade.getProvider()));
         historyTrade.setAffectedOrderRequest(historyOrderRequestService.getByOriginOrderRequestId(trade.getOrderHit()));

@@ -37,8 +37,11 @@ public class HistoryTrade {
 
     BigDecimal discountValue;
 
-    BigDecimal discountPercent;
+    BigDecimal periodReturn;
 
+    /**
+     * contains unpaid value before order
+     */
     BigDecimal unpaidInvoiceValue;
 
     public Long getId() {
@@ -85,12 +88,12 @@ public class HistoryTrade {
         this.discountValue = discountValue;
     }
 
-    public BigDecimal getDiscountPercent() {
-        return discountPercent;
+    public BigDecimal getPeriodReturn() {
+        return periodReturn;
     }
 
-    public void setDiscountPercent(BigDecimal discountPercent) {
-        this.discountPercent = discountPercent;
+    public void setPeriodReturn(BigDecimal periodReturn) {
+        this.periodReturn = periodReturn;
     }
 
     public BigDecimal getUnpaidInvoiceValue() {

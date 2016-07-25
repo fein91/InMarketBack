@@ -1,13 +1,9 @@
 package com.fein91.rest;
 
-import com.fein91.model.HistoryOrderRequest;
-import com.fein91.model.HistoryOrderType;
-import com.fein91.model.Invoice;
-import com.fein91.model.OrderRequest;
-import com.fein91.service.CounterPartyService;
-import com.fein91.service.HistoryOrderRequestService;
-import com.fein91.service.InvoiceService;
-import com.fein91.service.OrderRequestService;
+import com.fein91.model.*;
+import com.fein91.rest.exception.ImportExportException;
+import com.fein91.rest.exception.OrderRequestException;
+import com.fein91.service.*;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -31,23 +27,25 @@ import java.util.logging.Logger;
 @RequestMapping("/counterparties")
 public class CounterpartyController {
 
-    public static final SimpleDateFormat FORMAT = new SimpleDateFormat("dd.MM.yyyy");
     private final static Logger LOGGER = Logger.getLogger(CounterpartyController.class.getName());
 
     private final InvoiceService invoiceService;
     private final HistoryOrderRequestService historyOrderRequestService;
     private final CounterPartyService counterPartyService;
     private final OrderRequestService orderRequestService;
+    private final ImportExportService importExportService;
 
     @Autowired
     public CounterpartyController(@Qualifier("InvoiceServiceImpl") InvoiceService invoiceService,
                                   @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService,
                                   CounterPartyService counterPartyService,
-                                  @Qualifier("OrderRequestServiceImpl") OrderRequestService orderRequestService) {
+                                  @Qualifier("OrderRequestServiceImpl") OrderRequestService orderRequestService,
+                                  ImportExportService importExportService) {
         this.invoiceService = invoiceService;
         this.historyOrderRequestService = historyOrderRequestService;
         this.counterPartyService = counterPartyService;
         this.orderRequestService = orderRequestService;
+        this.importExportService = importExportService;
     }
 
 
@@ -76,46 +74,26 @@ public class CounterpartyController {
 
     @RequestMapping(value = "/{counterpartyId}/importInvoices", method = RequestMethod.POST)
     public ResponseEntity uploadFile(@PathVariable Long counterpartyId,
-                                     @RequestParam("file") MultipartFile file) {
-        try {
-            Workbook workbook = new XSSFWorkbook(file.getInputStream());
-
-            for (Sheet sheet : workbook) {
-                for (Row row : sheet) {
-                    int rowNum = 0;
-                    String source = row.getCell(rowNum++).getStringCellValue();
-                    double amount = row.getCell(rowNum++).getNumericCellValue();
-                    String stringDate = row.getCell(rowNum++).getStringCellValue();
-
-                    Invoice invoice = new Invoice();
-                    invoice.setSource(counterPartyService.getByNameOrAdd(source));
-                    invoice.setTarget(counterPartyService.getById(counterpartyId));
-                    invoice.setValue(BigDecimal.valueOf(amount));
-                    invoice.setPaymentDate(FORMAT.parse(stringDate));
-
-                    invoiceService.addInvoice(invoice);
-                }
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+                                     @RequestParam("file") MultipartFile file) throws ImportExportException {
+        importExportService.importExcel(counterpartyId, file);
         return new ResponseEntity<>("{}", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{counterpartyId}/exportInvoices", method = RequestMethod.POST, produces = "text/csv")
     @ResponseBody
     public ResponseEntity<String> exportInvoices(@PathVariable Long counterpartyId,
-                                                 final HttpServletResponse response) throws IOException {
+                                                 final HttpServletResponse response) {
         response.setHeader("Content-Disposition", "attachment");
         response.setContentType("text/csv");
-        List<Invoice> invoices = invoiceService.getByTargetId(counterpartyId);
-        StringBuilder stringBuilder = new StringBuilder();
-        invoices.forEach(invoice -> stringBuilder
-                .append(invoice.getSource().getName()).append(",")
-                .append(invoice.getValue().subtract(invoice.getPrepaidValue())).append(",")
-                .append(invoice.getPrepaidValue()).append(",")
-                .append(FORMAT.format(invoice.getPaymentDate())).append("\n"));
-        String csvResponse = stringBuilder.toString();
-        return new ResponseEntity<>(csvResponse, HttpStatus.OK);
+
+        return new ResponseEntity<>(importExportService.exportCsv(counterpartyId), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(ImportExportException.class)
+    public ResponseEntity<ErrorResponse> importExportExceptionHandler(Exception ex) {
+        ErrorResponse error = new ErrorResponse();
+        error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setMessage(ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

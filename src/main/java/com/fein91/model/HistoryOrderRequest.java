@@ -25,7 +25,7 @@ public class HistoryOrderRequest {
 
     BigDecimal quantity;
 
-    BigDecimal weightedDiscountPerc;
+    BigDecimal avgDiscountPerc;
 
     Date date;
 
@@ -72,12 +72,12 @@ public class HistoryOrderRequest {
         this.quantity = quantity;
     }
 
-    public BigDecimal getWeightedDiscountPerc() {
-        return weightedDiscountPerc;
+    public BigDecimal getAvgDiscountPerc() {
+        return avgDiscountPerc;
     }
 
-    public void setWeightedDiscountPerc(BigDecimal weightedDiscountPerc) {
-        this.weightedDiscountPerc = weightedDiscountPerc;
+    public void setAvgDiscountPerc(BigDecimal avgDiscountPerc) {
+        this.avgDiscountPerc = avgDiscountPerc;
     }
 
     public Date getDate() {
@@ -127,7 +127,7 @@ public class HistoryOrderRequest {
                 ", counterparty=" + counterparty +
                 ", price=" + price +
                 ", quantity=" + quantity +
-                ", weightedDiscountPerc=" + weightedDiscountPerc +
+                ", avgDiscountPerc=" + avgDiscountPerc +
                 ", date=" + date +
                 ", orderSide=" + orderSide +
                 ", historyOrderType='" + historyOrderType + '\'' +
@@ -154,7 +154,7 @@ public class HistoryOrderRequest {
             return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;
         if (quantity != null ? !quantity.equals(that.quantity) : that.quantity != null) return false;
-        if (weightedDiscountPerc != null ? !weightedDiscountPerc.equals(that.weightedDiscountPerc) : that.weightedDiscountPerc != null)
+        if (avgDiscountPerc != null ? !avgDiscountPerc.equals(that.avgDiscountPerc) : that.avgDiscountPerc != null)
             return false;
 
         return true;
@@ -166,7 +166,7 @@ public class HistoryOrderRequest {
         result = 31 * result + (counterparty != null ? counterparty.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
-        result = 31 * result + (weightedDiscountPerc != null ? weightedDiscountPerc.hashCode() : 0);
+        result = 31 * result + (avgDiscountPerc != null ? avgDiscountPerc.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + orderSide;
         result = 31 * result + (historyOrderType != null ? historyOrderType.hashCode() : 0);
