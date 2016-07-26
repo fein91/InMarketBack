@@ -114,6 +114,11 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
 
         $scope.import = function(files) {
             $scope.importPromise = invoicesService.import(session.counterpartyId, files);
+            $scope.importPromise.then(function successCallback(response) {
+                self.init();
+            }, function errorCallback(response) {
+                console.log('got ' + response.status + ' error');
+            });
         };
 
         // watch for data checkboxes

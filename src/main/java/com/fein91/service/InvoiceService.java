@@ -18,4 +18,6 @@ public interface InvoiceService {
     List<Invoice> getBySourceId(Long sourceId);
 
     List<Invoice> getByTargetId(Long targetId);
+
+    Invoice getByExternalId(Long externalId);
 }

@@ -16,11 +16,14 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class ImportExportService {
 
     public static final SimpleDateFormat FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    private final static Logger LOGGER = Logger.getLogger(ImportExportService.class.getName());
+
 
     final CounterPartyService counterPartyService;
     final InvoiceService invoiceService;
@@ -39,17 +42,26 @@ public class ImportExportService {
             for (Sheet sheet : workbook) {
                 for (Row row : sheet) {
                     int rowNum = 0;
+                    Long externalInvoiceId = new Double(row.getCell(rowNum++).getNumericCellValue()).longValue();
                     String source = row.getCell(rowNum++).getStringCellValue();
                     double amount = row.getCell(rowNum++).getNumericCellValue();
                     String stringDate = row.getCell(rowNum++).getStringCellValue();
 
-                    Invoice invoice = new Invoice();
-                    invoice.setSource(counterPartyService.getByNameOrAdd(source));
-                    invoice.setTarget(counterPartyService.getById(counterpartyId));
-                    invoice.setValue(BigDecimal.valueOf(amount));
-                    invoice.setPaymentDate(FORMAT.parse(stringDate));
+                    Invoice existedInvoice = invoiceService.getByExternalId(externalInvoiceId);
 
-                    invoiceService.addInvoice(invoice);
+                    if (existedInvoice == null) {
+                        Invoice invoice = new Invoice();
+                        invoice.setSource(counterPartyService.getByNameOrAdd(source));
+                        invoice.setTarget(counterPartyService.getById(counterpartyId));
+                        invoice.setValue(BigDecimal.valueOf(amount));
+                        invoice.setPaymentDate(FORMAT.parse(stringDate));
+                        invoice.setExternalId(externalInvoiceId);
+
+                        invoiceService.addInvoice(invoice);
+                        LOGGER.info("Invoice imported: " + invoice);
+                    } else {
+                        LOGGER.warning("Invoice with externalId: " + externalInvoiceId + " already exist");
+                    }
                 }
             }
         } catch (IOException | ParseException e) {
