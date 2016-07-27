@@ -69,11 +69,19 @@ public class ImportExportService {
         }
     }
 
-    public String exportCsv(Long counterpartyId) {
-        List<Invoice> invoices = invoiceService.getByTargetId(counterpartyId);
+    public String exportCsvBySource(Long counterpartyId) {
+        return convertInvoicesToString(invoiceService.getBySourceId(counterpartyId));
+    }
+
+    public String exportCsvByTarget(Long counterpartyId) {
+        return convertInvoicesToString(invoiceService.getByTargetId(counterpartyId));
+    }
+
+    private String convertInvoicesToString(List<Invoice> invoices) {
         StringBuilder stringBuilder = new StringBuilder();
         invoices.forEach(invoice -> stringBuilder
                 .append(invoice.getSource().getName()).append(",")
+                .append(invoice.getTarget().getName()).append(",")
                 .append(invoice.getValue().subtract(invoice.getPrepaidValue())).append(",")
                 .append(invoice.getPrepaidValue()).append(",")
                 .append(FORMAT.format(invoice.getPaymentDate())).append("\n"));

@@ -11,10 +11,32 @@ angular.module('inmarket.trans_history', ['ngRoute'])
     }])
 
 
-    .controller('TransHistoryCtrl', ['$scope', 'transHistoryService', 'NgTableParams', 'session', function ($scope, transHistoryService, NgTableParams, session) {
+    .controller('TransHistoryCtrl', ['$scope', 'transHistoryService', 'NgTableParams', 'session', 'invoicesService', function ($scope, transHistoryService, NgTableParams, session, invoicesService) {
         console.log('TransHistoryCtrl inited');
 
         var self = this;
+
+        $scope.exportInvoicesBySource = function() {
+            self.showDownloadExportedFileWindow(invoicesService.exportBySource(session.counterpartyId));
+        };
+
+        $scope.exportInvoicesByTarget = function() {
+            self.showDownloadExportedFileWindow(invoicesService.exportByTarget(session.counterpartyId));
+        };
+
+        self.showDownloadExportedFileWindow = function (exportPromise) {
+            exportPromise
+                .then(function successCallback(response) {
+                    var anchor = angular.element('<a/>');
+                    anchor.attr({
+                        href: 'data:attachment/csv;charset=utf-8,' + encodeURI(response.data),
+                        target: '_blank',
+                        download: 'export.csv'
+                    })[0].click();
+                }, function errorCallback(response) {
+                    console.log('got ' + response.status + ' error');
+                });
+        };
 
         self.init = function () {
             transHistoryService.getTransactionHistory(session.counterpartyId)

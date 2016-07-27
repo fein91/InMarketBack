@@ -39,7 +39,23 @@ angular
                 headers: {'Content-Type': undefined},
                 transformRequest: angular.identity
             });
-        }
+        };
+
+        this.exportBySource = function(counterpartyId) {
+            return $http({
+                method: 'POST',
+                url: 'counterparties/' + counterpartyId + '/exportInvoicesBySource',
+                headers: {'Content-Type': 'text/csv'}
+            });
+        };
+
+        this.exportByTarget = function(counterpartyId) {
+            return $http({
+                method: 'POST',
+                url: 'counterparties/' + counterpartyId + '/exportInvoicesByTarget',
+                headers: {'Content-Type': 'text/csv'}
+            });
+        };
 
         var _MS_PER_DAY = 1000 * 60 * 60 * 24;
         this.dateDiffInDays =  function (a, b) {

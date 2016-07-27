@@ -1,8 +1,8 @@
 <div class="row page-content" ng-controller="TransHistoryCtrl as transactionHistory">
-    <button ng-click="" class="btn btn-default import-btn pull-right">Экспорт</button>
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="Выданные предоплаты">
             <div class="table-responsive">
+                <button ng-click="exportInvoicesByTarget()" class="btn btn-default import-btn pull-right">Экспорт</button>
                 <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
                     <tr class="ng-table-group" ng-repeat-start="record in $data">
@@ -49,6 +49,7 @@
             </div>
         </uib-tab>
         <uib-tab index="1" heading="Полученные предоплаты">
+            <button ng-click="exportInvoicesBySource()" class="btn btn-default import-btn pull-right">Экспорт</button>
             <div class="table-responsive">
                 <table ng-table="bidsTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
