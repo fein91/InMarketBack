@@ -12,7 +12,8 @@
                             ng-switch="record.isEditing" ng-class="quantity.$dirty ? 'bg-warning' : ''" ng-form="quantity">
                             <span ng-switch-default class="editable-text">{{record.quantity}}</span>
                             <div class="controls" ng-class="quantity.$invalid && quantity.$dirty ? 'has-error' : ''" ng-switch-when="true">
-                                <input type="number" name="quantity" ng-model="record.quantity" class="editable-input form-control input-sm" required/>
+                                <input type="number" name="quantity" ng-model="record.quantity" class="editable-input form-control input-sm"
+                                       uib-tooltip="Enter something in this input field to disable this tooltip" tooltip-enable="{{recordForm.price.$invalid}}" required/>
                             </div>
                         </td>
                         <td data-title="'Годовая доходность'" sortable="'price'"
@@ -48,7 +49,8 @@
                             ng-switch="record.isEditing" ng-class="quantity.$dirty ? 'bg-warning' : ''" ng-form="quantity">
                             <span ng-switch-default class="editable-text">{{record.quantity}}</span>
                             <div class="controls" ng-class="quantity.$invalid && quantity.$dirty ? 'has-error' : ''" ng-switch-when="true">
-                                <input type="number" name="quantity" ng-model="record.quantity" class="editable-input form-control input-sm" required/>
+                                <input type="number" name="quantity" ng-model="record.quantity" class="editable-input form-control input-sm"
+                                       uib-tooltip="Enter something in this input field to disable this tooltip" tooltip-enable="{{recordForm.price.$invalid}}" required/>
                             </div>
                         </td>
                         <td data-title="'Годовая доходность'" sortable="'price'"

@@ -46,11 +46,13 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
 
         $scope.save = function(record, recordForm) {
+            recordForm.price.$invalid = false;
             orderRequestsService.updateOrder(record)
                 .then(function successCallback(response) {
                     self.resetRow(record, recordForm);
                     console.log("successful update");
                 }, function errorCallback(response) {
+                    recordForm.price.$invalid = true;
                     console.log('got ' + response.status + ' error, msg=' + response.data.message);
                 });
         };
