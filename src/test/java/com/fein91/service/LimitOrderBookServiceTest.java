@@ -410,11 +410,6 @@ public class LimitOrderBookServiceTest {
         Assert.assertNotNull(trade2);
         Assert.assertEquals(28d, trade2.getPrice(), 0d);
         Assert.assertEquals("Actual qty: " + trade2.getQty(), 0, BigDecimal.valueOf(50).compareTo(trade2.getQty()));
-
-        //TODO fix it
-//        Assert.assertEquals(100, lob.getVolumeAtPrice(OrderSide.BID.getCoreName(), 29d));
-//        Assert.assertEquals(50, lob.getVolumeAtPrice(OrderSide.ASK.getCoreName(), 28d));
-//        Assert.assertEquals(100, lob.getVolumeAtPrice(OrderSide.ASK.getCoreName(), 30d));
     }
 
     /*

@@ -46,7 +46,6 @@ angular.module('inmarket.proposal', ['ngRoute'])
                                 }
                             });
 
-                            //TODO remove it from here
                             $scope.asks_sum = orders_sum;
                         }, function errorCallback(response) {
                             console.log('got ' + response.status + ' error');
@@ -80,7 +79,6 @@ angular.module('inmarket.proposal', ['ngRoute'])
                                 }
                             });
 
-                            //TODO remove it from here
                             $scope.bids_sum = orders_sum;
                         }, function errorCallback(response) {
                             console.log('got ' + response.status + ' error');
