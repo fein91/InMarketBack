@@ -36,12 +36,6 @@ angular.module('inmarket', [
                 controller: 'home',
                 controllerAs: 'controller'
             })
-            .when('/importExcelFile', {
-                templateUrl: 'partials/import.html',
-                access: {
-                    loginRequired: true
-                }
-            })
             .otherwise({redirectTo: '/'});
 
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -70,41 +64,7 @@ angular.module('inmarket', [
 
             $location.path('/login');
         });
-    })
-
-    .controller('uploadCtrl', ['$scope', '$http', 'session', function ($scope, $http, session) {
-
-        $scope.uploadFile = function (files) {
-            var fd = new FormData();
-            //Take the first selected file
-            fd.append("file", files[0]);
-
-            $http.post('counterparties/' + session.counterpartyId + '/importInvoices', fd, {
-                withCredentials: true,
-                headers: {'Content-Type': undefined},
-                transformRequest: angular.identity
-            });
-        }
-    }])
-
-    .controller('exportCtrl', ['$scope', '$http', 'session', function ($scope, $http, session) {
-
-        $scope.exportData = function () {
-            $http({
-                method: 'POST',
-                url: 'counterparties/' + session.counterpartyId + '/exportInvoices',
-                headers: {'Content-Type': 'text/csv'}
-
-            }).success(function (data, status, headers, config) {
-                var anchor = angular.element('<a/>');
-                anchor.attr({
-                    href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
-                    target: '_blank',
-                    download: 'export.csv'
-                })[0].click();
-            })
-        }
-    }]);
+    });
 
     //here comes some static js
 

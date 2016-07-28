@@ -1,5 +1,4 @@
 <div class="row page-content">
-    <button type="button" class="btn btn-default import-btn pull-right">Импорт</button>
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="Мои покупатели">
             <div class="table-responsive" ng-controller="MyBuyersCtrl as myBuyers">
@@ -44,7 +43,12 @@
             </div>
         </uib-tab>
         <uib-tab index="1" heading="Мои поставщики">
-            <div class="table-responsive" ng-controller="MySuppliersCtrl as mySuppliers">
+            <div class="table-responsive" ng-controller="MySuppliersCtrl as mySuppliers" cg-busy="importPromise">
+                <label class="btn btn-default import-btn pull-right">
+                    <input type="file" name="file" accept=".xlsx" class="file-input"
+                           onchange="angular.element(this).scope().import(this.files)"/>
+                    <div>Импорт</div>
+                </label>
                 <table ng-table="suppliersTableParams" class="table table-condensed table-bordered table-striped"
                        show-filter="true">
                     <tr class="ng-table-group" ng-repeat-start="group in $groups">

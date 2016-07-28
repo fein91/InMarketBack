@@ -2,12 +2,7 @@ package com.fein91.rest;
 
 import com.fein91.model.*;
 import com.fein91.rest.exception.ImportExportException;
-import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.service.*;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -16,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -79,14 +71,24 @@ public class CounterpartyController {
         return new ResponseEntity<>("{}", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{counterpartyId}/exportInvoices", method = RequestMethod.POST, produces = "text/csv")
+    @RequestMapping(value = "/{counterpartyId}/exportInvoicesBySource", method = RequestMethod.POST, produces = "text/csv")
     @ResponseBody
-    public ResponseEntity<String> exportInvoices(@PathVariable Long counterpartyId,
+    public ResponseEntity<String> exportInvoicesBySource(@PathVariable Long counterpartyId,
                                                  final HttpServletResponse response) {
         response.setHeader("Content-Disposition", "attachment");
         response.setContentType("text/csv");
 
-        return new ResponseEntity<>(importExportService.exportCsv(counterpartyId), HttpStatus.OK);
+        return new ResponseEntity<>(importExportService.exportCsvBySource(counterpartyId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{counterpartyId}/exportInvoicesByTarget", method = RequestMethod.POST, produces = "text/csv")
+    @ResponseBody
+    public ResponseEntity<String> exportInvoicesByTarget(@PathVariable Long counterpartyId,
+                                                         final HttpServletResponse response) {
+        response.setHeader("Content-Disposition", "attachment");
+        response.setContentType("text/csv");
+
+        return new ResponseEntity<>(importExportService.exportCsvByTarget(counterpartyId), HttpStatus.OK);
     }
 
     @ExceptionHandler(ImportExportException.class)

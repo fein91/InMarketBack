@@ -1,5 +1,6 @@
 package com.fein91.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -35,6 +36,9 @@ public class Invoice {
 
     @Transient
     private boolean processed;
+
+    @JsonIgnore
+    private Long externalId;
 
     public Invoice() {
         //JPA
@@ -102,6 +106,14 @@ public class Invoice {
 
     public void setProcessed(boolean processed) {
         this.processed = processed;
+    }
+
+    public Long getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
     }
 
     @Override

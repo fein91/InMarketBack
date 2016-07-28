@@ -61,4 +61,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     public List<Invoice> getByTargetId(Long targetId) {
         return invoiceRepository.findInvoicesByTargetId(targetId);
     }
+
+    @Override
+    public Invoice getByExternalId(Long externalId) {
+        return invoiceRepository.findByExternalId(externalId);
+    }
 }
