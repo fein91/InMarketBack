@@ -628,6 +628,16 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(BigDecimal.valueOf(350), trade.getQty());
     }
 
+    /*
+    *   source  target  value paymentDate
+    *     s1      b1     200    40
+    *     s1      b1     200    50
+    *     s2      b1     300    40
+    *       BID
+    * s2 27 295
+    * s1 26 380
+    * b1 ask market order == 350
+    * */
     @Test
     @Transactional
     @Rollback
@@ -640,20 +650,24 @@ public class LimitOrderBookServiceTest {
         Invoice invoice2S1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, testUtils.getCurrentDayPlusDays(50)));
         Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, testUtils.getCurrentDayPlusDays(40)));
 
+        ImmutableMap<Long, Boolean> invoicesChecked = ImmutableMap.of(invoice1S1B.getId(), true, invoice2S1B.getId(), true, invoiceS2B.getId(), true);
+
         BigDecimal bid1Price = BigDecimal.valueOf(26);
         OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(380))
                 .price(bid1Price)
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
+                .invoicesChecked(invoicesChecked)
                 .build();
         orderRequestServiceImpl.process(bidOrderRequest1);
 
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
                 .quantity(BigDecimal.valueOf(295))
-                .price(BigDecimal.valueOf(25))
+                .price(BigDecimal.valueOf(27))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
+                .invoicesChecked(invoicesChecked)
                 .build();
         orderRequestServiceImpl.process(bidOrderRequest2);
 
@@ -661,15 +675,22 @@ public class LimitOrderBookServiceTest {
                 .quantity(BigDecimal.valueOf(350))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.MARKET)
-                .invoicesChecked(ImmutableMap.of(invoice1S1B.getId(), true, invoice2S1B.getId(), true, invoiceS2B.getId(), true))
+                .invoicesChecked(invoicesChecked)
                 .build();
 
         OrderResult result = orderRequestServiceImpl.process(marketOrderRequest1);
-        Trade trade = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
-        Assert.assertNotNull(trade);
-        Assert.assertEquals(bid1Price.doubleValue(), trade.getPrice(), 0d);
-        Assert.assertEquals("Actual trade qty: " + trade.getQty(),
-                BigDecimal.valueOf(350).compareTo(trade.getQty()), 0);
+
+        Trade tradeSupplier2Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
+        Assert.assertNotNull(tradeSupplier2Buyer);
+        Assert.assertEquals(27d, tradeSupplier2Buyer.getPrice(), 0d);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier2Buyer.getQty(),
+                BigDecimal.valueOf(295).compareTo(tradeSupplier2Buyer.getQty()), 0);
+
+        Trade tradeSupplier1Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
+        Assert.assertNotNull(tradeSupplier1Buyer);
+        Assert.assertEquals(26d, tradeSupplier1Buyer.getPrice(), 0d);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier1Buyer.getQty(),
+                BigDecimal.valueOf(350).compareTo(tradeSupplier1Buyer.getQty()), 0);
 
         invoice1S1B = invoiceServiceImpl.getById(invoice1S1B.getId());
         Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(invoice1S1B.getPrepaidValue()));

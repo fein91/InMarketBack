@@ -12,6 +12,8 @@ angular.module('inmarket', [
     'inmarket.make_prepay',
     'inmarket.trans_history',
     'inmarket.limit_orders',
+    'inmarket.limitOrderDeleteConfirmPopupCtrl',
+    'inmarket.limitOrderEditConfirmPopupCtrl',
     'inmarket.invoicesService',
     'inmarket.transHistoryService',
     'inmarket.orderRequestsService',
