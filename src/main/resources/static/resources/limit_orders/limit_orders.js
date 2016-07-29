@@ -11,7 +11,7 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
     }])
 
 
-    .controller('LimitOrdersCtrl', ['$scope', 'orderRequestsService', 'NgTableParams', 'session', function ($scope, orderRequestsService, NgTableParams, session) {
+    .controller('LimitOrdersCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'NgTableParams', 'session', function ($scope, $uibModal, orderRequestsService, NgTableParams, session) {
         console.log('LimitOrdersCtrl inited');
 
         var self = this;
@@ -46,13 +46,20 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
 
         $scope.save = function(record, recordForm) {
-            orderRequestsService.updateOrder(record)
-                .then(function successCallback(response) {
-                    self.resetRow(record, recordForm);
-                    console.log("successful update");
-                }, function errorCallback(response) {
-                    console.log('got ' + response.status + ' error, msg=' + response.data.message);
-                });
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'partials/limitOrderEditConfirmPopup.html',
+                controller: 'LimitOrderEditConfirmPopupCtrl',
+                size: 'sm',
+                resolve: {
+                    popupData: function () {
+                        return {
+                            "record" : record,
+                            "recordForm" : recordForm
+                        };
+                    }
+                }
+            });
         };
 
         $scope.cancel = function(record, recordForm) {
@@ -67,30 +74,28 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
 
         $scope.delAsk = function(record) {
-            self.del(record, $scope.asksTableParams);
+            self.openDeleteConfirmPopup(record, $scope.asksTableParams);
         };
 
         $scope.delBid = function(record) {
-            self.del(record, $scope.bidsTableParams);
+            self.openDeleteConfirmPopup(record, $scope.bidsTableParams);
         };
 
-        self.del = function(record, tableParams) {
-            orderRequestsService.removeOrder(record.id)
-                .then(function successCallback(response) {
-                    _.remove(tableParams.settings().dataset, function(item) {
-                        return record === item;
-                    });
-
-                    tableParams.reload().then(function(data) {
-                        if (data.length === 0 && tableParams.total() > 0) {
-                            tableParams.page(tableParams.page() - 1);
-                            tableParams.reload();
-                        }
-                    });
-
-                }, function errorCallback(response) {
-                    console.log('got ' + response.status + ' error');
-                });
+        self.openDeleteConfirmPopup = function(record, tableParams) {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'partials/limitOrderDeleteConfirmPopup.html',
+                controller: 'LimitOrderDeleteConfirmPopupCtrl',
+                size: 'sm',
+                resolve: {
+                    popupData: function () {
+                        return {
+                            "record" : record,
+                            "tableParams" : tableParams
+                        };
+                    }
+                }
+            });
         };
 
         self.resetRow = function(record, recordForm){
