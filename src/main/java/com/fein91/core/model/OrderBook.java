@@ -2,27 +2,27 @@ package com.fein91.core.model;
 
 import com.fein91.model.Invoice;
 import com.fein91.model.OrderType;
+import com.fein91.service.CalculationService;
 import com.fein91.service.InvoiceService;
 import com.fein91.service.OrderRequestService;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.logging.Logger;
 
 // TODO for precision, change prices from double to java.math.BigDecimal
 
 @Component
 public class OrderBook {
 
-    private static Logger log = Logger.getLogger(OrderBook.class);
+    private final static Logger LOGGER = Logger.getLogger(OrderBook.class.getName());
 
     private OrderRequestService orderRequestService;
     private InvoiceService invoiceService;
+    private CalculationService calculationService;
 
     private List<Trade> tape = new ArrayList<Trade>();
     private OrderTree bids = new OrderTree();
@@ -188,7 +188,7 @@ public class OrderBook {
         while ((orders.getLength() > 0) && (qtyRemaining.signum() > 0) && ordersIter.hasNext()) {
 
             Order headOrder = ordersIter.next();
-            log.info("Head order is processing: " + headOrder.getId());
+            LOGGER.info("Head order is processing: " + headOrder.getId());
 
             List<Invoice> invoices = side == OrderSide.ASK
                     ? invoiceService.findBySourceAndTarget(headOrder.getTakerId(), takerId)
@@ -201,17 +201,18 @@ public class OrderBook {
             for (Invoice currentInvoice : invoices) {
                 if (currentInvoice.isProcessed()
                         || (OrderSide.ASK == side && this.bids.length() <= 0)
-                        || (OrderSide.BID == side && this.asks.length() <= 0)) {
+                        || (OrderSide.BID == side && this.asks.length() <= 0)
+                        || qtyRemaining.signum() <= 0) {
                     continue;
                 }
-                log.info("Invoice is processing: " + currentInvoice);
+                LOGGER.info("Invoice is processing: " + currentInvoice);
 
                 BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
-                int daysToPayment = getDaysToPayment(currentInvoice.getPaymentDate());
-                BigDecimal discountPercent = calculateDiscount(BigDecimal.valueOf(headOrder.getPrice()), daysToPayment);
-                BigDecimal maxPrepaidInvoiceValue = unpaidInvoiceValue.divide(BigDecimal.ONE.add(discountPercent), BigDecimal.ROUND_HALF_UP);
-                log.info("discountPercent " + discountPercent);
-                log.info("maxPrepaidInvoiceValue " + maxPrepaidInvoiceValue);
+                int daysToPayment = calculationService.getDaysToPayment(currentInvoice.getPaymentDate());
+                BigDecimal discountPercent = calculationService.calculateDiscountPercent(BigDecimal.valueOf(headOrder.getPrice()), daysToPayment);
+                BigDecimal maxPrepaidInvoiceValue = calculationService.calculateMaxPossibleInvoicePrepaidValue(unpaidInvoiceValue, discountPercent);
+                LOGGER.info("discountPercent " + discountPercent);
+                LOGGER.info("maxPrepaidInvoiceValue " + maxPrepaidInvoiceValue);
 
                 BigDecimal localOrderQty = headOrder.getQuantity().min(maxPrepaidInvoiceValue);
                 BigDecimal discountValue;
@@ -227,11 +228,9 @@ public class OrderBook {
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
                         if (side == OrderSide.ASK) {
-                            this.bids.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.update(headOrder.getId(), newQty);
+                            updateBidOrder(headOrder, newQty);
                         } else {
-                            this.asks.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.update(headOrder.getId(), newQty);
+                            updateAskOrder(headOrder, newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
                     } else {
@@ -242,11 +241,9 @@ public class OrderBook {
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
                         if (side == OrderSide.ASK) {
-                            this.bids.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.update(headOrder.getId(), newQty);
+                            updateBidOrder(headOrder, newQty);
                         } else {
-                            this.asks.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.update(headOrder.getId(), newQty);
+                            updateAskOrder(headOrder, newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
                     }
@@ -258,11 +255,9 @@ public class OrderBook {
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         if (side == OrderSide.ASK) {
-                            this.bids.removeOrderByID(headOrder.getqId());
-                            orderRequestService.removeById(headOrder.getId());
+                            removeBidOrder(headOrder);
                         } else {
-                            this.asks.removeOrderByID(headOrder.getqId());
-                            orderRequestService.removeById(headOrder.getId());
+                            removeAskOrder(headOrder);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
                     } else {
@@ -273,11 +268,9 @@ public class OrderBook {
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
                         if (side == OrderSide.ASK) {
-                            this.bids.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.update(headOrder.getId(), newQty);
+                            updateBidOrder(headOrder, newQty);
                         } else {
-                            this.asks.updateOrderQty(newQty, headOrder.getqId());
-                            orderRequestService.update(headOrder.getId(), newQty);
+                            updateAskOrder(headOrder, newQty);
                         }
                         qtyRemaining = qtyRemaining.subtract(qtyTraded) ;
                     }
@@ -301,7 +294,7 @@ public class OrderBook {
                 trades.add(trade);
                 this.tape.add(trade);
                 if (verbose) {
-                    System.out.println(trade);
+                    LOGGER.info(trade.toString());
                 }
             }
             //ALL invoices and orders are distributed and processed
@@ -310,24 +303,32 @@ public class OrderBook {
         return qtyRemaining;
     }
 
-    @Deprecated
-    private BigDecimal calculateDiscount(BigDecimal apr, int daysToPayment) {
-        //double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
-        return apr.multiply(BigDecimal.valueOf(daysToPayment))
-                .divide(BigDecimal.valueOf(365), 10, BigDecimal.ROUND_HALF_UP)
-                .divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP);
+    private void removeBidOrder(Order order) {
+        this.bids.removeOrderByID(order.getqId());
+        orderRequestService.removeById(order.getId());
     }
 
-    @Deprecated
-    private int getDaysToPayment(Date paymentDate) {
-        DateTime paymentDT = new DateTime(paymentDate);
-        DateTime currDT = new DateTime();
-        Days daysBetween = Days.daysBetween(currDT.toLocalDate(), paymentDT.toLocalDate());
-        int daysToPayment = daysBetween.getDays();
-        log.info("Days to payment date left: " + daysToPayment);
-        return daysToPayment;
+    private void removeAskOrder(Order order) {
+        this.asks.removeOrderByID(order.getqId());
+        orderRequestService.removeById(order.getId());
     }
 
+    private void updateAskOrder(Order order, BigDecimal newQty) {
+        if (newQty.signum() < 0) {
+            throw new IllegalArgumentException("Can't update order: " + order + " with new quantity: " + newQty);
+        }
+        this.asks.updateOrderQty(newQty, order.getqId());
+        orderRequestService.update(order.getId(), newQty);
+    }
+
+    private void updateBidOrder(Order order, BigDecimal newQty) {
+        if (newQty.signum() < 0) {
+            throw new IllegalArgumentException("Can't update order: " + order + " with new quantity: " + newQty);
+        }
+
+        this.bids.updateOrderQty(newQty, order.getqId());
+        orderRequestService.update(order.getId(), newQty);
+    }
 
     public void cancelOrder(OrderSide orderSide, int qId, int time) {
         this.time = time;
@@ -340,8 +341,7 @@ public class OrderBook {
                 asks.removeOrderByID(qId);
             }
         } else {
-            System.out.println("cancelOrder() given neither 'bid' nor 'offer'");
-            System.exit(0);
+            LOGGER.info("cancelOrder() given neither 'bid' nor 'offer'");
         }
     }
 
@@ -364,8 +364,7 @@ public class OrderBook {
                 vol = asks.getPriceList(price).getVolume();
             }
         } else {
-            System.out.println("modifyOrder() given neither 'bid' nor 'offer'");
-            System.exit(0);
+            LOGGER.info("modifyOrder() given neither 'bid' nor 'offer'");
         }
         return vol;
 
@@ -452,5 +451,9 @@ public class OrderBook {
 
     public void setInvoiceService(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
+    }
+
+    public void setCalculationService(CalculationService calculationService) {
+        this.calculationService = calculationService;
     }
 }

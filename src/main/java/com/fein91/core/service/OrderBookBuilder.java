@@ -14,6 +14,9 @@ public class OrderBookBuilder {
     private final static double DEFAULT_TICK_SIZE = 0.1;
 
     @Autowired
+    CalculationService calculationService;
+
+    @Autowired
     @Qualifier("OrderRequestServiceImpl")
     OrderRequestService orderRequestServiceImpl;
     @Autowired
@@ -33,6 +36,7 @@ public class OrderBookBuilder {
         OrderBook orderBook = new OrderBook(DEFAULT_TICK_SIZE);
         orderBook.setOrderRequestService(orderRequestServiceImpl);
         orderBook.setInvoiceService(invoiceServiceImpl);
+        orderBook.setCalculationService(calculationService);
         return orderBook;
     }
 
@@ -42,6 +46,7 @@ public class OrderBookBuilder {
         OrderBook orderBook = new OrderBook(DEFAULT_TICK_SIZE);
         orderBook.setOrderRequestService(orderRequestsServiceStub);
         orderBook.setInvoiceService(invoicesServiceStub);
+        orderBook.setCalculationService(calculationService);
         return orderBook;
     }
 

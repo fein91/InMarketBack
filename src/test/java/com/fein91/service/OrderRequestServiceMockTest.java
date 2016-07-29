@@ -40,6 +40,7 @@ public class OrderRequestServiceMockTest {
     private CounterPartyService counterPartyService;
     private HistoryOrderRequestService historyOrderRequestService;
     private HistoryTradeService historyTradeService;
+    private CalculationService calculationService;
 
     @Before
     public void setUp() {
@@ -50,11 +51,12 @@ public class OrderRequestServiceMockTest {
         counterPartyService = createMock(CounterPartyService.class);
         historyOrderRequestService = createMock(HistoryOrderRequestService.class);
         historyTradeService = createMock(HistoryTradeService.class);
+        calculationService = createMock(CalculationService.class);
         orderRequestService = new OrderRequestServiceImpl(
                 orderRequestRepository,
                 invoiceRepository,
                 lobService,
-                orderBookBuilder, counterPartyService, historyOrderRequestService, historyTradeService);
+                orderBookBuilder, counterPartyService, historyOrderRequestService, historyTradeService, calculationService);
     }
 
     @Test

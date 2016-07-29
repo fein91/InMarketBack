@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.ZERO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -366,7 +367,6 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback
-    @Ignore
     public void testLimitOrderRequestWithTwoOrdersPerPrice() throws Exception {
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
         Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
@@ -384,14 +384,14 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.process(askOrderRequest1);
 
         OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
-                .quantity(BigDecimal.valueOf(99))
+                .quantity(BigDecimal.valueOf(90))
                 .price(BigDecimal.valueOf(28d))
                 .orderSide(OrderSide.ASK)
                 .orderType(OrderType.LIMIT)
                 .build();
         orderRequestServiceImpl.process(askOrderRequest2);
 
-        double supplier1BidPrice = 28d;
+        double supplier1BidPrice = 29d;
         OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(150))
                 .price(BigDecimal.valueOf(supplier1BidPrice))
@@ -400,16 +400,8 @@ public class LimitOrderBookServiceTest {
                 .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
                 .build();
         OrderResult result = orderRequestServiceImpl.process(bidOrderRequest);
-
-        Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer2.getId());
-        Assert.assertNotNull(trade1);
-        Assert.assertEquals(28d, trade1.getPrice(), 0d);
-        Assert.assertEquals("Actual qty: " + trade1.getQty(), 0, BigDecimal.valueOf(50).compareTo(trade1.getQty()));
-
-        Trade trade2 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer1.getId());
-        Assert.assertNotNull(trade2);
-        Assert.assertEquals(28d, trade2.getPrice(), 0d);
-        Assert.assertEquals("Actual qty: " + trade2.getQty(), 0, BigDecimal.valueOf(50).compareTo(trade2.getQty()));
+        Assert.assertEquals("Actual satisfied demand: " + result.getSatisfiedDemand(),
+                0, BigDecimal.valueOf(150).compareTo(result.getSatisfiedDemand()));
     }
 
     /*
@@ -663,7 +655,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.process(bidOrderRequest1);
 
         OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
-                .quantity(BigDecimal.valueOf(295))
+                .quantity(BigDecimal.valueOf(291))
                 .price(BigDecimal.valueOf(27))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
@@ -684,19 +676,24 @@ public class LimitOrderBookServiceTest {
         Assert.assertNotNull(tradeSupplier2Buyer);
         Assert.assertEquals(27d, tradeSupplier2Buyer.getPrice(), 0d);
         Assert.assertEquals("Actual trade qty: " + tradeSupplier2Buyer.getQty(),
-                BigDecimal.valueOf(295).compareTo(tradeSupplier2Buyer.getQty()), 0);
+                BigDecimal.valueOf(291).compareTo(tradeSupplier2Buyer.getQty()), 0);
 
         Trade tradeSupplier1Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(tradeSupplier1Buyer);
         Assert.assertEquals(26d, tradeSupplier1Buyer.getPrice(), 0d);
         Assert.assertEquals("Actual trade qty: " + tradeSupplier1Buyer.getQty(),
-                BigDecimal.valueOf(350).compareTo(tradeSupplier1Buyer.getQty()), 0);
+                BigDecimal.valueOf(59).compareTo(tradeSupplier1Buyer.getQty()), 0);
 
         invoice1S1B = invoiceServiceImpl.getById(invoice1S1B.getId());
-        Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(invoice1S1B.getPrepaidValue()));
+        Assert.assertEquals("Actual invoice prepaid value: " + invoice1S1B.getPrepaidValue(),
+                0, BigDecimal.valueOf(60.68).compareTo(invoice1S1B.getPrepaidValue().setScale(2, ROUND_HALF_UP)));
         invoice2S1B = invoiceServiceImpl.getById(invoice2S1B.getId());
         Assert.assertEquals("Actual invoice prepaid value: " + invoice2S1B.getPrepaidValue(),
-                BigDecimal.valueOf(168.01).compareTo(invoice2S1B.getPrepaidValue()), 0);
+                BigDecimal.ZERO.compareTo(invoice2S1B.getPrepaidValue()), 0);
+
+        invoiceS2B = invoiceServiceImpl.getById(invoiceS2B.getId());
+        Assert.assertEquals("Actual invoice prepaid value: " + invoiceS2B.getPrepaidValue(),
+                BigDecimal.valueOf(299.61).compareTo(invoiceS2B.getPrepaidValue().setScale(2, ROUND_HALF_UP)), 0);
 
 
     }

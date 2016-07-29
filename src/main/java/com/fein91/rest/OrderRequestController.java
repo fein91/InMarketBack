@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/orderRequests")
@@ -80,7 +80,8 @@ public class OrderRequestController {
         if (OrderType.LIMIT == orderRequest.getOrderType() && orderRequest.getPrice() == null) {
             throw new OrderRequestException("Limit order request price isn't filled");
         }
-        if (OrderType.LIMIT == orderRequest.getOrderType() && orderRequest.getPrice().signum() <= 0) {
+        if (OrderType.LIMIT == orderRequest.getOrderType()
+                && (orderRequest.getPrice().signum() <= 0 || orderRequest.getPrice().compareTo(BigDecimal.valueOf(100)) >= 0)) {
             throw new OrderRequestException("Limit order request price incorrect value: " + orderRequest.getPrice());
         }
     }

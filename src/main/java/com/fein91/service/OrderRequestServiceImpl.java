@@ -36,6 +36,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     private final CounterPartyService counterPartyService;
     private final HistoryOrderRequestService historyOrderRequestService;
     private final HistoryTradeService historyTradeService;
+    private final CalculationService calculationService;
 
     @Autowired
     public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository,
@@ -44,7 +45,8 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                                    OrderBookBuilder orderBookBuilder,
                                    CounterPartyService counterPartyService,
                                    @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService,
-                                   HistoryTradeService historyTradeService) {
+                                   HistoryTradeService historyTradeService,
+                                   CalculationService calculationService) {
         this.orderRequestRepository = orderRequestRepository;
         this.invoiceRepository = invoiceRepository;
         this.lobService = lobService;
@@ -52,6 +54,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         this.counterPartyService = counterPartyService;
         this.historyOrderRequestService = historyOrderRequestService;
         this.historyTradeService = historyTradeService;
+        this.calculationService = calculationService;
     }
 
     @Override
@@ -161,18 +164,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             limitOrderRequest.setQuantity(unsatisfiedDemand);
             limitOrderRequest = save(limitOrderRequest);
             historyOrderRequestService.save(historyOrderRequestService.convertFrom(limitOrderRequest));
-        } else {
-            //currently removing logic of processing limit order with unsatisfied demand after market order
-//            limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
-//                    .date(orderRequest.getDate())
-//                    .orderSide(orderRequest.getOrderSide())
-//                    .orderType(OrderType.LIMIT)
-//                    .price(result.getApr())
-//                    .quantity(unsatisfiedDemand)
-//                    .build();
-//            //it's needed here to validate if we can add this order
-//            findLimitOrderRequestsToTrade(limitOrderRequest);
-//            limitOrderRequest = save(limitOrderRequest);
         }
     }
 
@@ -193,15 +184,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             } else {
                 throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity() + " cannot be satisfied. "
                         + "Please process unsatisfied quantity: " + unsatisfiedDemand + " as limit order.");
-                //currently removing logic of processing limit order with unsatisfied demand after market order
-//                OrderRequest limitOrderRequest = new OrderRequestBuilder(orderRequest.getCounterparty())
-//                        .date(orderRequest.getDate())
-//                        .orderSide(orderRequest.getOrderSide())
-//                        .orderType(OrderType.LIMIT)
-//                        .price(result.getApr())
-//                        .quantity(unsatisfiedDemand)
-//                        .build();
-//                findLimitOrderRequestsToTrade(limitOrderRequest);
             }
         }
         return result;
@@ -243,9 +225,11 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                             .reduce(orderRequestsToTradeSum, BigDecimal::add);
                 orderRequestsToTrade.addAll(orderRequests);
             }
-            invoicesSum = invoicesSum.add(invoice.getValue());
+            BigDecimal unpaidInvoiceValue = invoice.getValue().subtract(invoice.getPrepaidValue());
+            invoicesSum = invoicesSum.add(unpaidInvoiceValue);
             if (OrderType.LIMIT == orderRequest.getOrderType()) {
-                discountsSum = discountsSum.add(calculateDiscount(orderRequest.getPrice(), getDaysToPayment(invoice.getPaymentDate())));
+                BigDecimal discountPercent = calculationService.calculateDiscountPercent(orderRequest.getPrice(), invoice.getPaymentDate());
+                discountsSum = discountsSum.add(unpaidInvoiceValue.multiply(discountPercent));
             }
         }
 
@@ -266,22 +250,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         }
 
         return orderRequestsToTrade;
-    }
-
-    private BigDecimal calculateDiscount(BigDecimal apr, int daysToPayment) {
-        //double discount = Math.pow(1 + apr / 100, daysBetween.getDays() / 365d) - 1;
-        return apr.multiply(BigDecimal.valueOf(daysToPayment))
-                .divide(BigDecimal.valueOf(365), 10, BigDecimal.ROUND_HALF_UP)
-                .divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP);
-    }
-
-    private int getDaysToPayment(Date paymentDate) {
-        DateTime paymentDT = new DateTime(paymentDate);
-        DateTime currDT = new DateTime();
-        Days daysBetween = Days.daysBetween(currDT.toLocalDate(), paymentDT.toLocalDate());
-        int daysToPayment = daysBetween.getDays();
-        LOGGER.info("Days to payment date left: " + daysToPayment);
-        return daysToPayment;
     }
 
     @Override
