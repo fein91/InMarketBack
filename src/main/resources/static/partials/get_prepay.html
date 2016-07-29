@@ -36,7 +36,7 @@
                     <form name="bidMarketForm" ng-controller="BidMarketCtrl">
                         <div class="form-group form-inline">
                             <label>Заказать предоплаты на сумму: </label>
-                            <input ng-model="bidQty" type="number" min="0" class="form-control" placeholder="Сумма"
+                            <input ng-model="bidQty" type="number" min="0" step="any" class="form-control" placeholder="Сумма"
                                    required>
                         </div>
                         <div>
@@ -48,17 +48,11 @@
                                 средний срок оплаты={{avgDaysToPayment}} дней
                             </p>
                         </div>
-                        <!--<div ng-hide="demandSatisfied" class="alert alert-info alert-dismissable">-->
-                            <!--<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>-->
-                            <!--В данный момент ваши покупатели готовы сделать предоплату только на-->
-                            <!--сумму={{satisfiedBidQty}} грн.-->
-                            <!--Остаток ({{bidQty - satisfiedBidQty}} грн) будет размещен по APR={{bidApr}}-->
-                        <!--</div>-->
                         <div class="alert alert-warning alert-dismissable"
                              ng-show="calculationCalled && calculatedWithError">
                             {{calculationErrorMsg}}
                         </div>
-                        <button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError"
+                        <button type="submit" ng-click="openConfirmation()" ng-disabled="!calculationCalled || calculatedWithError"
                                 class="btn btn-default">Подтвердить
                         </button>
                         <button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>
@@ -79,10 +73,10 @@
                         </div>
                         <div class="form-group form-inline">
                             <label>Введите желаемую сумму для получения предоплаты: </label>
-                            <input name="bidQty" ng-model="bidQty" type="number" min="0" class="form-control"
+                            <input name="bidQty" ng-model="bidQty" type="number" min="0" step="any" class="form-control"
                                    placeholder="Сумма" required>
                         </div>
-                        <div>
+                        <div class="alert alert-info alert-dismissable" ng-show="limitOrderPartTradedAsMarket">
                             <p>По заданному APR к моментальному исполнению подлежит сумма: {{satisfiedBidQty}} грн.</p>
                         </div>
                         <div class="alert alert-warning alert-dismissable"
@@ -96,7 +90,7 @@
                                 </canvas>
                             </div>
                         </div>
-                        <button type="submit" ng-click="openConfirmation()" ng-disabled="calculatedWithError"
+                        <button type="submit" ng-click="openConfirmation()" ng-disabled="!calculationCalled || calculatedWithError"
                                 class="btn btn-default">Подтвердить
                         </button>
                         <button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>

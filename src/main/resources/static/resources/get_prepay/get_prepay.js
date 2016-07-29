@@ -20,7 +20,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
         $scope.discountSum = '';
         $scope.demandSatisfied = true;
         $scope.calculationCalled = false;
-        $scope.calculatedWithError = true;
+        $scope.calculatedWithError = false;
         $scope.calculationErrorMsg = false;
 
         $scope.calculateMarketBidOrder = function () {
@@ -90,7 +90,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
             $scope.avgDiscountPerc = '';
             $scope.discountSum = '';
             $scope.demandSatisfied = true;
-            $scope.calculatedWithError = true;
+            $scope.calculatedWithError = false;
             $scope.calculationErrorMsg = '';
             $scope.calculationCalled = false;
         };
@@ -146,8 +146,10 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
 
         $scope.bidQty = '';
         $scope.bidApr = '';
+        $scope.satisfiedBidQty = '';
+        $scope.limitOrderPartTradedAsMarket = false;
         $scope.calculationCalled = false;
-        $scope.calculatedWithError = true;
+        $scope.calculatedWithError = false;
         $scope.calculationErrorMsg = false;
 
         $scope.calculateLimitBidOrder = function () {
@@ -170,8 +172,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                         var orderResult = response.data;
                         console.log('order result: ' + JSON.stringify(orderResult));
                         $scope.satisfiedBidQty = orderResult.satisfiedDemand;
-                        if ($scope.bidQty > $scope.satisfiedBidQty) {
-                            $scope.demandSatisfied = false;
+                        if ($scope.satisfiedBidQty > 0) {
+                            $scope.limitOrderPartTradedAsMarket = true;
                         }
 
                         $scope.calculatedWithError = false;
@@ -210,7 +212,9 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
         $scope.reset = function () {
             $scope.bidQty = '';
             $scope.bidApr = '';
-            $scope.calculatedWithError = true;
+            $scope.satisfiedBidQty = '';
+            $scope.limitOrderPartTradedAsMarket = false;
+            $scope.calculatedWithError = false;
             $scope.calculationErrorMsg = '';
             $scope.calculationCalled = false;
         };

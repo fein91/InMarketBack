@@ -20,7 +20,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
         $scope.discountSum = '';
         $scope.demandSatisfied = true;
         $scope.calculationCalled = false;
-        $scope.calculatedWithError = true;
+        $scope.calculatedWithError = false;
         $scope.calculationErrorMsg = false;
 
         $scope.calculateAskMarketOrder = function () {
@@ -90,7 +90,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
             $scope.avgDiscountPerc = '';
             $scope.discountSum = '';
             $scope.demandSatisfied = true;
-            $scope.calculatedWithError = true;
+            $scope.calculatedWithError = false;
             $scope.calculationErrorMsg = '';
             $scope.calculationCalled = false;
         };
@@ -101,8 +101,9 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
         $scope.askQty = '';
         $scope.askApr = '';
         $scope.satisfiedAskQty = '';
+        $scope.limitOrderPartTradedAsMarket = false;
         $scope.calculationCalled = false;
-        $scope.calculatedWithError = true;
+        $scope.calculatedWithError = false;
         $scope.calculationErrorMsg = false;
 
         $scope.calculateLimitAskOrder = function () {
@@ -125,8 +126,8 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                         var orderResult = response.data;
                         console.log('order result: ' + JSON.stringify(orderResult));
                         $scope.satisfiedAskQty = orderResult.satisfiedDemand;
-                        if ($scope.askQty > $scope.satisfiedAskQty) {
-                            $scope.demandSatisfied = false;
+                        if ($scope.satisfiedAskQty > 0) {
+                            $scope.limitOrderPartTradedAsMarket = true;
                         }
 
                         $scope.calculatedWithError = false;
@@ -166,9 +167,10 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
             $scope.askQty = '';
             $scope.askApr = '';
             $scope.satisfiedAskQty = '';
-            $scope.calculatedWithError = true;
+            $scope.calculatedWithError = false;
             $scope.calculationErrorMsg = '';
             $scope.calculationCalled = false;
+            $scope.limitOrderPartTradedAsMarket = false;
         };
 
     }])

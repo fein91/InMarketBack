@@ -18,7 +18,7 @@
                         <td>
                             <strong>{{ group.data.sum('unpaidValue') | number : 2}}</strong></td>
                         <td>
-                            <strong>{{ myBuyers.calculateAvgDaysToPayment(group.data) }}</strong></td>
+                            <strong>{{ myBuyers.calculateAvgDaysToPayment(group.data) | number : 2}}</strong></td>
                         <td/>
                         <td/>
                     </tr>
