@@ -6,7 +6,7 @@
                        show-filter="true" ng-form="asksTableForm">
                     <tr ng-repeat="record in $data" ng-form="recordForm">
                         <td data-title="'Время размещения заявки'" sortable="'date'">
-                            {{record.date | date:'dd/MM/yyyy hh:mm:ss'}}
+                            {{record.date | date:'dd/MM/yyyy HH:mm'}}
                         </td>
                         <td data-title="'Сумма'" sortable="'quantity'" ng-switch="record.isEditing" ng-form="quantity">
                             <span ng-switch-default class="editable-text">{{record.quantity}}</span>
@@ -41,7 +41,7 @@
                        show-filter="true">
                     <tr ng-repeat="record in $data" ng-form="recordForm">
                         <td data-title="'Время размещения заявки'" sortable="'date'">
-                            {{record.date | date:'dd/MM/yyyy hh:mm:ss'}}
+                            {{record.date | date:'dd/MM/yyyy HH:mm'}}
                         </td>
                         <td data-title="'Сумма'" sortable="'quantity'" ng-switch="record.isEditing" ng-form="quantity">
                             <span ng-switch-default class="editable-text">{{record.quantity}}</span>

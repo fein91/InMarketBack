@@ -9,16 +9,16 @@
                         <td>
                             <a href="" ng-click="record.$hideRows = !record.$hideRows">
                                 <span class="glyphicon"
-                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }">{{record.date | date:'dd/MM/yyyy hh:mm:ss'}}</span>
+                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"><strong>{{record.date | date:'dd/MM/yyyy HH:mm'}}</strong></span>
                             </a></td>
-                        <td>{{record.historyOrderType}}</td>
-                        <td>{{record.price | number : 2}}</td>
-                        <td>{{record.periodReturn | number : 2}}</td>
-                        <td>{{record.avgDiscountPerc | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('quantity') | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('discountValue') | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('toPay') | number : 2}}</td>
+                        <td><strong>{{record.historyOrderType}}</strong></strong></td>
+                        <td><strong>{{record.price | number : 2}}</strong></td>
+                        <td><strong>{{record.periodReturn | number : 2}}</strong></td>
+                        <td><strong>{{record.avgDiscountPerc | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -57,16 +57,16 @@
                         <td>
                             <a href="" ng-click="record.$hideRows = !record.$hideRows">
                                 <span class="glyphicon"
-                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }">{{record.date | date:'dd/MM/yyyy hh:mm:ss'}}</span>
+                                      ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"><strong>{{record.date | date:'dd/MM/yyyy HH:mm'}}</strong></span>
                             </a></td>
-                        <td>{{record.historyOrderType}}</td>
-                        <td>{{record.price | number : 2}}</td>
-                        <td>{{record.periodReturn | number : 2}}</td>
-                        <td>{{record.avgDiscountPerc | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('quantity') | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('discountValue') | number : 2}}</td>
-                        <td>{{record.historyTrades.sum('toPay') | number : 2}}</td>
+                        <td><strong>{{record.historyOrderType}}</strong></td>
+                        <td><strong>{{record.price | number : 2}}</strong></td>
+                        <td><strong>{{record.periodReturn | number : 2}}</strong></td>
+                        <td><strong>{{record.avgDiscountPerc | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
+                        <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
                         <td></td>
                         <td></td>
                     </tr>

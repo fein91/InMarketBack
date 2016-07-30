@@ -43,8 +43,8 @@
                             <p>В данный момент вы можете получить предоплату на эту сумму со следующими
                                 параметрами:</br>
                                 APR={{bidApr}}</br>
-                                средний % скидки={{avgDiscountPerc}}</br>
-                                общая сумму скидок будет составлять={{discountSum}}</br>
+                                % скидки={{avgDiscountPerc}}</br>
+                                общая сумма скидок будет составлять={{discountSum}}</br>
                                 средний срок оплаты={{avgDaysToPayment}} дней
                             </p>
                         </div>
@@ -68,7 +68,7 @@
                     <form name="bidLimitForm" ng-controller="BidLimitCtrl">
                         <div class="form-group form-inline">
                             <label>Введите желаемый APR: </label>
-                            <input name="bidApr" ng-model="bidApr" type="number" min="0" max="99" class="form-control"
+                            <input name="bidApr" ng-model="bidApr" type="number" min="0" max="99" step="any" class="form-control"
                                    placeholder="Процент" required>
                         </div>
                         <div class="form-group form-inline">
