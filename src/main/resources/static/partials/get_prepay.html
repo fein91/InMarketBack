@@ -30,7 +30,7 @@
                 <!--</div>-->
             </div>
         </uib-tab>
-        <uib-tab index="1" heading="Рыночная заявка">
+        <uib-tab index="1" heading="Получить срочно">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form name="bidMarketForm" ng-controller="BidMarketCtrl">
@@ -52,17 +52,15 @@
                              ng-show="calculationCalled && calculatedWithError">
                             {{calculationErrorMsg}}
                         </div>
+                        <button type="submit" ng-click="calculateMarketBidOrder()" class="btn btn-default">Запросить данные</button>
+                        <button type="reset" ng-click="reset()" class="btn btn-default">Отказаться</button>
                         <button type="submit" ng-click="openConfirmation()" ng-disabled="!calculationCalled || calculatedWithError"
-                                class="btn btn-default">Подтвердить
-                        </button>
-                        <button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>
-                        <button type="submit" ng-click="calculateMarketBidOrder()" class="btn btn-default">Пересчитать
-                        </button>
+                                class="btn btn-success">Осуществить рыночную сделку</button>
                     </form>
                 </div>
             </div>
         </uib-tab>
-        <uib-tab index="2" heading="Отложенная заявка">
+        <uib-tab index="2" heading="Назначить свою цену">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form name="bidLimitForm" ng-controller="BidLimitCtrl">
@@ -90,12 +88,10 @@
                                 </canvas>
                             </div>
                         </div>
+                        <button type="submit" ng-click="calculateLimitBidOrder()" class="btn btn-default">Пересчитать</button>
+                        <button type="reset" ng-click="reset()" class="btn btn-default">Ввести заново</button>
                         <button type="submit" ng-click="openConfirmation()" ng-disabled="!calculationCalled || calculatedWithError"
-                                class="btn btn-default">Подтвердить
-                        </button>
-                        <button type="reset" ng-click="reset()" class="btn btn-default">Сбросить</button>
-                        <button type="submit" ng-click="calculateLimitBidOrder()" class="btn btn-default">Пересчитать
-                        </button>
+                                class="btn btn-success">Разместить отложенную заявку</button>
                     </form>
                 </div>
             </div>
