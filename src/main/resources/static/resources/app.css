@@ -184,3 +184,7 @@ body {
     width: 330px;
     margin-left: 25%;
 }
+
+.angular-with-newlines {
+    white-space: pre-wrap;
+}

@@ -3,12 +3,14 @@ package com.fein91.rest.exception;
 /**
  * Unchecked exception for order processing errors
  */
-public class OrderRequestProcessingException extends RuntimeException {
+public class OrderRequestProcessingException extends LocalizedException {
 
-    public OrderRequestProcessingException(String errorMessage) {
-        super(errorMessage);
+
+    public OrderRequestProcessingException(String message, String localizedMessage) {
+        super(message, localizedMessage);
     }
-    public OrderRequestProcessingException() {
-        super();
+
+    public OrderRequestProcessingException(String message, String localizedMessage, Throwable cause) {
+        super(message, localizedMessage, cause);
     }
 }

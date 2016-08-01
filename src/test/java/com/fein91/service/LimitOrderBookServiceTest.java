@@ -566,7 +566,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.process(bidOrderRequest1);
 
         thrown.expect(OrderRequestProcessingException.class);
-        thrown.expectMessage("Requested order quantity: 200 is greater than available orders sum: 150.00. Please process unsatisfied quantity: 50.00 as limit order.");
+        thrown.expectMessage("Requested order quantity: 200 cannot be satisfied. Please process unsatisfied quantity: 50.00 as limit order.");
 
         OrderRequest askOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(200))

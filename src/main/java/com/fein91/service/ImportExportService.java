@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static com.fein91.rest.exception.ExceptionMessages.*;
+
 @Service
 public class ImportExportService {
 
@@ -41,11 +43,11 @@ public class ImportExportService {
             workbook = new XSSFWorkbook(file.getInputStream());
             for (Sheet sheet : workbook) {
                 for (Row row : sheet) {
-                    int rowNum = 0;
-                    Long externalInvoiceId = new Double(row.getCell(rowNum++).getNumericCellValue()).longValue();
-                    String source = row.getCell(rowNum++).getStringCellValue();
-                    double amount = row.getCell(rowNum++).getNumericCellValue();
-                    String stringDate = row.getCell(rowNum++).getStringCellValue();
+                    int cellNum = 0;
+                    Long externalInvoiceId = new Double(row.getCell(cellNum++).getNumericCellValue()).longValue();
+                    String source = row.getCell(cellNum++).getStringCellValue();
+                    double amount = row.getCell(cellNum++).getNumericCellValue();
+                    String stringDate = row.getCell(cellNum++).getStringCellValue();
 
                     Invoice existedInvoice = invoiceService.getByExternalId(externalInvoiceId);
 
@@ -65,7 +67,7 @@ public class ImportExportService {
                 }
             }
         } catch (IOException | ParseException e) {
-            throw new ImportExportException("exception while import/export occured");
+            throw new ImportExportException(EXCEPTION_WHILE_IMPORT_OCCURRED.getMessage(), EXCEPTION_WHILE_IMPORT_OCCURRED.getLocalizedMessage());
         }
     }
 

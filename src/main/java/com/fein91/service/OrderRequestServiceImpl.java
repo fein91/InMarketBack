@@ -11,8 +11,6 @@ import com.fein91.dao.OrderRequestRepository;
 import com.fein91.model.*;
 import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.rest.exception.OrderRequestProcessingException;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,6 +21,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static com.fein91.rest.exception.ExceptionMessages.*;
 
 @Service("OrderRequestServiceImpl")
 public class OrderRequestServiceImpl implements OrderRequestService {
@@ -181,9 +181,12 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             if (OrderType.LIMIT == orderRequest.getOrderType()) {
                 orderRequest.setQuantity(unsatisfiedDemand);
                 findLimitOrderRequestsToTrade(orderRequest);
-            } else {
-                throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity() + " cannot be satisfied. "
-                        + "Please process unsatisfied quantity: " + unsatisfiedDemand + " as limit order.");
+            } else if (OrderSide.ASK == orderRequest.getOrderSide()) {
+                throw new OrderRequestProcessingException(String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
+                        String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
+            } else if (OrderSide.BID == orderRequest.getOrderSide()) {
+                throw new OrderRequestProcessingException(String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
+                        String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
             }
         }
         return result;
@@ -199,7 +202,13 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 : invoiceRepository.findInvoicesByTargetId(counterpartyId);
 
         if (CollectionUtils.isEmpty(invoices)) {
-            throw new OrderRequestProcessingException("No invoices were found while processing order request");
+            if (OrderSide.BID == orderSide) {
+                throw new OrderRequestProcessingException(NO_BUYER_INVOICES_WERE_FOUND_WHILE_PROCESSING_ORDER_REQUEST.getMessage(),
+                        NO_BUYER_INVOICES_WERE_FOUND_WHILE_PROCESSING_ORDER_REQUEST.getLocalizedMessage());
+            } else if (OrderSide.ASK == orderSide) {
+                throw new OrderRequestProcessingException(NO_SUPPLIER_INVOICES_WERE_FOUND_WHILE_PROCESSING_ORDER_REQUEST.getMessage(),
+                        NO_SUPPLIER_INVOICES_WERE_FOUND_WHILE_PROCESSING_ORDER_REQUEST.getLocalizedMessage());
+            }
         }
 
         Set<Counterparty> counterparties = new HashSet<>();
@@ -235,18 +244,24 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
         if (OrderType.MARKET == orderRequest.getOrderType()) {
             if (CollectionUtils.isEmpty(orderRequestsToTrade)) {
-                throw new OrderRequestProcessingException("No suitable order requests were found");
+                throw new OrderRequestProcessingException(NO_SUITABLE_ORDER_REQUESTS_WERE_FOUND.getMessage(),
+                        NO_SUITABLE_ORDER_REQUESTS_WERE_FOUND.getLocalizedMessage());
             } else if (orderRequest.getQuantity().compareTo(orderRequestsToTradeSum) > 0) {
-                throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity()
-                        + " is greater than available orders sum: " + orderRequestsToTradeSum
-                        + ". Please process unsatisfied quantity: " + orderRequest.getQuantity().subtract(orderRequestsToTradeSum) + " as limit order.");
+                BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(orderRequestsToTradeSum);
+                if (OrderSide.ASK == orderRequest.getOrderSide()) {
+                    throw new OrderRequestProcessingException(String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
+                            String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
+                } else if (OrderSide.BID == orderRequest.getOrderSide()) {
+                    throw new OrderRequestProcessingException(String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
+                            String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
+                }
             }
         }
 
         BigDecimal availableOrderAmount = invoicesSum.subtract(discountsSum);
         if (orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
-            throw new OrderRequestProcessingException("Requested order quantity: " + orderRequest.getQuantity()
-                    + " is greater than available quantity = invoices - discounts: " + availableOrderAmount);
+            throw new OrderRequestProcessingException(String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getMessage(), orderRequest.getQuantity(), availableOrderAmount),
+                    String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getLocalizedMessage(), orderRequest.getQuantity(), availableOrderAmount));
         }
 
         return orderRequestsToTrade;
