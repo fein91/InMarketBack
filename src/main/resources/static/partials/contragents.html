@@ -2,7 +2,7 @@
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="Мои покупатели">
             <div class="table-responsive" ng-controller="MyBuyersCtrl as myBuyers">
-                <table ng-table="buyersTableParams" class="table table-condensed table-bordered table-striped"
+                <table ng-table="buyersTableParams" class="table table-condensed table-bordered table-striped centered-table"
                        show-filter="true">
                     <tr class="ng-table-group" ng-repeat-start="group in $groups">
                         <td></td>
@@ -49,7 +49,7 @@
                            onchange="angular.element(this).scope().import(this.files)"/>
                     <div>Импорт</div>
                 </label>
-                <table ng-table="suppliersTableParams" class="table table-condensed table-bordered table-striped"
+                <table ng-table="suppliersTableParams" class="table table-condensed table-bordered table-striped centered-table"
                        show-filter="true">
                     <tr class="ng-table-group" ng-repeat-start="group in $groups">
                         <td></td>

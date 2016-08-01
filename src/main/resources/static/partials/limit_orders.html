@@ -2,7 +2,7 @@
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="Получение предоплаты">
             <div class="table-responsive">
-                <table ng-table="bidsTableParams" class="table table-condensed table-bordered table-striped"
+                <table ng-table="bidsTableParams" class="table table-condensed table-bordered table-striped editable-table centered-table"
                        show-filter="true">
                     <tr ng-repeat="record in $data" ng-form="recordForm">
                         <td data-title="'Время размещения заявки'" sortable="'date'">
@@ -37,7 +37,7 @@
         </uib-tab>
         <uib-tab index="1" heading="Осуществление предоплаты">
             <div class="table-responsive">
-                <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped editable-table"
+                <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped editable-table centered-table"
                        show-filter="true" ng-form="asksTableForm">
                     <tr ng-repeat="record in $data" ng-form="recordForm">
                         <td data-title="'Время размещения заявки'" sortable="'date'">
