@@ -86,10 +86,10 @@
                                 </canvas>
                             </div>
                         </div>
-                        <button type="submit" ng-click="calculateLimitAskOrder()" class="btn btn-default">Пересчитать</button>
-                        <button type="submit" ng-click="openConfirmation()" ng-disabled="!calculationCalled || calculatedWithError"
+                        <!--<button type="submit" ng-click="calculateLimitAskOrder()" class="btn btn-default">Пересчитать</button>-->
+                        <button type="submit" ng-click="makePrepay()" ng-disabled="calculationCalled || calculatedWithError"
                                 class="btn btn-success">Разместить отложенную заявку</button>
-                        <button type="reset" ng-click="reset()" class="btn btn-default">Ввести заново</button>
+                        <button type="reset" ng-show="calculatedWithError" ng-click="reset()" class="btn btn-default">Ввести заново</button>
                     </form>
                 </div>
             </div>
