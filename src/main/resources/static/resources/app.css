@@ -174,3 +174,8 @@ body {
     padding-top: 4px;
     padding-bottom: 4px;
 }
+
+.login-form {
+    width: 330px;
+    margin-left: 25%;
+}

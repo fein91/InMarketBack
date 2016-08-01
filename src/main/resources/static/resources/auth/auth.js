@@ -31,8 +31,8 @@ angular.module('inmarket.auth', ['ngStorage'])
 
             var headers = credentials ? {
                 authorization: "Basic "
-                + btoa(credentials.username + ":"
-                + credentials.password)
+                + btoa(unescape(encodeURIComponent(credentials.username + ":"
+                + credentials.password)))
             } : {};
 
             $http.get('user', {
