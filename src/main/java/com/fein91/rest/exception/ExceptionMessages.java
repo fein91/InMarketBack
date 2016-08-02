@@ -20,18 +20,18 @@ public enum ExceptionMessages {
     SUPPLIERS_ORDERS_SUM_NO_ENOUGH("Requested order quantity: %s cannot be satisfied. " +
             "Available order quantity: %s. " +
             "Please process unsatisfied quantity: %s as limit order.",
-            "На запрашиваемую сумму %s невозможно осуществить рыночную сделку. \n" +
-                    "Ваши поставщики готовы получить предоплаты только на сумму=%s грн.\n" +
+            "На запрашиваемую сумму %s невозможно осуществить рыночную сделку. <br>" +
+                    "Ваши поставщики готовы получить предоплаты только на сумму=%s грн.<br>" +
                     "Воспользуйтесь отложенной заявкой на остаток %s грн."),
     BUYERS_ORDERS_SUM_NO_ENOUGH("Requested order quantity: %s cannot be satisfied. " +
             "Available order quantity: %s. " +
             "Please process unsatisfied quantity: %s as limit order.",
-            "На запрашиваемую сумму %s невозможно осуществить рыночную сделку. \n" +
-                    "Ваши покупатели готовы сделать предоплаты только на сумму=%s грн.\n" +
+            "На запрашиваемую сумму %s невозможно осуществить рыночную сделку. <br>" +
+                    "Ваши покупатели готовы сделать предоплаты только на сумму=%s грн.<br>" +
                     "Воспользуйтесь отложенной заявкой на остаток %s грн."),
     REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY("Requested order quantity: %s is greater than available quantity = invoices - discounts: %s",
-            "Заявка не может быть размещена.\n" +
-                    "Запрашиваемая сумма: %s превышает сумму инвойсов с учетом скидок. \n" +
+            "Заявка не может быть размещена.<br>" +
+                    "Запрашиваемая сумма: %s превышает сумму инвойсов с учетом скидок. <br>" +
                     "Максимальная доступная сумма: %s"),
     NO_BUYER_INVOICES_WERE_FOUND_WHILE_PROCESSING_ORDER_REQUEST("No buyer invoices were found while processing order request",
             "У вас нет покупателей чтобы заказать предоплату."),

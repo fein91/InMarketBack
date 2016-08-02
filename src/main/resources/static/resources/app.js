@@ -2,6 +2,7 @@ angular.module('inmarket', [
     'ngRoute',
     'ngTable',
     'ngStorage',
+    'ngSanitize',
     'chart.js',
     'ui.bootstrap',
     'inmarket.auth',
