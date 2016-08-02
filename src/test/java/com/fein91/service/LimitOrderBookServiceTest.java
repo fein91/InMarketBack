@@ -586,12 +586,12 @@ public class LimitOrderBookServiceTest {
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
 
-        Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(400), ZERO, getDate(2016, 7, 12)));
-        Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, getDate(2016, 7, 2)));
+        Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(400), ZERO, testUtils.getCurrentDayPlusDays(50)));
+        Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, testUtils.getCurrentDayPlusDays(60)));
 
         BigDecimal bid1Price = BigDecimal.valueOf(26);
         OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
-                .quantity(BigDecimal.valueOf(395))
+                .quantity(BigDecimal.valueOf(385))
                 .price(bid1Price)
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
