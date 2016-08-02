@@ -47,9 +47,7 @@
                             </p>
                         </div>
                         <div class="alert alert-warning alert-dismissable"
-                             ng-show="calculationCalled && calculatedWithError">
-                            {{calculationErrorMsg}}
-                        </div>
+                             ng-show="calculationCalled && calculatedWithError" ng-bind-html="calculationErrorMsg"></div>
                         <button type="submit" ng-click="calculateAskMarketOrder()" class="btn btn-default">Запросить данные</button>
                         <button type="reset" class="btn btn-default" ng-click="reset()">Отказаться</button>
                         <button type="submit" ng-click="openConfirmation()" ng-disabled="!calculationCalled || calculatedWithError"
@@ -76,9 +74,7 @@
                             <p>По заданному APR к моментальному исполнению подлежит сумма {{satisfiedAskQty}} грн.</p>
                         </div>
                         <div class="alert alert-warning alert-dismissable"
-                             ng-show="calculationCalled && calculatedWithError">
-                            {{calculationErrorMsg}}
-                        </div>
+                             ng-show="calculationCalled && calculatedWithError" ng-bind-html="calculationErrorMsg"></div>
                         <div class="row">
                             <div class="col-xs-4">
                                 <canvas id="bar" class="chart chart-bar"
@@ -86,10 +82,10 @@
                                 </canvas>
                             </div>
                         </div>
-                        <button type="submit" ng-click="calculateLimitAskOrder()" class="btn btn-default">Пересчитать</button>
-                        <button type="submit" ng-click="openConfirmation()" ng-disabled="!calculationCalled || calculatedWithError"
+                        <!--<button type="submit" ng-click="calculateLimitAskOrder()" class="btn btn-default">Пересчитать</button>-->
+                        <button type="submit" ng-click="makePrepay()" ng-disabled="calculationCalled || calculatedWithError"
                                 class="btn btn-success">Разместить отложенную заявку</button>
-                        <button type="reset" ng-click="reset()" class="btn btn-default">Ввести заново</button>
+                        <button type="reset" ng-show="calculatedWithError" ng-click="reset()" class="btn btn-default">Ввести заново</button>
                     </form>
                 </div>
             </div>

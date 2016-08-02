@@ -92,10 +92,10 @@ public class CounterpartyController {
     }
 
     @ExceptionHandler(ImportExportException.class)
-    public ResponseEntity<ErrorResponse> importExportExceptionHandler(Exception ex) {
+    public ResponseEntity<ErrorResponse> importExportExceptionHandler(ImportExportException ex) {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        error.setMessage(ex.getMessage());
+        error.setMessage(ex.getLocalizedMsg());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

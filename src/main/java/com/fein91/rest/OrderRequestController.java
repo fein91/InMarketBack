@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+import static com.fein91.rest.exception.ExceptionMessages.*;
+
 @RestController
 @RequestMapping("/orderRequests")
 public class OrderRequestController {
@@ -49,7 +51,7 @@ public class OrderRequestController {
     public ResponseEntity<OrderRequest> update(@RequestBody OrderRequest orderRequest) throws OrderRequestException {
         checkOrderRequest(orderRequest);
         if (OrderType.LIMIT != orderRequest.getOrderType()) {
-            throw new OrderRequestException("Only limit order request can be updated");
+            throw new OrderRequestException(ONLY_LIMIT_ORDER_REQUEST_CAN_BE_UPDATED.getMessage(), ONLY_LIMIT_ORDER_REQUEST_CAN_BE_UPDATED.getLocalizedMessage());
         }
 
         return new ResponseEntity<>(orderRequestServiceImpl.update(orderRequest), HttpStatus.OK);
@@ -63,42 +65,44 @@ public class OrderRequestController {
 
     private void checkOrderRequest(OrderRequest orderRequest) throws OrderRequestException {
         if (orderRequest.getCounterparty() == null) {
-            throw new OrderRequestException("Order request counterparty isn't filled");
+            throw new OrderRequestException(ORDER_REQUEST_COUNTERPARTY_ISNT_FILLED.getMessage(), ORDER_REQUEST_COUNTERPARTY_ISNT_FILLED.getLocalizedMessage());
         }
         if (orderRequest.getQuantity() == null) {
-            throw new OrderRequestException("Order request quantity isn't filled");
+            throw new OrderRequestException(ORDER_REQUEST_QUANTITY_ISNT_FILLED.getMessage(), ORDER_REQUEST_QUANTITY_ISNT_FILLED.getLocalizedMessage());
         }
         if (orderRequest.getQuantity().signum() <= 0) {
-            throw new OrderRequestException("Order request quantity incorrect value: " + orderRequest.getQuantity());
+            throw new OrderRequestException(String.format(ORDER_REQUEST_QUANTITY_INCORRECT_VALUE.getMessage(), orderRequest.getQuantity()),
+                    String.format(ORDER_REQUEST_QUANTITY_INCORRECT_VALUE.getLocalizedMessage(), orderRequest.getQuantity()));
         }
         if (orderRequest.getOrderType() == null) {
-            throw new OrderRequestException("Order request type isn't filled");
+            throw new OrderRequestException(ORDER_REQUEST_TYPE_ISNT_FILLED.getMessage(), ORDER_REQUEST_TYPE_ISNT_FILLED.getLocalizedMessage());
         }
         if (orderRequest.getOrderSide() == null) {
-            throw new OrderRequestException("Order request side isn't filled");
+            throw new OrderRequestException(ORDER_REQUEST_SIDE_ISNT_FILLED.getMessage(), ORDER_REQUEST_SIDE_ISNT_FILLED.getLocalizedMessage());
         }
         if (OrderType.LIMIT == orderRequest.getOrderType() && orderRequest.getPrice() == null) {
-            throw new OrderRequestException("Limit order request price isn't filled");
+            throw new OrderRequestException(LIMIT_ORDER_REQUEST_PRICE_ISNT_FILLED.getMessage(), LIMIT_ORDER_REQUEST_PRICE_ISNT_FILLED.getLocalizedMessage());
         }
         if (OrderType.LIMIT == orderRequest.getOrderType()
                 && (orderRequest.getPrice().signum() <= 0 || orderRequest.getPrice().compareTo(BigDecimal.valueOf(100)) >= 0)) {
-            throw new OrderRequestException("Limit order request price incorrect value: " + orderRequest.getPrice());
+            throw new OrderRequestException(String.format(LIMIT_ORDER_REQUEST_PRICE_INCORRECT_VALUE.getMessage(), orderRequest.getPrice()),
+                    String.format(LIMIT_ORDER_REQUEST_PRICE_INCORRECT_VALUE.getLocalizedMessage(), orderRequest.getPrice()));
         }
     }
 
     @ExceptionHandler(OrderRequestException.class)
-    public ResponseEntity<ErrorResponse> orderRequestExceptionHandler(Exception ex) {
+    public ResponseEntity<ErrorResponse> orderRequestExceptionHandler(OrderRequestException ex) {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
-        error.setMessage(ex.getMessage());
+        error.setMessage(ex.getLocalizedMsg());
         return new ResponseEntity<>(error, HttpStatus.PRECONDITION_FAILED);
     }
 
     @ExceptionHandler(OrderRequestProcessingException.class)
-    public ResponseEntity<ErrorResponse> orderRequestProcessingExceptionHandler(Exception ex) {
+    public ResponseEntity<ErrorResponse> orderRequestProcessingExceptionHandler(OrderRequestProcessingException ex) {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        error.setMessage(ex.getMessage());
+        error.setMessage(ex.getLocalizedMsg());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

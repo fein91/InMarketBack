@@ -51,7 +51,7 @@ body {
 .proposal-bar-text {
     padding-top: 15px;
     padding-right: 15px;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 20px;
     width: 100%;
 }
@@ -173,4 +173,14 @@ body {
     font-size: 14px;
     padding-top: 4px;
     padding-bottom: 4px;
+}
+
+.centered-table {
+    text-align:center;
+    vertical-align:middle;
+}
+
+.login-form {
+    width: 330px;
+    margin-left: 25%;
 }

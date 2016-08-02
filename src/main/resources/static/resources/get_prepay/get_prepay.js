@@ -152,7 +152,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
         $scope.calculatedWithError = false;
         $scope.calculationErrorMsg = false;
 
-        $scope.calculateLimitBidOrder = function () {
+        $scope.getPrepay = function () {
             if ($scope.bidQty && $scope.bidApr) {
                 $scope.calculationCalled = true;
                 var orderRequest = {
@@ -177,6 +177,9 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                         }
 
                         $scope.calculatedWithError = false;
+
+                        self.openConfirmation();
+
                     }, function errorCallback(response) {
                         console.log('got ' + response.status + ' error');
                         $scope.calculatedWithError = true;
@@ -185,7 +188,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
             }
         };
 
-        $scope.openConfirmation = function () {
+        self.openConfirmation = function () {
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'partials/orderRequestConfirmPopup.html',
