@@ -91,18 +91,18 @@ public class OrderRequestController {
     }
 
     @ExceptionHandler(OrderRequestException.class)
-    public ResponseEntity<ErrorResponse> orderRequestExceptionHandler(Exception ex) {
+    public ResponseEntity<ErrorResponse> orderRequestExceptionHandler(OrderRequestException ex) {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
-        error.setMessage(ex.getLocalizedMessage());
+        error.setMessage(ex.getLocalizedMsg());
         return new ResponseEntity<>(error, HttpStatus.PRECONDITION_FAILED);
     }
 
     @ExceptionHandler(OrderRequestProcessingException.class)
-    public ResponseEntity<ErrorResponse> orderRequestProcessingExceptionHandler(Exception ex) {
+    public ResponseEntity<ErrorResponse> orderRequestProcessingExceptionHandler(OrderRequestProcessingException ex) {
         ErrorResponse error = new ErrorResponse();
         error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        error.setMessage(ex.getLocalizedMessage());
+        error.setMessage(ex.getLocalizedMsg());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
