@@ -2,24 +2,23 @@ package com.fein91.rest.exception;
 
 public abstract class LocalizedException extends RuntimeException {
 
-    private String localizedMessage;
+    private String localizedMsg;
 
-    public LocalizedException(String message, String localizedMessage) {
+    public LocalizedException(String message, String localizedMsg) {
         super(message);
-        this.localizedMessage = localizedMessage;
+        this.localizedMsg = localizedMsg;
     }
 
-    public LocalizedException(String message, String localizedMessage, Throwable cause) {
+    public LocalizedException(String message, String localizedMsg, Throwable cause) {
         super(message, cause);
-        this.localizedMessage = localizedMessage;
+        this.localizedMsg = localizedMsg;
     }
 
-    @Override
-    public String getLocalizedMessage() {
-        return localizedMessage;
+    public String getLocalizedMsg() {
+        return localizedMsg;
     }
 
-    public void setLocalizedMessage(String localizedMessage) {
-        this.localizedMessage = localizedMessage;
+    public void setLocalizedMsg(String localizedMsg) {
+        this.localizedMsg = localizedMsg;
     }
 }

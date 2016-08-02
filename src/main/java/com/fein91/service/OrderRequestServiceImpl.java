@@ -182,11 +182,25 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 orderRequest.setQuantity(unsatisfiedDemand);
                 findLimitOrderRequestsToTrade(orderRequest);
             } else if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                throw new OrderRequestProcessingException(String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
-                        String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
+                throw new OrderRequestProcessingException(
+                        String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
+                                orderRequest.getQuantity(),
+                                result.getSatisfiedDemand(),
+                                unsatisfiedDemand),
+                        String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
+                                orderRequest.getQuantity(),
+                                result.getSatisfiedDemand(),
+                                unsatisfiedDemand));
             } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                throw new OrderRequestProcessingException(String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
-                        String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
+                throw new OrderRequestProcessingException(
+                        String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
+                                orderRequest.getQuantity(),
+                                result.getSatisfiedDemand(),
+                                unsatisfiedDemand),
+                        String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
+                                orderRequest.getQuantity(),
+                                result.getSatisfiedDemand(),
+                                unsatisfiedDemand));
             }
         }
         return result;
@@ -249,11 +263,25 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             } else if (orderRequest.getQuantity().compareTo(orderRequestsToTradeSum) > 0) {
                 BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(orderRequestsToTradeSum);
                 if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                    throw new OrderRequestProcessingException(String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
-                            String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
+                    throw new OrderRequestProcessingException(
+                            String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
+                                    orderRequest.getQuantity(),
+                                    orderRequestsToTradeSum,
+                                    unsatisfiedDemand),
+                            String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
+                                    orderRequest.getQuantity(),
+                                    orderRequestsToTradeSum,
+                                    unsatisfiedDemand));
                 } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                    throw new OrderRequestProcessingException(String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(), orderRequest.getQuantity(), unsatisfiedDemand),
-                            String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(), orderRequest.getQuantity(), unsatisfiedDemand));
+                    throw new OrderRequestProcessingException(
+                            String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
+                                    orderRequest.getQuantity(),
+                                    orderRequestsToTradeSum,
+                                    unsatisfiedDemand),
+                            String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
+                                    orderRequest.getQuantity(),
+                                    orderRequestsToTradeSum,
+                                    unsatisfiedDemand));
                 }
             }
         }
