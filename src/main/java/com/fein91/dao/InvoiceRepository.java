@@ -25,7 +25,7 @@ public interface InvoiceRepository extends CrudRepository<Invoice, Long> {
 
     List<Invoice> findBySourceAndTarget(Counterparty source, Counterparty target);
 
-    @Query("SELECT i FROM Invoice i where i.target.id = :targetId and i.source.id = :sourceId")
+    @Query("SELECT i FROM Invoice i where i.target.id = :targetId and i.source.id = :sourceId and i.paymentDate > CURRENT_DATE")
     List<Invoice> findBySourceAndTarget(@Param("sourceId") Long sourceId, @Param("targetId") Long targetId);
 
     Invoice findByExternalId(Long externalId);

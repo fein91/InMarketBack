@@ -33,7 +33,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         BigDecimal unpaidInvoiceValue = invoice.getValue().subtract(prepaidValue).setScale(2, BigDecimal.ROUND_HALF_UP);
         if (unpaidInvoiceValue.signum() < 0) {
             throw new IllegalStateException("Invoice prepaid value can't be greater than invoice value");
-        } else  if (unpaidInvoiceValue.signum() == 0) {
+        } else if (unpaidInvoiceValue.signum() == 0) {
             invoice.setProcessed(true);
         }
         invoice.setPrepaidValue(invoice.getPrepaidValue().add(prepaidValue));

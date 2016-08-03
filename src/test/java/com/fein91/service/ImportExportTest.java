@@ -80,7 +80,7 @@ public class ImportExportTest {
 
         invoiceService.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), ZERO, FORMAT.parse("30.05.2018")));
         invoiceService.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(200), BigDecimal.valueOf(100.5), FORMAT.parse("26.12.2017")));
-        invoiceService.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, FORMAT.parse("01.01.2016")));
+        invoiceService.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(300), ZERO, FORMAT.parse("01.01.2017")));
 
         String actualSupplier1Csv = importExportService.exportCsvBySource(supplier1.getId());
         String expectedSupplier1Csv = "supplier1,buyer,200,0,30.05.2018\n" +
@@ -91,7 +91,7 @@ public class ImportExportTest {
         String actualBuyerCsv = importExportService.exportCsvByTarget(buyer.getId());
         String expectedBuyerCsv = "supplier1,buyer,200,0,30.05.2018\n" +
                 "supplier1,buyer,99.5,100.5,26.12.2017\n" +
-                "supplier2,buyer,300,0,01.01.2016\n";
+                "supplier2,buyer,300,0,01.01.2017\n";
 
         Assert.assertEquals(expectedBuyerCsv, actualBuyerCsv);
     }

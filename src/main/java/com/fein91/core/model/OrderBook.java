@@ -199,15 +199,18 @@ public class OrderBook {
 
             //TODO how to define first invoice to calculate
             for (Invoice currentInvoice : invoices) {
+                BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
+
                 if (currentInvoice.isProcessed()
                         || (OrderSide.ASK == side && this.bids.length() <= 0)
                         || (OrderSide.BID == side && this.asks.length() <= 0)
-                        || qtyRemaining.signum() <= 0) {
+                        || qtyRemaining.signum() <= 0
+                        || unpaidInvoiceValue.signum() <= 0) {
+                    LOGGER.info("Skipping invoice processing: " + currentInvoice);
                     continue;
                 }
                 LOGGER.info("Invoice is processing: " + currentInvoice);
 
-                BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
                 int daysToPayment = calculationService.getDaysToPayment(currentInvoice.getPaymentDate());
                 BigDecimal discountPercent = calculationService.calculateDiscountPercent(BigDecimal.valueOf(headOrder.getPrice()), daysToPayment);
                 BigDecimal maxPrepaidInvoiceValue = calculationService.calculateMaxPossibleInvoicePrepaidValue(unpaidInvoiceValue, discountPercent);

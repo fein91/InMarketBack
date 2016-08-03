@@ -28,6 +28,7 @@ angular.module('inmarket.trans_history', ['ngRoute'])
             exportPromise
                 .then(function successCallback(response) {
                     var anchor = angular.element('<a/>');
+                    angular.element(document.body).append(anchor);
                     anchor.attr({
                         href: 'data:attachment/csv;charset=utf-8,' + encodeURI(response.data),
                         target: '_blank',
