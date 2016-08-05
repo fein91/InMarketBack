@@ -80,6 +80,11 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     }
                 }
             });
+
+            modalInstance.closed.then(function successCallback(response) {
+                $scope.reset();
+            }, function errorCallback(response) {
+            });
         };
 
         $scope.reset = function () {
@@ -209,6 +214,11 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                         };
                     }
                 }
+            });
+
+            modalInstance.closed.then(function successCallback(response) {
+                $scope.reset();
+            }, function errorCallback(response) {
             });
         };
 
