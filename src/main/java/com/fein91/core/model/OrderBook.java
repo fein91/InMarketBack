@@ -64,7 +64,7 @@ public class OrderBook {
     }
 
 
-    public OrderReport processOrder(Order quote, boolean verbose) {
+    public OrderReport processOrder(Order quote) {
         OrderType orderType = quote.getOrderType();
         OrderReport oReport;
         // Update time
@@ -75,15 +75,15 @@ public class OrderBook {
         if (OrderType.LIMIT == orderType) {
             double clippedPrice = clipPrice(quote.getPrice());
             quote.setPrice(clippedPrice);
-            oReport = processLimitOrder(quote, verbose);
+            oReport = processLimitOrder(quote);
         } else {
-            oReport = processMarketOrder(quote, verbose);
+            oReport = processMarketOrder(quote);
         }
         return oReport;
     }
 
 
-    private OrderReport processMarketOrder(Order quote, boolean verbose) {
+    private OrderReport processMarketOrder(Order quote) {
         ArrayList<Trade> trades = new ArrayList<Trade>();
         OrderSide side = quote.getOrderSide();
         BigDecimal qtyRemaining = quote.getQuantity();
@@ -93,7 +93,7 @@ public class OrderBook {
             while ((qtyRemaining.signum() > 0) && (orderListIterator.hasNext())) {
                 OrderList ordersAtBest = orderListIterator.next();
                 qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-                        quote, verbose);
+                        quote);
             }
         } else if (side == OrderSide.ASK) {
             this.lastOrderSign = -1;
@@ -101,7 +101,7 @@ public class OrderBook {
             while ((qtyRemaining.signum() > 0) && (orderListIterator.hasNext())) {
                 OrderList ordersAtBest = orderListIterator.next();
                 qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-                        quote, verbose);
+                        quote);
             }
         } else {
             throw new IllegalArgumentException("order neither market nor limit: " +
@@ -112,8 +112,7 @@ public class OrderBook {
     }
 
 
-    private OrderReport processLimitOrder(Order quote,
-                                          boolean verbose) {
+    private OrderReport processLimitOrder(Order quote) {
         boolean orderInBook = false;
         ArrayList<Trade> trades = new ArrayList<Trade>();
         OrderSide side = quote.getOrderSide();
@@ -129,7 +128,7 @@ public class OrderBook {
                 if (price >= minPrice) {
                     OrderList ordersAtBest = priceTreeEntry.getValue();
                     qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-                            quote, verbose);
+                            quote);
                 }
 
             }
@@ -153,7 +152,7 @@ public class OrderBook {
                 if (price <= maxPrice) {
                     OrderList ordersAtBest = priceTreeEntry.getValue();
                     qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
-                            quote, verbose);
+                            quote);
                 }
             }
             // If volume remains, add to book
@@ -179,8 +178,7 @@ public class OrderBook {
 
 
     private BigDecimal processOrderList(ArrayList<Trade> trades, OrderList orders,
-                                 BigDecimal qtyRemaining, Order quote,
-                                 boolean verbose) {
+                                 BigDecimal qtyRemaining, Order quote) {
         OrderSide side = quote.getOrderSide();
         long buyer, seller;
         long takerId = quote.getTakerId();
@@ -296,9 +294,6 @@ public class OrderBook {
                         headOrder.getId(), currentInvoice.getId());
                 trades.add(trade);
                 this.tape.add(trade);
-                if (verbose) {
-                    LOGGER.info(trade.toString());
-                }
             }
             //ALL invoices and orders are distributed and processed
 

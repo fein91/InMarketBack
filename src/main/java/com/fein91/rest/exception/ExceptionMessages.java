@@ -41,7 +41,14 @@ public enum ExceptionMessages {
             "В данный момент нет контрагентов, желающих провести рыночную сделку. Воспользуйтесь отложенной заявкой."),
     EXCEPTION_WHILE_IMPORT_OCCURRED("Exception while import occurred",
             "Произошла ошибка во время импорта. Проверьте пожалуйста входные данные."),
-
+    BID_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET("Requested APR is higher than available on market. " +
+            "You can process market order on sum=%s and APR=%s.",
+            "Введённый APR выше, чем доступный на рынке. <br>" +
+                    "Вы можете получить предоплаты на сумму=%s грн. по APR=%s, осуществив рыночную сделку."),
+    ASK_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET("Requested APR is lower than available on market. " +
+            "You can process market order on sum=%s and APR=%s.",
+            "Введённый APR ниже, чем доступный на рынке. <br>" +
+                    "Вы можете выдать предоплаты на сумму=%s грн. по APR=%s, осуществив рыночную сделку."),
     ;
 
     private String message;

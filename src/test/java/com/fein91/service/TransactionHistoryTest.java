@@ -48,17 +48,17 @@ public class TransactionHistoryTest {
     @Test
     @Transactional
     @Rollback
-    public void test() throws Exception {
+    public void testMarketAsk() throws Exception {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
         Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
         Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
         Counterparty supplier4 = counterPartyService.addCounterParty("supplier4");
 
-        Invoice invoiceS1B = invoiceService.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), ZERO, new Date()));
-        Invoice invoiceS2B= invoiceService.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, new Date()));
-        Invoice invoiceS3B = invoiceService.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(50), ZERO, new Date()));
-        Invoice invoiceS4B = invoiceService.addInvoice(new Invoice(supplier4, buyer, BigDecimal.valueOf(50), ZERO, new Date()));
+        Invoice invoiceS1B = invoiceService.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), ZERO, testUtils.getCurrentDayPlusDays(20)));
+        Invoice invoiceS2B= invoiceService.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, testUtils.getCurrentDayPlusDays(30)));
+        Invoice invoiceS3B = invoiceService.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(50), ZERO, testUtils.getCurrentDayPlusDays(40)));
+        Invoice invoiceS4B = invoiceService.addInvoice(new Invoice(supplier4, buyer, BigDecimal.valueOf(50), ZERO, testUtils.getCurrentDayPlusDays(50)));
 
         OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(50))
@@ -137,58 +137,6 @@ public class TransactionHistoryTest {
     @Test
     @Transactional
     @Rollback
-    public void testMarketAsk() throws OrderRequestException {
-        Counterparty buyer = counterPartyService.addCounterParty("buyer");
-        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
-        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
-        Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
-        Counterparty supplier4 = counterPartyService.addCounterParty("supplier4");
-
-        Invoice invoiceS1B = invoiceService.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(100), ZERO, new Date()));
-        Invoice invoiceS2B= invoiceService.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200), ZERO, new Date()));
-        Invoice invoiceS3B = invoiceService.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(50), ZERO, new Date()));
-        Invoice invoiceS4B = invoiceService.addInvoice(new Invoice(supplier4, buyer, BigDecimal.valueOf(50), ZERO, new Date()));
-
-        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
-                .quantity(BigDecimal.valueOf(50))
-                .price(BigDecimal.valueOf(27d))
-                .orderSide(OrderSide.BID)
-                .orderType(OrderType.LIMIT)
-                .build();
-        orderRequestService.process(bidOrderRequest1);
-
-        OrderRequest askOrderRequest = new OrderRequestBuilder(buyer)
-                .quantity(BigDecimal.valueOf(250))
-                .orderSide(OrderSide.ASK)
-                .orderType(OrderType.MARKET)
-                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS2B.getId(), true, invoiceS3B.getId(), true, invoiceS4B.getId(), true))
-                .build();
-        orderRequestService.process(askOrderRequest);
-
-        List<HistoryOrderRequest> supplier1TransHistory = historyOrderRequestService.getByCounterparty(supplier1);
-        Assert.assertEquals(2, supplier1TransHistory.size());
-        HistoryOrderRequest supplier1LimitOrderRequest = testUtils.findHistoryOrderRequestByOrderSide(supplier1TransHistory, HistoryOrderType.LIMIT);
-        Assert.assertEquals(OrderSide.BID, supplier1LimitOrderRequest.getOrderSide());
-        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1LimitOrderRequest.getQuantity()));
-
-        HistoryOrderRequest supplier1MarketOrderRequest = testUtils.findHistoryOrderRequestByOrderSide(supplier1TransHistory, HistoryOrderType.EXECUTED_LIMIT);
-        Assert.assertEquals(OrderSide.BID, supplier1MarketOrderRequest.getOrderSide());
-        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1MarketOrderRequest.getQuantity()));
-
-        List<HistoryOrderRequest> buyerTransHistory = historyOrderRequestService.getByCounterparty(buyer);
-        Assert.assertEquals(2, buyerTransHistory.size());
-        HistoryOrderRequest buyerMarketOrderRequest = testUtils.findHistoryOrderRequestByOrderSide(buyerTransHistory, HistoryOrderType.MARKET);
-        Assert.assertEquals(OrderSide.ASK, buyerMarketOrderRequest.getOrderSide());
-        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(buyerMarketOrderRequest.getQuantity()));
-
-        HistoryOrderRequest buyerLimitOrderRequest = testUtils.findHistoryOrderRequestByOrderSide(buyerTransHistory, HistoryOrderType.LIMIT);
-        Assert.assertEquals(OrderSide.ASK, buyerLimitOrderRequest.getOrderSide());
-        Assert.assertEquals(0, BigDecimal.valueOf(200).compareTo(buyerLimitOrderRequest.getQuantity()));
-    }
-
-    @Test
-    @Transactional
-    @Rollback
     public void testMarketBid() throws OrderRequestException {
         Counterparty buyer = counterPartyService.addCounterParty("buyer");
         Counterparty supplier = counterPartyService.addCounterParty("supplier");
@@ -235,5 +183,4 @@ public class TransactionHistoryTest {
         Assert.assertEquals(0, BigDecimal.valueOf(100).compareTo(buyerSupplierTrade.getQuantity()));
 
     }
-
 }

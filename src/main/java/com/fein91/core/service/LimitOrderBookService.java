@@ -41,7 +41,7 @@ public class LimitOrderBookService {
                 .takerId(orderRequest.getCounterparty().getId())
                 .build();
 
-        OrderReport orderReport = lob.processOrder(order, false);
+        OrderReport orderReport = lob.processOrder(order);
         log.info(lob);
 
         BigDecimal satisfiedDemand = quantity.subtract(orderReport.getQtyRemaining());

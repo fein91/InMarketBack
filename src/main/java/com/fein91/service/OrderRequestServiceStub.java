@@ -49,11 +49,6 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
-        return null;
-    }
-
-    @Override
     public void removeById(Long orderId) {
 
     }

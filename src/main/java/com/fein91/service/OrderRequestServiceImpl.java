@@ -149,7 +149,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         targetHor.setQuantity(qty);
         targetHor.setCounterparty(counterparty);
         targetHor.setDate(new Date());
-        //TODO check it!!! should we change trade source and target
         targetHor.setHistoryTrades(historyTradeService.copyAndUpdateTarget(target, trades));
         targetHor.setHistoryOrderType(HistoryOrderType.EXECUTED_LIMIT);
         targetHor.setOrderSide(orderSide);
@@ -176,39 +175,21 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         }
 
         OrderResult result = lobService.addOrder(lob, orderRequest);
-        BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
-        if (unsatisfiedDemand.signum() > 0) {
-            if (OrderType.LIMIT == orderRequest.getOrderType()) {
-                orderRequest.setQuantity(unsatisfiedDemand);
-                findLimitOrderRequestsToTrade(orderRequest);
-            } else if (OrderSide.ASK == orderRequest.getOrderSide()) {
-                throw new OrderRequestProcessingException(
-                        String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
-                                orderRequest.getQuantity(),
-                                result.getSatisfiedDemand(),
-                                unsatisfiedDemand),
-                        String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
-                                orderRequest.getQuantity(),
-                                result.getSatisfiedDemand(),
-                                unsatisfiedDemand));
-            } else if (OrderSide.BID == orderRequest.getOrderSide()) {
-                throw new OrderRequestProcessingException(
-                        String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
-                                orderRequest.getQuantity(),
-                                result.getSatisfiedDemand(),
-                                unsatisfiedDemand),
-                        String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
-                                orderRequest.getQuantity(),
-                                result.getSatisfiedDemand(),
-                                unsatisfiedDemand));
+
+        if (OrderType.LIMIT == orderRequest.getOrderType() && result.getSatisfiedDemand().signum() > 0) {
+            if (OrderSide.ASK == orderRequest.getOrderSide()) {
+                throw new OrderRequestProcessingException(String.format(ASK_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET.getMessage(), result.getSatisfiedDemand(), result.getApr()),
+                        String.format(ASK_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET.getLocalizedMessage(), result.getSatisfiedDemand(), result.getApr()));
+            } else {
+                throw new OrderRequestProcessingException(String.format(BID_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET.getMessage(), result.getSatisfiedDemand(), result.getApr()),
+                        String.format(BID_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET.getLocalizedMessage(), result.getSatisfiedDemand(), result.getApr()));
             }
         }
+
         return result;
     }
 
-    @Override
-    @Transactional
-    public Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
+    protected Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
         OrderSide orderSide = orderRequest.getOrderSide();
         Long counterpartyId = orderRequest.getCounterparty().getId();
         List<Invoice> invoices = OrderSide.BID == orderSide
@@ -286,6 +267,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             }
         }
 
+        //works for limit orders only
         BigDecimal availableOrderAmount = invoicesSum.subtract(discountsSum);
         if (orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
             throw new OrderRequestProcessingException(String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getMessage(), orderRequest.getQuantity(), availableOrderAmount),

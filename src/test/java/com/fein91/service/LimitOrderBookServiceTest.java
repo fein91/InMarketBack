@@ -285,6 +285,8 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals(0, BigDecimal.valueOf(28).compareTo(result.getApr()));
     }
 
+    @Rule
+    public ExpectedException limitOrderCanBeExecutedAsMarket = ExpectedException.none();
     /*
        *     b1  b2
        * s1 150 200
@@ -296,7 +298,7 @@ public class LimitOrderBookServiceTest {
     @Test
     @Transactional
     @Rollback
-    public void limitOrderTest6() throws Exception {
+    public void limitOrderCanBeExecutedAsMarketThrownTest() throws Exception {
         Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
         Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
         Counterparty supplier = counterPartyService.addCounterParty("supplier");
@@ -322,6 +324,9 @@ public class LimitOrderBookServiceTest {
                 .build();
         orderRequestServiceImpl.process(askOrderRequest2);
 
+        limitOrderCanBeExecutedAsMarket.expect(OrderRequestProcessingException.class);
+        limitOrderCanBeExecutedAsMarket.expectMessage("Requested APR is higher than available on market. You can process market order on sum=150.00 and APR=28.00.");
+
         BigDecimal supplier1BidPrice = BigDecimal.valueOf(29);
         OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(200))
@@ -330,18 +335,7 @@ public class LimitOrderBookServiceTest {
                 .orderType(OrderType.LIMIT)
                 .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
                 .build();
-        OrderResult result = orderRequestServiceImpl.process(bidOrderRequest);
-
-        Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer2.getId());
-        Assert.assertNotNull(trade1);
-        Assert.assertEquals(28d, trade1.getPrice(), 0d);
-        Assert.assertEquals(BigDecimal.valueOf(150).compareTo(trade1.getQty()), 0);
-
-        List<OrderRequest> orderRequests = orderRequestServiceImpl.getByCounterpartyId(supplier.getId());
-        Assert.assertEquals(1, orderRequests.size());
-        OrderRequest limitOrderRequest = orderRequests.iterator().next();
-        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(limitOrderRequest.getQuantity()));
-        Assert.assertEquals(0, supplier1BidPrice.compareTo(limitOrderRequest.getPrice()));
+        orderRequestServiceImpl.calculate(bidOrderRequest);
     }
 
     /*
@@ -738,12 +732,5 @@ public class LimitOrderBookServiceTest {
         Assert.assertEquals("Actual invoice prepaid value: " + invoiceS2B.getPrepaidValue(),
                 BigDecimal.valueOf(299.61).compareTo(invoiceS2B.getPrepaidValue().setScale(2, ROUND_HALF_UP)), 0);
 
-
-    }
-
-    @Deprecated
-    private Date getDate(int year, int month, int day) {
-        Instant instant = LocalDate.of(year, month, day).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
-        return Date.from(instant);
     }
 }
