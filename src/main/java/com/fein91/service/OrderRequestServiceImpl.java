@@ -189,9 +189,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         return result;
     }
 
-    @Override
-    @Transactional
-    public Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
+    protected Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest) {
         OrderSide orderSide = orderRequest.getOrderSide();
         Long counterpartyId = orderRequest.getCounterparty().getId();
         List<Invoice> invoices = OrderSide.BID == orderSide

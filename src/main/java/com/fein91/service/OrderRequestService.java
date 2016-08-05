@@ -30,9 +30,6 @@ public interface OrderRequestService {
     OrderResult calculate(OrderRequest orderRequest) throws OrderRequestException;
 
     @Transactional
-    Set<OrderRequest> findLimitOrderRequestsToTrade(OrderRequest orderRequest);
-
-    @Transactional
     void removeById(Long orderId);
 
     @Transactional
