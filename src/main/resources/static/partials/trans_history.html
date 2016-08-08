@@ -11,7 +11,7 @@
                                 <span class="glyphicon"
                                       ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"><strong>{{record.date | date:'dd/MM/yyyy HH:mm'}}</strong></span>
                             </a></td>
-                        <td><strong>{{record.historyOrderType}}</strong></td>
+                        <td><strong>{{record.historyOrderType | i18n}}</strong></td>
                         <td><strong>{{record.price | number : 2}}</strong></td>
                         <td><strong>{{record.periodReturn | number : 2}}</strong></td>
                         <td><strong>{{record.avgDiscountPerc | number : 2}}</strong></td>
@@ -58,7 +58,7 @@
                                 <span class="glyphicon"
                                       ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"><strong>{{record.date | date:'dd/MM/yyyy HH:mm'}}</strong></span>
                             </a></td>
-                        <td><strong>{{record.historyOrderType}}</strong></td>
+                        <td><strong>{{record.historyOrderType | i18n}}</strong></td>
                         <td><strong>{{record.price | number : 2}}</strong></td>
                         <td><strong>{{record.periodReturn | number : 2}}</strong></td>
                         <td><strong>{{record.avgDiscountPerc | number : 2}}</strong></td>

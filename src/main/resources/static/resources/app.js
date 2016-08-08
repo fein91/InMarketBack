@@ -6,6 +6,7 @@ angular.module('inmarket', [
     'chart.js',
     'ui.bootstrap',
     'inmarket.auth',
+    'inmarket.localization',
     'inmarket.proposal',
     'inmarket.orderRequestConfirmPopup',
     'inmarket.contragents',
