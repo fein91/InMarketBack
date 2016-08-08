@@ -21,18 +21,19 @@ public enum ExceptionMessages {
             "Available order quantity: %s. " +
             "Please process unsatisfied quantity: %s as limit order.",
             "На запрашиваемую сумму %s невозможно осуществить рыночную сделку. <br>" +
-                    "Ваши поставщики готовы получить предоплаты только на сумму=%s грн.<br>" +
+                    "Ваши поставщики желают получить предоплаты только на сумму=%s грн.<br>" +
                     "Воспользуйтесь отложенной заявкой на остаток %s грн."),
     BUYERS_ORDERS_SUM_NO_ENOUGH("Requested order quantity: %s cannot be satisfied. " +
             "Available order quantity: %s. " +
             "Please process unsatisfied quantity: %s as limit order.",
             "На запрашиваемую сумму %s невозможно осуществить рыночную сделку. <br>" +
-                    "Ваши покупатели готовы сделать предоплаты только на сумму=%s грн.<br>" +
+                    "Ваши покупатели желают сделать предоплаты только на сумму=%s грн.<br>" +
                     "Воспользуйтесь отложенной заявкой на остаток %s грн."),
     REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY("Requested order quantity: %s is greater than available quantity = invoices - discounts: %s",
             "Заявка не может быть размещена.<br>" +
                     "Запрашиваемая сумма: %s превышает сумму инвойсов с учетом скидок. <br>" +
-                    "Максимальная доступная сумма: %s"),
+                    "Максимальная доступная сумма: %s.<br>" +
+                    "Измените вводимые параметры."),
     NO_BUYER_INVOICES_WERE_FOUND_WHILE_PROCESSING_ORDER_REQUEST("No buyer invoices were found while processing order request",
             "У вас нет покупателей чтобы заказать предоплату."),
     NO_SUPPLIER_INVOICES_WERE_FOUND_WHILE_PROCESSING_ORDER_REQUEST("No supplier invoices were found while processing order request",
@@ -44,11 +45,13 @@ public enum ExceptionMessages {
     BID_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET("Requested APR is higher than available on market. " +
             "You can process market order on sum=%s and APR=%s.",
             "Введённый APR выше, чем доступный на рынке. <br>" +
-                    "Вы можете получить предоплаты на сумму=%s грн. по APR=%s, осуществив рыночную сделку."),
+                    "Вы можете получить предоплаты на сумму=%s грн. по APR=%s, осуществив рыночную сделку.<br>" +
+                    "Измените вводимые параметры."),
     ASK_LIMIT_ORDER_CAN_BE_PROCESSED_AS_MARKET("Requested APR is lower than available on market. " +
             "You can process market order on sum=%s and APR=%s.",
             "Введённый APR ниже, чем доступный на рынке. <br>" +
-                    "Вы можете выдать предоплаты на сумму=%s грн. по APR=%s, осуществив рыночную сделку."),
+                    "Вы можете выдать предоплаты на сумму=%s грн. по APR=%s, осуществив рыночную сделку.<br>" +
+                    "Измените вводимые параметры."),
     ;
 
     private String message;

@@ -208,9 +208,8 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
         Set<Counterparty> counterparties = new HashSet<>();
         Set<OrderRequest> orderRequestsToTrade = new HashSet<>();
-        BigDecimal invoicesSum = BigDecimal.ZERO;
-        BigDecimal discountsSum = BigDecimal.ZERO;
         BigDecimal orderRequestsToTradeSum = BigDecimal.ZERO;
+        BigDecimal availableOrderAmount = BigDecimal.ZERO;
         for (Invoice invoice : invoices) {
             boolean invoiceUnchecked = Boolean.FALSE.equals(orderRequest.getInvoicesChecked().get(invoice.getId()));
             if (invoiceUnchecked) {
@@ -230,10 +229,10 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 orderRequestsToTrade.addAll(orderRequests);
             }
             BigDecimal unpaidInvoiceValue = invoice.getValue().subtract(invoice.getPrepaidValue());
-            invoicesSum = invoicesSum.add(unpaidInvoiceValue);
             if (OrderType.LIMIT == orderRequest.getOrderType()) {
                 BigDecimal discountPercent = calculationService.calculateDiscountPercent(orderRequest.getPrice(), invoice.getPaymentDate());
-                discountsSum = discountsSum.add(unpaidInvoiceValue.multiply(discountPercent));
+                BigDecimal maxPrepaidInvoiceValue = calculationService.calculateMaxPossibleInvoicePrepaidValue(unpaidInvoiceValue, discountPercent);
+                availableOrderAmount = availableOrderAmount.add(maxPrepaidInvoiceValue);
             }
         }
 
@@ -243,7 +242,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                         NO_SUITABLE_ORDER_REQUESTS_WERE_FOUND.getLocalizedMessage());
             } else if (orderRequest.getQuantity().compareTo(orderRequestsToTradeSum) > 0) {
                 BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(orderRequestsToTradeSum);
-                if (OrderSide.ASK == orderRequest.getOrderSide()) {
+                if (OrderSide.BID == orderRequest.getOrderSide()) {
                     throw new OrderRequestProcessingException(
                             String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
                                     orderRequest.getQuantity(),
@@ -253,7 +252,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                                     orderRequest.getQuantity(),
                                     orderRequestsToTradeSum,
                                     unsatisfiedDemand));
-                } else if (OrderSide.BID == orderRequest.getOrderSide()) {
+                } else if (OrderSide.ASK == orderRequest.getOrderSide()) {
                     throw new OrderRequestProcessingException(
                             String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
                                     orderRequest.getQuantity(),
@@ -268,8 +267,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
         }
 
         //works for limit orders only
-        BigDecimal availableOrderAmount = invoicesSum.subtract(discountsSum);
-        if (orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
+        if (OrderType.LIMIT == orderRequest.getOrderType() && orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
             throw new OrderRequestProcessingException(String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getMessage(), orderRequest.getQuantity(), availableOrderAmount),
                     String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getLocalizedMessage(), orderRequest.getQuantity(), availableOrderAmount));
         }
