@@ -34,11 +34,6 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public OrderRequest saveOrder(Order order) {
-        return null;
-    }
-
-    @Override
     public OrderResult process(OrderRequest orderRequest) {
         return null;
     }

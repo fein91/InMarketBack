@@ -28,6 +28,6 @@ public interface InvoiceRepository extends CrudRepository<Invoice, Long> {
     @Query("SELECT i FROM Invoice i where i.target.id = :targetId and i.source.id = :sourceId and i.paymentDate > CURRENT_DATE")
     List<Invoice> findBySourceAndTarget(@Param("sourceId") Long sourceId, @Param("targetId") Long targetId);
 
-    Invoice findByExternalId(Long externalId);
+    Invoice findByExternalId(String externalId);
 
 }

@@ -6,6 +6,7 @@ angular.module('inmarket.limitOrderEditConfirmPopupCtrl', ['ui.bootstrap'])
             var record = popupData.record;
 
             recordForm.quantity.$invalid = false;
+            //TODO maybe we should just call update here
             orderRequestsService.updateOrder(record)
                 .then(function successCallback(response) {
                     record.isEditing = false;

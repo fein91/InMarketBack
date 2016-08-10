@@ -63,7 +63,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Invoice getByExternalId(Long externalId) {
+    public Invoice getByExternalId(String externalId) {
         return invoiceRepository.findByExternalId(externalId);
     }
 }

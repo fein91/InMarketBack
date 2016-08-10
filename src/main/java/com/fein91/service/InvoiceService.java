@@ -19,5 +19,5 @@ public interface InvoiceService {
 
     List<Invoice> getByTargetId(Long targetId);
 
-    Invoice getByExternalId(Long externalId);
+    Invoice getByExternalId(String externalId);
 }

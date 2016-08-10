@@ -12,15 +12,14 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.fein91.Constants.UI_SCALE;
+import static com.fein91.Constants.ROUNDING_MODE;
 
 @Service
 public class LimitOrderBookService {
     private static Logger log = Logger.getLogger(LimitOrderBookService.class);
-
-    private static final int SCALE = 2;
 
     public OrderResult addOrder(OrderBook lob, OrderRequest orderRequest) {
         BigDecimal quantity = orderRequest.getQuantity();
@@ -50,15 +49,15 @@ public class LimitOrderBookService {
         BigDecimal totalDiscountSum = calculateTotalDiscountSum(lob);
         BigDecimal totalInvoicesSum = calculateTotalInvoicesSum(lob);
         BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0
-                ? totalDiscountSum.divide(totalInvoicesSum, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100))
+                ? totalDiscountSum.divide(totalInvoicesSum, ROUNDING_MODE).multiply(BigDecimal.valueOf(100))
                 : BigDecimal.ZERO;
         BigDecimal avgDaysToPayment = calculateAvgDaysToPayment(lob);
 
-        return new OrderResult(apr.setScale(SCALE, RoundingMode.HALF_UP),
-                satisfiedDemand.setScale(SCALE, RoundingMode.HALF_UP),
-                totalDiscountSum.setScale(SCALE, RoundingMode.HALF_UP),
-                avgDiscountPerc.setScale(SCALE, RoundingMode.HALF_UP),
-                avgDaysToPayment.setScale(SCALE, RoundingMode.HALF_UP),
+        return new OrderResult(apr.setScale(UI_SCALE, ROUNDING_MODE),
+                satisfiedDemand.setScale(UI_SCALE, ROUNDING_MODE),
+                totalDiscountSum.setScale(UI_SCALE, ROUNDING_MODE),
+                avgDiscountPerc.setScale(UI_SCALE, ROUNDING_MODE),
+                avgDaysToPayment.setScale(UI_SCALE, ROUNDING_MODE),
                 orderReport.getTrades());
     }
 
@@ -75,7 +74,7 @@ public class LimitOrderBookService {
             paymentsSum = paymentsSum.add(trade.getQty());
         }
         return paymentsSum.signum() > 0 ?
-                totalSumInvoicesDaysToPaymentMultQtyTraded.divide(paymentsSum, BigDecimal.ROUND_HALF_UP)
+                totalSumInvoicesDaysToPaymentMultQtyTraded.divide(paymentsSum, ROUNDING_MODE)
                 : BigDecimal.ZERO;
     }
 
@@ -91,7 +90,7 @@ public class LimitOrderBookService {
     private BigDecimal calculateAPR(OrderBook lob, BigDecimal satisfiedDemand) {
         BigDecimal apr = BigDecimal.ZERO;
         for (Trade trade : lob.getTape()) {
-            apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQty()).divide(satisfiedDemand, BigDecimal.ROUND_HALF_UP));
+            apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQty()).divide(satisfiedDemand, ROUNDING_MODE));
         }
 
         return apr;

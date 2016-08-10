@@ -21,8 +21,6 @@ public interface OrderRequestService {
 
     OrderRequest save(OrderRequest orderRequest);
 
-    OrderRequest saveOrder(Order order);
-
     @Transactional
     OrderResult process(OrderRequest orderRequest) throws OrderRequestException;
 

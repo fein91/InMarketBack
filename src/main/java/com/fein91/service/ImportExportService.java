@@ -44,7 +44,7 @@ public class ImportExportService {
             for (Sheet sheet : workbook) {
                 for (Row row : sheet) {
                     int cellNum = 0;
-                    Long externalInvoiceId = new Double(row.getCell(cellNum++).getNumericCellValue()).longValue();
+                    String externalInvoiceId = row.getCell(cellNum++).getStringCellValue();
                     String source = row.getCell(cellNum++).getStringCellValue();
                     double amount = row.getCell(cellNum++).getNumericCellValue();
                     String stringDate = row.getCell(cellNum++).getStringCellValue();

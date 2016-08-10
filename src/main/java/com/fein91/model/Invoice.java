@@ -37,8 +37,7 @@ public class Invoice {
     @Transient
     private boolean processed;
 
-    @JsonIgnore
-    private Long externalId;
+    private String externalId;
 
     public Invoice() {
         //JPA
@@ -108,11 +107,11 @@ public class Invoice {
         this.processed = processed;
     }
 
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(Long externalId) {
+    public void setExternalId(String  externalId) {
         this.externalId = externalId;
     }
 

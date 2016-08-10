@@ -10,6 +10,11 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         });
     }])
 
+    .filter('lbrRemove', function() {
+        return function (msg) {
+            return _.replace(msg, new RegExp("<br>","g"),"");
+        };
+    })
 
     .controller('LimitOrdersCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'NgTableParams', 'session', function ($scope, $uibModal, orderRequestsService, NgTableParams, session) {
         console.log('LimitOrdersCtrl inited');
@@ -46,20 +51,31 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
 
         $scope.save = function(record, recordForm) {
-            var modalInstance = $uibModal.open({
-                animation: true,
-                templateUrl: 'partials/limitOrderEditConfirmPopup.html',
-                controller: 'LimitOrderEditConfirmPopupCtrl',
-                size: 'sm',
-                resolve: {
-                    popupData: function () {
-                        return {
-                            "record" : record,
-                            "recordForm" : recordForm
-                        };
-                    }
+            orderRequestsService.calculate(record)
+                .then(function successCallback(response) {
+                    var modalInstance = $uibModal.open({
+                        animation: true,
+                        templateUrl: 'partials/limitOrderEditConfirmPopup.html',
+                        controller: 'LimitOrderEditConfirmPopupCtrl',
+                        size: 'sm',
+                        resolve: {
+                            popupData: function () {
+                                return {
+                                    "record" : record,
+                                    "recordForm" : recordForm
+                                };
+                            }
+                        }
+                    });
+                }, function errorCallback(response) {
+                    recordForm.quantity.$invalid = true;
+                    recordForm.$invalid = true;
+                    recordForm.quantity.message = response.data.message;
+
+                    console.log('got ' + response.status + ' error, msg=' + response.data.message);
                 }
-            });
+
+            );
         };
 
         $scope.cancel = function(record, recordForm) {

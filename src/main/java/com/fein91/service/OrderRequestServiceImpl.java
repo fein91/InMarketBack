@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.fein91.rest.exception.ExceptionMessages.*;
+import static com.fein91.Constants.ROUNDING_MODE;
+import static com.fein91.Constants.UI_SCALE;
 
 @Service("OrderRequestServiceImpl")
 public class OrderRequestServiceImpl implements OrderRequestService {
@@ -77,19 +79,6 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     @Override
     @Transactional
     public OrderRequest save(OrderRequest orderRequest) {
-        LOGGER.info("Order request to save: " + orderRequest);
-        return orderRequestRepository.save(orderRequest);
-    }
-
-    @Override
-    @Transactional
-    public OrderRequest saveOrder(Order order) {
-        OrderRequest orderRequest = new OrderRequestBuilder(counterPartyService.getById(order.getTakerId()))
-                .orderSide(order.getOrderSide())
-                .orderType(order.getOrderType())
-                .price(BigDecimal.valueOf(order.getPrice()))
-                .quantity(order.getQuantity())
-                .build();
         LOGGER.info("Order request to save: " + orderRequest);
         return orderRequestRepository.save(orderRequest);
     }
@@ -245,22 +234,22 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 if (OrderSide.BID == orderRequest.getOrderSide()) {
                     throw new OrderRequestProcessingException(
                             String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
-                                    orderRequest.getQuantity(),
-                                    orderRequestsToTradeSum,
+                                    orderRequest.getQuantity().setScale(UI_SCALE, ROUNDING_MODE),
+                                    orderRequestsToTradeSum.setScale(UI_SCALE, ROUNDING_MODE),
                                     unsatisfiedDemand),
                             String.format(BUYERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
-                                    orderRequest.getQuantity(),
-                                    orderRequestsToTradeSum,
+                                    orderRequest.getQuantity().setScale(UI_SCALE, ROUNDING_MODE),
+                                    orderRequestsToTradeSum.setScale(UI_SCALE, ROUNDING_MODE),
                                     unsatisfiedDemand));
                 } else if (OrderSide.ASK == orderRequest.getOrderSide()) {
                     throw new OrderRequestProcessingException(
                             String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getMessage(),
-                                    orderRequest.getQuantity(),
-                                    orderRequestsToTradeSum,
+                                    orderRequest.getQuantity().setScale(UI_SCALE, ROUNDING_MODE),
+                                    orderRequestsToTradeSum.setScale(UI_SCALE, ROUNDING_MODE),
                                     unsatisfiedDemand),
                             String.format(SUPPLIERS_ORDERS_SUM_NO_ENOUGH.getLocalizedMessage(),
-                                    orderRequest.getQuantity(),
-                                    orderRequestsToTradeSum,
+                                    orderRequest.getQuantity().setScale(UI_SCALE, ROUNDING_MODE),
+                                    orderRequestsToTradeSum.setScale(UI_SCALE, ROUNDING_MODE),
                                     unsatisfiedDemand));
                 }
             }
@@ -268,8 +257,13 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
         //works for limit orders only
         if (OrderType.LIMIT == orderRequest.getOrderType() && orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
-            throw new OrderRequestProcessingException(String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getMessage(), orderRequest.getQuantity(), availableOrderAmount),
-                    String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getLocalizedMessage(), orderRequest.getQuantity(), availableOrderAmount));
+            throw new OrderRequestProcessingException(
+                    String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getMessage(),
+                        orderRequest.getQuantity().setScale(UI_SCALE, ROUNDING_MODE),
+                        availableOrderAmount.setScale(UI_SCALE, ROUNDING_MODE)),
+                    String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getLocalizedMessage(),
+                            orderRequest.getQuantity().setScale(UI_SCALE, ROUNDING_MODE),
+                            availableOrderAmount.setScale(UI_SCALE, ROUNDING_MODE)));
         }
 
         return orderRequestsToTrade;
