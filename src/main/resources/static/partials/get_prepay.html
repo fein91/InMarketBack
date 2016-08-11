@@ -1,36 +1,6 @@
 <div class="row page-content">
     <uib-tabset active="activeJustified" justified="false" type="pills">
-        <uib-tab index="0" heading="История рынка">
-            <div class="row" ng-controller="GetPrepayHistoryChartCtrl as gpHistoryChart">
-                Функция в beta версии не доступна
-                <!--<div class="col-xs-8">-->
-                    <!--<canvas id="line" class="chart chart-line" chart-data="line_data"-->
-                            <!--chart-labels="line_labels" chart-legend="true"-->
-                            <!--chart-click="gpHistoryChart.onClick">-->
-                    <!--</canvas>-->
-                    <!--<canvas id="bar" class="chart chart-bar"-->
-                            <!--chart-data="bar_data" chart-labels="bar_labels">-->
-                    <!--</canvas>-->
-                <!--</div>-->
-                <!--<div class="col-xs-4">-->
-                    <!--<div class="panel panel-default">-->
-                        <!--<div class="panel-body">-->
-                            <!--<div class="btn-group btn-group-justified" role="group" aria-label="...">-->
-                                <!--<a href ng-click="gpHistoryChart.drawWeekChart()" class="btn btn-default" role="button">История-->
-                                    <!--за неделю</a>-->
-                                <!--<a href ng-click="gpHistoryChart.drawMonthChart()" class="btn btn-default"-->
-                                   <!--role="button">История за месяц</a>-->
-                            <!--</div>-->
-                            <!--<p>Максимальная цена: {{maxPrice}}</p>-->
-                            <!--<p>Минимальная цена: {{minPrice}}</p>-->
-                            <!--<p>Средняя цена: {{avgPrice}}</p>-->
-                            <!--<p>Средний объем сделок: {{avgDeals}}</p>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-            </div>
-        </uib-tab>
-        <uib-tab index="1" heading="Получить срочно">
+        <uib-tab index="0" heading="Получить срочно">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form name="bidMarketForm" ng-controller="BidMarketCtrl">
@@ -40,13 +10,15 @@
                                    required>
                         </div>
                         <div>
-                            <p>В данный момент вы можете получить предоплату на эту сумму со следующими
-                                параметрами:</br>
-                                APR={{bidApr}}</br>
-                                % скидки={{avgDiscountPerc}}</br>
-                                общая сумма скидок будет составлять={{discountSum}}</br>
-                                средний срок оплаты={{avgDaysToPayment}} дней
-                            </p>
+                            <p>В данный момент вы можете получить предоплату на эту сумму со следующими параметрами:</p>
+                            <table class="table table-bordered order-result-table">
+                                <col width="15%">
+                                <col width="15%">
+                                <tr><td>APR</td><td>{{bidApr}}</td></tr>
+                                <tr><td>Процент скидки (%)</td><td>{{avgDiscountPerc}}</td></tr>
+                                <tr><td>Общая сумма скидок будет составлять (грн.)</td><td>{{discountSum}}</td></tr>
+                                <tr><td>Средний срок оплаты (дни)</td><td>{{avgDaysToPayment}}</td></tr>
+                            </table>
                         </div>
                         <div class="alert alert-warning alert-dismissable"
                              ng-show="calculationCalled && calculatedWithError" ng-bind-html="calculationErrorMsg"></div>
@@ -58,7 +30,7 @@
                 </div>
             </div>
         </uib-tab>
-        <uib-tab index="2" heading="Назначить свою цену">
+        <uib-tab index="1" heading="Назначить свою цену">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form name="bidLimitForm" ng-controller="BidLimitCtrl">
@@ -90,6 +62,36 @@
                         <button type="reset" ng-show="calculatedWithError" ng-click="reset()" class="btn btn-default">Ввести заново</button>
                     </form>
                 </div>
+            </div>
+        </uib-tab>
+        <uib-tab index="2" heading="История рынка">
+            <div class="row" ng-controller="GetPrepayHistoryChartCtrl as gpHistoryChart">
+                Функция в beta версии не доступна
+                <!--<div class="col-xs-8">-->
+                <!--<canvas id="line" class="chart chart-line" chart-data="line_data"-->
+                <!--chart-labels="line_labels" chart-legend="true"-->
+                <!--chart-click="gpHistoryChart.onClick">-->
+                <!--</canvas>-->
+                <!--<canvas id="bar" class="chart chart-bar"-->
+                <!--chart-data="bar_data" chart-labels="bar_labels">-->
+                <!--</canvas>-->
+                <!--</div>-->
+                <!--<div class="col-xs-4">-->
+                <!--<div class="panel panel-default">-->
+                <!--<div class="panel-body">-->
+                <!--<div class="btn-group btn-group-justified" role="group" aria-label="...">-->
+                <!--<a href ng-click="gpHistoryChart.drawWeekChart()" class="btn btn-default" role="button">История-->
+                <!--за неделю</a>-->
+                <!--<a href ng-click="gpHistoryChart.drawMonthChart()" class="btn btn-default"-->
+                <!--role="button">История за месяц</a>-->
+                <!--</div>-->
+                <!--<p>Максимальная цена: {{maxPrice}}</p>-->
+                <!--<p>Минимальная цена: {{minPrice}}</p>-->
+                <!--<p>Средняя цена: {{avgPrice}}</p>-->
+                <!--<p>Средний объем сделок: {{avgDeals}}</p>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
             </div>
         </uib-tab>
     </uib-tabset>

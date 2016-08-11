@@ -184,3 +184,7 @@ body {
     width: 330px;
     margin-left: 25%;
 }
+
+.order-result-table {
+    width: 30%;
+}
