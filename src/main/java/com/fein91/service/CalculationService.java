@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import static com.fein91.Constants.ROUNDING_MODE;
+
 @Service
 public class CalculationService {
 
@@ -29,12 +31,12 @@ public class CalculationService {
      */
     public BigDecimal calculateDiscountPercent(BigDecimal apr, int daysToPayment) {
         return apr.multiply(BigDecimal.valueOf(daysToPayment))
-                .divide(BigDecimal.valueOf(365), 10, BigDecimal.ROUND_HALF_UP)
-                .divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP);
+                .divide(BigDecimal.valueOf(365), 10, ROUNDING_MODE)
+                .divide(BigDecimal.valueOf(100), 10, ROUNDING_MODE);
     }
 
     public BigDecimal calculateMaxPossibleInvoicePrepaidValue(BigDecimal invoiceValue, BigDecimal discountPercent) {
-        return invoiceValue.divide(BigDecimal.ONE.add(discountPercent), BigDecimal.ROUND_HALF_UP);
+        return invoiceValue.divide(BigDecimal.ONE.add(discountPercent), ROUNDING_MODE);
     }
 
     public int getDaysToPayment(Date paymentDate) {

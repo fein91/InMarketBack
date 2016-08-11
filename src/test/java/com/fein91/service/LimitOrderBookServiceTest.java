@@ -281,6 +281,42 @@ public class LimitOrderBookServiceTest {
     }
 
     @Rule
+    public ExpectedException marketOrderException = ExpectedException.none();
+
+    @Test
+    @Transactional
+    @Rollback
+    public void marketOrderTest() throws Exception {
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
+
+        Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(550), ZERO, testUtils.getCurrentDayPlusDays(15)));
+        Invoice invoiceS3B = invoiceServiceImpl.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(200), ZERO, testUtils.getCurrentDayPlusDays(55)));
+
+        OrderRequest askLimitOrderRequest = new OrderRequestBuilder(buyer)
+                .quantity(BigDecimal.valueOf(700))
+                .price(BigDecimal.valueOf(16))
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.LIMIT)
+                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS3B.getId(), true))
+                .build();
+        orderRequestServiceImpl.process(askLimitOrderRequest);
+
+        marketOrderException.expect(OrderRequestProcessingException.class);
+        marketOrderException.expectMessage("asas");
+
+        OrderRequest bidMarketOrderRequest = new OrderRequestBuilder(supplier1)
+                .quantity(BigDecimal.valueOf(545))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.MARKET)
+                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS3B.getId(), true))
+                .build();
+        orderRequestServiceImpl.process(bidMarketOrderRequest);
+
+    }
+
+    @Rule
     public ExpectedException limitOrderCanBeExecutedAsMarket = ExpectedException.none();
     /*
        *     b1  b2
@@ -596,7 +632,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.process(bidOrderRequest1);
 
         marketOrderProcessingException.expect(OrderRequestProcessingException.class);
-        marketOrderProcessingException.expectMessage("Requested order quantity: 200 cannot be satisfied. Available order quantity: 150.00. Please process unsatisfied quantity: 50.00 as limit order");
+        marketOrderProcessingException.expectMessage("Requested order quantity: 200.00 cannot be satisfied. Available order quantity: 150.00. Please process unsatisfied quantity: 50.00 as limit order");
 
         OrderRequest askOrderRequest = new OrderRequestBuilder(supplier)
                 .quantity(BigDecimal.valueOf(200))

@@ -222,6 +222,8 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 BigDecimal discountPercent = calculationService.calculateDiscountPercent(orderRequest.getPrice(), invoice.getPaymentDate());
                 BigDecimal maxPrepaidInvoiceValue = calculationService.calculateMaxPossibleInvoicePrepaidValue(unpaidInvoiceValue, discountPercent);
                 availableOrderAmount = availableOrderAmount.add(maxPrepaidInvoiceValue);
+            } else if (OrderType.MARKET == orderRequest.getOrderType()) {
+                availableOrderAmount = availableOrderAmount.add(unpaidInvoiceValue);
             }
         }
 
@@ -255,8 +257,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
             }
         }
 
-        //works for limit orders only
-        if (OrderType.LIMIT == orderRequest.getOrderType() && orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
+        if (orderRequest.getQuantity().compareTo(availableOrderAmount) > 0) {
             throw new OrderRequestProcessingException(
                     String.format(REQUESTED_ORDER_QUANTITY_IS_GREATER_THAN_AVAILABLE_QUANTITY.getMessage(),
                         orderRequest.getQuantity().setScale(UI_SCALE, ROUNDING_MODE),
