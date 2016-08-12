@@ -41,8 +41,8 @@ public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestServic
         historyOrderRequest.setPrice(orderRequest.getPrice());
         historyOrderRequest.setQuantity(orderRequest.getQuantity());
         historyOrderRequest.setDate(orderRequest.getDate());
-        historyOrderRequest.setOrderSide(orderRequest.getOrderSide());
-        historyOrderRequest.setHistoryOrderType(HistoryOrderType.valueOf(orderRequest.getOrderType().name()));
+        historyOrderRequest.setSide(orderRequest.getSide());
+        historyOrderRequest.setType(HistoryOrderType.valueOf(orderRequest.getType().name()));
         historyOrderRequest.setOriginOrderRequestId(orderRequest.getId());
         return historyOrderRequest;
     }

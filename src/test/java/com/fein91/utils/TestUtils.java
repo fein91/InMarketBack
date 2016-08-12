@@ -31,7 +31,7 @@ public class TestUtils {
 
     public HistoryOrderRequest findHistoryOrderRequestByOrderSide(List<HistoryOrderRequest> transHistory, HistoryOrderType orderType) {
         return transHistory.stream()
-                .filter(historyOrderRequest -> orderType.equals(historyOrderRequest.getHistoryOrderType()))
+                .filter(historyOrderRequest -> orderType.equals(historyOrderRequest.getType()))
                 .findFirst()
                 .get();
     }

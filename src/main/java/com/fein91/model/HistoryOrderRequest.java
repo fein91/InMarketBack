@@ -29,9 +29,9 @@ public class HistoryOrderRequest {
 
     Date date;
 
-    int orderSide;
+    int side;
 
-    String historyOrderType;
+    String type;
 
     @JsonIgnore
     Long originOrderRequestId;
@@ -88,20 +88,20 @@ public class HistoryOrderRequest {
         this.date = date;
     }
 
-    public OrderSide getOrderSide() {
-        return OrderSide.valueOf(orderSide);
+    public OrderSide getSide() {
+        return OrderSide.valueOf(side);
     }
 
-    public void setOrderSide(OrderSide orderSide) {
-        this.orderSide = orderSide.getId();
+    public void setSide(OrderSide side) {
+        this.side = side.getId();
     }
 
-    public HistoryOrderType getHistoryOrderType() {
-        return HistoryOrderType.valueOf(historyOrderType);
+    public HistoryOrderType getType() {
+        return HistoryOrderType.valueOf(type);
     }
 
-    public void setHistoryOrderType(HistoryOrderType historyOrderType) {
-        this.historyOrderType = historyOrderType.name();
+    public void setType(HistoryOrderType type) {
+        this.type = type.name();
     }
 
     public Long getOriginOrderRequestId() {
@@ -129,8 +129,8 @@ public class HistoryOrderRequest {
                 ", quantity=" + quantity +
                 ", avgDiscountPerc=" + avgDiscountPerc +
                 ", date=" + date +
-                ", orderSide=" + orderSide +
-                ", historyOrderType='" + historyOrderType + '\'' +
+                ", side=" + side +
+                ", type='" + type + '\'' +
                 ", originOrderRequestId=" + originOrderRequestId +
                 ", historyTrades=" + historyTrades +
                 '}';
@@ -143,13 +143,13 @@ public class HistoryOrderRequest {
 
         HistoryOrderRequest that = (HistoryOrderRequest) o;
 
-        if (orderSide != that.orderSide) return false;
+        if (side != that.side) return false;
         if (counterparty != null ? !counterparty.equals(that.counterparty) : that.counterparty != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (historyTrades != null ? !historyTrades.equals(that.historyTrades) : that.historyTrades != null)
             return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (historyOrderType != null ? !historyOrderType.equals(that.historyOrderType) : that.historyOrderType != null) return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (originOrderRequestId != null ? !originOrderRequestId.equals(that.originOrderRequestId) : that.originOrderRequestId != null)
             return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;
@@ -168,8 +168,8 @@ public class HistoryOrderRequest {
         result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
         result = 31 * result + (avgDiscountPerc != null ? avgDiscountPerc.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + orderSide;
-        result = 31 * result + (historyOrderType != null ? historyOrderType.hashCode() : 0);
+        result = 31 * result + side;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (originOrderRequestId != null ? originOrderRequestId.hashCode() : 0);
         result = 31 * result + (historyTrades != null ? historyTrades.hashCode() : 0);
         return result;

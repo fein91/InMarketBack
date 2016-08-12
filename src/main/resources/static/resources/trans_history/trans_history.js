@@ -54,9 +54,9 @@ angular.module('inmarket.trans_history', ['ngRoute'])
 
                         historyMarketOrder.periodReturn = historyMarketOrder.historyTrades.sum('periodReturnMultQty') / historyMarketOrder.historyTrades.sum('quantity');
 
-                        if ('ASK' === historyMarketOrder.orderSide) {
+                        if ('ASK' === historyMarketOrder.side) {
                             asks.push(historyMarketOrder);
-                        } else if ('BID' === historyMarketOrder.orderSide) {
+                        } else if ('BID' === historyMarketOrder.side) {
                             bids.push(historyMarketOrder);
                         }
                     });

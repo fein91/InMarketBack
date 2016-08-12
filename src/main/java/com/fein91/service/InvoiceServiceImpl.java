@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static com.fein91.Constants.ROUNDING_MODE;
+
 @Service("InvoiceServiceImpl")
 public class InvoiceServiceImpl implements InvoiceService {
 
@@ -30,7 +32,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice updateInvoice(Invoice invoice, BigDecimal prepaidValue) {
-        BigDecimal unpaidInvoiceValue = invoice.getValue().subtract(prepaidValue).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal unpaidInvoiceValue = invoice.getValue().subtract(prepaidValue).setScale(2, ROUNDING_MODE);
         if (unpaidInvoiceValue.signum() < 0) {
             throw new IllegalStateException("Invoice prepaid value can't be greater than invoice value");
         } else if (unpaidInvoiceValue.signum() == 0) {

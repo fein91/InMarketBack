@@ -28,8 +28,8 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                 $scope.calculationCalled = true;
                 var orderRequest = {
                     "quantity": $scope.askQty,
-                    "orderSide": 0,
-                    "orderType": 1,
+                    "side": 0,
+                    "type": 1,
                     "date": new Date(),
                     "counterparty": {
                         "id": session.counterpartyId
@@ -69,8 +69,8 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                     orderRequest: function () {
                         return {
                             "quantity": $scope.askQty,
-                            "orderSide": 0,
-                            "orderType": 1,
+                            "side": 0,
+                            "type": 1,
                             "date": new Date(),
                             "counterparty": {
                                 "id": session.counterpartyId
@@ -117,8 +117,8 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                 var orderRequest = {
                     "price": $scope.askApr,
                     "quantity": $scope.askQty,
-                    "orderSide": 0,
-                    "orderType": 0,
+                    "side": 0,
+                    "type": 0,
                     "date": new Date(),
                     "counterparty": {
                         "id": session.counterpartyId
@@ -158,8 +158,8 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
                         return {
                             "price": $scope.askApr,
                             "quantity": $scope.askQty,
-                            "orderSide": 0,
-                            "orderType": 0,
+                            "side": 0,
+                            "type": 0,
                             "date": new Date(),
                             "counterparty": {
                                 "id": session.counterpartyId

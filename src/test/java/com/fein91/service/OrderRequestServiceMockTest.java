@@ -37,10 +37,8 @@ public class OrderRequestServiceMockTest {
     private LimitOrderBookService lobService;
     private OrderBookBuilder orderBookBuilder;
     private OrderRequestService orderRequestService;
-    private CounterPartyService counterPartyService;
-    private HistoryOrderRequestService historyOrderRequestService;
-    private HistoryTradeService historyTradeService;
-    private CalculationService calculationService;
+    private TransactionHistoryService transactionHistoryService;
+    private OrderRequestValidator orderRequestValidator;
 
     @Before
     public void setUp() {
@@ -48,15 +46,13 @@ public class OrderRequestServiceMockTest {
         invoiceRepository = createMock(InvoiceRepository.class);
         lobService = createMock(LimitOrderBookService.class);
         orderBookBuilder = createMock(OrderBookBuilder.class);
-        counterPartyService = createMock(CounterPartyService.class);
-        historyOrderRequestService = createMock(HistoryOrderRequestService.class);
-        historyTradeService = createMock(HistoryTradeService.class);
-        calculationService = createMock(CalculationService.class);
+        transactionHistoryService = createMock(TransactionHistoryService.class);
+        orderRequestValidator = createMock(OrderRequestValidator.class);
         orderRequestService = new OrderRequestServiceImpl(
                 orderRequestRepository,
                 invoiceRepository,
                 lobService,
-                orderBookBuilder, counterPartyService, historyOrderRequestService, historyTradeService, calculationService);
+                orderBookBuilder, transactionHistoryService, orderRequestValidator);
     }
 
     @Test
@@ -136,7 +132,7 @@ public class OrderRequestServiceMockTest {
 //        invoice.setId(11L);
 //
 //        expect(invoiceRepository.findInvoicesByTargetId(1L)).andReturn(ImmutableList.of(invoice));
-//        expect(orderRequestRepository.findByCounterpartyAndOrderSide(source, BID.getId())).andReturn(new ArrayList<>());
+//        expect(orderRequestRepository.findByCounterpartyAndSide(source, BID.getId())).andReturn(new ArrayList<>());
 //
 //        replay(invoiceRepository, orderRequestRepository);
 //        orderRequestService.findLimitOrderRequestsToTrade(1L, ASK);
@@ -147,7 +143,7 @@ public class OrderRequestServiceMockTest {
 //        reset(invoiceRepository, orderRequestRepository);
 //
 //        expect(invoiceRepository.findInvoicesBySourceId(1L)).andReturn(ImmutableList.of(invoice));
-//        expect(orderRequestRepository.findByCounterpartyAndOrderSide(target, ASK.getId())).andReturn(new ArrayList<>());
+//        expect(orderRequestRepository.findByCounterpartyAndSide(target, ASK.getId())).andReturn(new ArrayList<>());
 //
 //        replay(invoiceRepository, orderRequestRepository);
 //        orderRequestService.findLimitOrderRequestsToTrade(1L, BID);

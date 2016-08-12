@@ -58,6 +58,7 @@ public class UpdateOrderRequestTest {
                 .price(bidPrice)
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
+                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true))
                 .build();
         orderRequestService.process(bidOrderRequest1);
 
@@ -96,13 +97,14 @@ public class UpdateOrderRequestTest {
                 .price(BigDecimal.valueOf(27d))
                 .orderSide(OrderSide.BID)
                 .orderType(OrderType.LIMIT)
+                .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true))
                 .build();
         orderRequestService.process(bidOrderRequest1);
 
         bidOrderRequest1.setQuantity(BigDecimal.valueOf(120));
 
         thrown.expect(OrderRequestProcessingException.class);
-        thrown.expectMessage("Requested order quantity: 120 is greater than available quantity = invoices - discounts: 100.00");
+        thrown.expectMessage("Requested order quantity: 120.00 is greater than available quantity = invoices - discounts: 100.00");
 
         orderRequestService.update(bidOrderRequest1);
     }

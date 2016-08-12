@@ -62,8 +62,8 @@ public class OrderRequestBuilder {
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.setCounterparty(counterparty);
         orderRequest.setDate(date);
-        orderRequest.setOrderSide(orderSide);
-        orderRequest.setOrderType(orderType);
+        orderRequest.setSide(orderSide);
+        orderRequest.setType(orderType);
         orderRequest.setPrice(price);
         orderRequest.setQuantity(quantity);
         orderRequest.setInvoicesChecked(invoicesChecked);
