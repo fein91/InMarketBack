@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 public interface Constants {
 
     int UI_SCALE = 2;
-    RoundingMode ROUNDING_MODE = RoundingMode.HALF_DOWN;
+    int CALCULATION_SCALE = 10;
+    RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
 
 }

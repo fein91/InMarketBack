@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface OrderRequestRepository extends CrudRepository<OrderRequest, Long> {
 
-    List<OrderRequest> findByCounterpartyAndOrderSide(Counterparty counterparty, int orderSide);
+    List<OrderRequest> findByCounterpartyAndSide(Counterparty counterparty, int orderSide);
 
     @Query("SELECT r FROM OrderRequest r where r.counterparty.id = :counterPartyId")
     List<OrderRequest> findByCounterpartyId(@Param("counterPartyId") Long counterPartyId);

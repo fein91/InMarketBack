@@ -26,15 +26,15 @@ public class LimitOrderBookService {
         BigDecimal price = orderRequest.getPrice();
 
         checkArgument(quantity.signum() > 0, "Quantity can't be 0");
-        if (OrderType.LIMIT == orderRequest.getOrderType()) {
+        if (OrderType.LIMIT == orderRequest.getType()) {
             checkArgument(price.signum() > 0, "Price can't be 0");
         }
 
         long time = System.nanoTime();
         Order order = new OrderBuilder(orderRequest.getId())
                 .timestamp(time)
-                .orderSide(orderRequest.getOrderSide())
-                .orderType(orderRequest.getOrderType())
+                .orderSide(orderRequest.getSide())
+                .orderType(orderRequest.getType())
                 .quantity(quantity)
                 .price(price)
                 .takerId(orderRequest.getCounterparty().getId())

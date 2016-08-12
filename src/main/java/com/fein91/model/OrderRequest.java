@@ -4,14 +4,10 @@ import com.fein91.core.model.OrderSide;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by olta1014 on 23.05.2016.
- */
 @Entity
 public class OrderRequest {
 
@@ -29,9 +25,9 @@ public class OrderRequest {
 
     Date date;
 
-    int orderSide;
+    int side;
 
-    int orderType;
+    int type;
 
     @Transient
     Map<Long, Boolean> invoicesChecked = new HashMap<>();
@@ -76,20 +72,20 @@ public class OrderRequest {
         this.date = date;
     }
 
-    public OrderSide getOrderSide() {
-        return OrderSide.valueOf(orderSide);
+    public OrderSide getSide() {
+        return OrderSide.valueOf(side);
     }
 
-    public void setOrderSide(OrderSide orderSide) {
-        this.orderSide = orderSide.getId();
+    public void setSide(OrderSide side) {
+        this.side = side.getId();
     }
 
-    public OrderType getOrderType() {
-        return OrderType.valueOf(orderType);
+    public OrderType getType() {
+        return OrderType.valueOf(type);
     }
 
-    public void setOrderType(OrderType orderType) {
-        this.orderType = orderType.getId();
+    public void setType(OrderType type) {
+        this.type = type.getId();
     }
 
     public Map<Long, Boolean> getInvoicesChecked() {
@@ -108,8 +104,8 @@ public class OrderRequest {
                 ", price=" + price +
                 ", quantity=" + quantity +
                 ", date=" + date +
-                ", orderSide=" + getOrderSide() +
-                ", orderType=" + getOrderType() +
+                ", side=" + getSide() +
+                ", type=" + getType() +
                 '}';
     }
 
@@ -120,8 +116,8 @@ public class OrderRequest {
 
         OrderRequest that = (OrderRequest) o;
 
-        if (orderSide != that.orderSide) return false;
-        if (orderType != that.orderType) return false;
+        if (side != that.side) return false;
+        if (type != that.type) return false;
         if (counterparty != null ? !counterparty.equals(that.counterparty) : that.counterparty != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
@@ -138,8 +134,8 @@ public class OrderRequest {
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + orderSide;
-        result = 31 * result + orderType;
+        result = 31 * result + side;
+        result = 31 * result + type;
         return result;
     }
 }

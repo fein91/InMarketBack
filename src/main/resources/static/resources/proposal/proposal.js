@@ -40,7 +40,7 @@ angular.module('inmarket.proposal', ['ngRoute'])
                             console.log('order: ' + JSON.stringify(orderRequests));
 
                             angular.forEach(orderRequests, function (orderRequest) {
-                                if (orderRequest.orderSide == 'ASK') {
+                                if (orderRequest.side == 'ASK') {
                                     orders_sum += Math.min(orderRequest.quantity, invoiceValue);
                                     console.log('asks sum increased: ' + orders_sum);
                                 }
@@ -73,7 +73,7 @@ angular.module('inmarket.proposal', ['ngRoute'])
                             console.log('order: ' + JSON.stringify(orderRequests));
 
                             angular.forEach(orderRequests, function (orderRequest) {
-                                if (orderRequest.orderSide == 'BID') {
+                                if (orderRequest.side == 'BID') {
                                     orders_sum += Math.min(orderRequest.quantity, invoiceValue);
                                     console.log('bids sum increased: ' + orders_sum);
                                 }

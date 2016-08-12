@@ -16,7 +16,7 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
     })
 
-    .controller('LimitOrdersCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'NgTableParams', 'session', function ($scope, $uibModal, orderRequestsService, NgTableParams, session) {
+    .controller('LimitOrdersCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'NgTableParams', 'session', 'invoices', function ($scope, $uibModal, orderRequestsService, NgTableParams, session, invoices) {
         console.log('LimitOrdersCtrl inited');
 
         var self = this;
@@ -28,9 +28,9 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
                     var asks = [];
 
                     angular.forEach(response.data, function (limitOrder) {
-                        if ('ASK' === limitOrder.orderSide) {
+                        if ('ASK' === limitOrder.side) {
                             asks.push(limitOrder);
-                        } else if ('BID' === limitOrder.orderSide) {
+                        } else if ('BID' === limitOrder.side) {
                             bids.push(limitOrder);
                         }
                     });
@@ -51,6 +51,10 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
 
         $scope.save = function(record, recordForm) {
+            record.invoicesChecked = record.side == 'ASK'
+                ? invoices.supplierInvoicesCheckboxes.invoices
+                : invoices.buyerInvoicesCheckboxes.invoices;
+
             orderRequestsService.calculate(record)
                 .then(function successCallback(response) {
                     var modalInstance = $uibModal.open({

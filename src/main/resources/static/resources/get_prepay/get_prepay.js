@@ -28,8 +28,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                 $scope.calculationCalled = true;
                 var orderRequest = {
                     "quantity": $scope.bidQty,
-                    "orderSide": 1,
-                    "orderType": 1,
+                    "side": 1,
+                    "type": 1,
                     "date": new Date(),
                     "counterparty": {
                         "id": session.counterpartyId
@@ -69,8 +69,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     orderRequest: function () {
                         return {
                             "quantity": $scope.bidQty,
-                            "orderSide": 1,
-                            "orderType": 1,
+                            "side": 1,
+                            "type": 1,
                             "date": new Date(),
                             "counterparty": {
                                 "id": session.counterpartyId
@@ -163,8 +163,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                 var orderRequest = {
                     "price": $scope.bidApr,
                     "quantity": $scope.bidQty,
-                    "orderSide": 1,
-                    "orderType": 0,
+                    "side": 1,
+                    "type": 0,
                     "date": new Date(),
                     "counterparty": {
                         "id": session.counterpartyId
@@ -204,8 +204,8 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                         return {
                             "price": $scope.bidApr,
                             "quantity": $scope.bidQty,
-                            "orderSide": 1,
-                            "orderType": 0,
+                            "side": 1,
+                            "type": 0,
                             "date": new Date(),
                             "counterparty": {
                                 "id": session.counterpartyId

@@ -1,6 +1,5 @@
 package com.fein91.rest;
 
-import com.fein91.core.model.Order;
 import com.fein91.model.ErrorResponse;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
@@ -50,7 +49,7 @@ public class OrderRequestController {
     @RequestMapping(method = RequestMethod.PUT, value = "/update")
     public ResponseEntity<OrderRequest> update(@RequestBody OrderRequest orderRequest) throws OrderRequestException {
         checkOrderRequest(orderRequest);
-        if (OrderType.LIMIT != orderRequest.getOrderType()) {
+        if (OrderType.LIMIT != orderRequest.getType()) {
             throw new OrderRequestException(ONLY_LIMIT_ORDER_REQUEST_CAN_BE_UPDATED.getMessage(), ONLY_LIMIT_ORDER_REQUEST_CAN_BE_UPDATED.getLocalizedMessage());
         }
 
@@ -74,16 +73,16 @@ public class OrderRequestController {
             throw new OrderRequestException(String.format(ORDER_REQUEST_QUANTITY_INCORRECT_VALUE.getMessage(), orderRequest.getQuantity()),
                     String.format(ORDER_REQUEST_QUANTITY_INCORRECT_VALUE.getLocalizedMessage(), orderRequest.getQuantity()));
         }
-        if (orderRequest.getOrderType() == null) {
+        if (orderRequest.getType() == null) {
             throw new OrderRequestException(ORDER_REQUEST_TYPE_ISNT_FILLED.getMessage(), ORDER_REQUEST_TYPE_ISNT_FILLED.getLocalizedMessage());
         }
-        if (orderRequest.getOrderSide() == null) {
+        if (orderRequest.getSide() == null) {
             throw new OrderRequestException(ORDER_REQUEST_SIDE_ISNT_FILLED.getMessage(), ORDER_REQUEST_SIDE_ISNT_FILLED.getLocalizedMessage());
         }
-        if (OrderType.LIMIT == orderRequest.getOrderType() && orderRequest.getPrice() == null) {
+        if (OrderType.LIMIT == orderRequest.getType() && orderRequest.getPrice() == null) {
             throw new OrderRequestException(LIMIT_ORDER_REQUEST_PRICE_ISNT_FILLED.getMessage(), LIMIT_ORDER_REQUEST_PRICE_ISNT_FILLED.getLocalizedMessage());
         }
-        if (OrderType.LIMIT == orderRequest.getOrderType()
+        if (OrderType.LIMIT == orderRequest.getType()
                 && (orderRequest.getPrice().signum() <= 0 || orderRequest.getPrice().compareTo(BigDecimal.valueOf(100)) >= 0)) {
             throw new OrderRequestException(String.format(LIMIT_ORDER_REQUEST_PRICE_INCORRECT_VALUE.getMessage(), orderRequest.getPrice()),
                     String.format(LIMIT_ORDER_REQUEST_PRICE_INCORRECT_VALUE.getLocalizedMessage(), orderRequest.getPrice()));

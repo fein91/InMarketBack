@@ -291,7 +291,7 @@ public class LimitOrderBookServiceTest {
         Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
         Counterparty supplier3 = counterPartyService.addCounterParty("supplier3");
 
-        Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(550), ZERO, testUtils.getCurrentDayPlusDays(15)));
+        Invoice invoiceS1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(550), ZERO, testUtils.getCurrentDayPlusDays(60)));
         Invoice invoiceS3B = invoiceServiceImpl.addInvoice(new Invoice(supplier3, buyer, BigDecimal.valueOf(200), ZERO, testUtils.getCurrentDayPlusDays(55)));
 
         OrderRequest askLimitOrderRequest = new OrderRequestBuilder(buyer)
@@ -304,7 +304,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.process(askLimitOrderRequest);
 
         marketOrderException.expect(OrderRequestProcessingException.class);
-        marketOrderException.expectMessage("asas");
+        marketOrderException.expectMessage("Requested order quantity: 545.00 is greater than available quantity = invoices - discounts: 535.90");
 
         OrderRequest bidMarketOrderRequest = new OrderRequestBuilder(supplier1)
                 .quantity(BigDecimal.valueOf(545))
@@ -369,58 +369,6 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.calculate(bidOrderRequest);
     }
 
-    /*
-   *   source  target  value paymentDate
-   *     s1      b1     150    40
-   *     s1      b2     100    40
-   *       ASK
-   * b1 28 100
-   * b2 28 100
-   * s1 bid limit order qty == 200 price == 29
-   * TODO holy random here
-   * */
-    @Test
-    @Transactional
-    @Rollback
-    public void testLimitOrderRequestWithTwoOrdersPerPrice() throws Exception {
-        Counterparty buyer1 = counterPartyService.addCounterParty("buyer1");
-        Counterparty buyer2 = counterPartyService.addCounterParty("buyer2");
-        Counterparty supplier = counterPartyService.addCounterParty("supplier");
-
-        Invoice invoiceSB1 = invoiceServiceImpl.addInvoice(new Invoice(supplier, buyer1, BigDecimal.valueOf(150), ZERO, testUtils.getCurrentDayPlusDays(40)));
-        Invoice invoiceSB2 = invoiceServiceImpl.addInvoice(new Invoice(supplier, buyer2, BigDecimal.valueOf(100), ZERO, testUtils.getCurrentDayPlusDays(40)));
-
-        OrderRequest askOrderRequest1 = new OrderRequestBuilder(buyer1)
-                .quantity(BigDecimal.valueOf(100))
-                .price(BigDecimal.valueOf(28d))
-                .orderSide(OrderSide.ASK)
-                .orderType(OrderType.LIMIT)
-                .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
-                .build();
-        orderRequestServiceImpl.process(askOrderRequest1);
-
-        OrderRequest askOrderRequest2 = new OrderRequestBuilder(buyer2)
-                .quantity(BigDecimal.valueOf(90))
-                .price(BigDecimal.valueOf(28d))
-                .orderSide(OrderSide.ASK)
-                .orderType(OrderType.LIMIT)
-                .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
-                .build();
-        orderRequestServiceImpl.process(askOrderRequest2);
-
-        double supplier1BidPrice = 29d;
-        OrderRequest bidOrderRequest = new OrderRequestBuilder(supplier)
-                .quantity(BigDecimal.valueOf(150))
-                .price(BigDecimal.valueOf(supplier1BidPrice))
-                .orderSide(OrderSide.BID)
-                .orderType(OrderType.LIMIT)
-                .invoicesChecked(ImmutableMap.of(invoiceSB1.getId(), true, invoiceSB2.getId(), true))
-                .build();
-        OrderResult result = orderRequestServiceImpl.process(bidOrderRequest);
-        Assert.assertEquals("Actual satisfied demand: " + result.getSatisfiedDemand(),
-                0, BigDecimal.valueOf(150).compareTo(result.getSatisfiedDemand()));
-    }
-
     @Rule
     public ExpectedException limitOrderProcessingException = ExpectedException.none();
     /*
@@ -452,7 +400,7 @@ public class LimitOrderBookServiceTest {
         orderRequestServiceImpl.process(bidOrderRequest1);
 
         limitOrderProcessingException.expect(OrderRequestProcessingException.class);
-        limitOrderProcessingException.expectMessage("Requested order quantity: 250 is greater than available quantity = invoices - discounts: 198.3561643900");
+        limitOrderProcessingException.expectMessage("Requested order quantity: 250.00 is greater than available quantity = invoices - discounts: 198.37");
 
         OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
                 .quantity(BigDecimal.valueOf(250))
