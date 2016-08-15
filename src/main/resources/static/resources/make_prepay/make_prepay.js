@@ -137,7 +137,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
 
                         $scope.calculatedWithError = false;
 
-                        self.openConfirmation();
+                        openConfirmation();
 
                     }, function errorCallback(response) {
                         console.log('got ' + response.status + ' error');
@@ -147,7 +147,7 @@ angular.module('inmarket.make_prepay', ['ngRoute'])
             }
         };
 
-        self.openConfirmation = function () {
+        var openConfirmation = function () {
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'partials/orderRequestConfirmPopup.html',
