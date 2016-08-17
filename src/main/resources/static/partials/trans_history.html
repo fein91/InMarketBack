@@ -21,6 +21,7 @@
                         <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
                         <td></td>
                         <td></td>
+                        <td></td>
                     </tr>
                     <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
                         <td data-title="'Время сделки'"></td>
@@ -37,8 +38,10 @@
                             {{trade.quantity | number : 2}}</td>
                         <td data-title="'Скидка'" sortable="'discountValue'">
                             {{trade.discountValue | number : 2}}</td>
-                        <td data-title="'Остаток  к оплате'" sortable="'toPay'">
+                        <td data-title="'Остаток к оплате'" sortable="'toPay'">
                             {{trade.toPay | number : 2}}</td>
+                        <td data-title="'Период предоплаты, дней'">
+                            {{trade.daysToPayment}}</td>
                         <td data-title="'Покупатель'" sortable="'target.name'">
                             {{trade.target.name}}</td>
                         <td data-title="'# инвойса'" sortable="'invoice.id'">
@@ -68,6 +71,7 @@
                         <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
                         <td></td>
                         <td></td>
+                        <td></td>
                     </tr>
                     <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
                         <td data-title="'Время сделки'"></td>
@@ -85,8 +89,9 @@
                             {{trade.quantity | number : 2}}</td>
                         <td data-title="'Скидка'" sortable="'discountValue'">
                             {{trade.discountValue | number : 2}}</td>
-                        <td data-title="'Остаток  к оплате'" sortable="'toPay'">
+                        <td data-title="'Остаток к оплате'" sortable="'toPay'">
                             {{trade.toPay | number : 2}}</td>
+                        <td data-title="'Срок, дней'"></td>
                         <td data-title="'Поставщик'" sortable="'target.name'">
                             {{trade.target.name}}</td>
                         <td data-title="'# инвойса'" sortable="'invoice.id'">

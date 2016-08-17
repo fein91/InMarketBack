@@ -50,6 +50,7 @@ angular.module('inmarket.trans_history', ['ngRoute'])
                             trade.toPay = trade.unpaidInvoiceValue - trade.quantity - trade.discountValue;
                             trade.avgDiscountPerc = trade.discountValue / trade.invoice.value * 100;
                             trade.periodReturnMultQty = trade.periodReturn * trade.quantity;
+                            trade.daysToPayment = invoicesService.dateDiffInDays(new Date(), new Date(trade.invoice.paymentDate));
                         });
 
                         historyMarketOrder.periodReturn = historyMarketOrder.historyTrades.sum('periodReturnMultQty') / historyMarketOrder.historyTrades.sum('quantity');
