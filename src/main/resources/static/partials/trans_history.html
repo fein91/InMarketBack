@@ -19,7 +19,7 @@
                         <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
-                        <td></td>
+                        <td><strong>{{calculateAvgDaysToPayment(record.historyTrades)}}</strong></td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -41,7 +41,7 @@
                         <td data-title="'Остаток к оплате'" sortable="'toPay'">
                             {{trade.toPay | number : 2}}</td>
                         <td data-title="'Период предоплаты, дней'">
-                            {{trade.daysToPayment}}</td>
+                            {{trade.invoice.daysToPayment}}</td>
                         <td data-title="'Покупатель'" sortable="'target.name'">
                             {{trade.target.name}}</td>
                         <td data-title="'# инвойса'" sortable="'invoice.id'">

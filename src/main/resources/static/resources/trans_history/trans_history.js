@@ -39,6 +39,10 @@ angular.module('inmarket.trans_history', ['ngRoute'])
                 });
         };
 
+        $scope.calculateAvgDaysToPayment = function(trades) {
+            return invoicesService.calculateAvgDaysToPayment(_.map(trades, function(trade) { return trade.invoice; }));
+        };
+
         self.init = function () {
             transHistoryService.getTransactionHistory(session.counterpartyId)
                 .then(function successCallback(response) {
@@ -50,7 +54,7 @@ angular.module('inmarket.trans_history', ['ngRoute'])
                             trade.toPay = trade.unpaidInvoiceValue - trade.quantity - trade.discountValue;
                             trade.avgDiscountPerc = trade.discountValue / trade.invoice.value * 100;
                             trade.periodReturnMultQty = trade.periodReturn * trade.quantity;
-                            trade.daysToPayment = invoicesService.dateDiffInDays(new Date(), new Date(trade.invoice.paymentDate));
+                            trade.invoice.daysToPayment = invoicesService.dateDiffInDays(new Date(), new Date(trade.invoice.paymentDate));
                         });
 
                         historyMarketOrder.periodReturn = historyMarketOrder.historyTrades.sum('periodReturnMultQty') / historyMarketOrder.historyTrades.sum('quantity');
