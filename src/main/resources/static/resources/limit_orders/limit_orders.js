@@ -16,6 +16,16 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
         };
     })
 
+    .directive('limitOrdersTable', function() {
+        return {
+            restrict: 'E',
+            scope: {
+                tableParams: '@'
+            },
+            templateUrl: 'partials/limit_orders_table.html'
+        };
+    })
+
     .controller('LimitOrdersCtrl', ['$scope', '$uibModal', 'orderRequestsService', 'NgTableParams', 'session', 'invoices', function ($scope, $uibModal, orderRequestsService, NgTableParams, session, invoices) {
         console.log('LimitOrdersCtrl inited');
 
