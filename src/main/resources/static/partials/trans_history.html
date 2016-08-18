@@ -26,21 +26,21 @@
                     <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
                         <td data-title="'Время сделки'"></td>
                         <td data-title="'Тип сделки'"></td>
-                        <td data-title="'Годовая доходность'" sortable="'price'">
+                        <td data-title="'Годовая процентная ставка'" sortable="'price'">
                             {{trade.price | number : 2}}</td>
                         <td data-title="'Доходность за период'" sortable="'periodReturn'">
                             {{trade.periodReturn | number : 2}}</td>
-                        <td data-title="'% скидки'" sortable="'avgDiscountPerc'">
+                        <td data-title="'Процент скидки (%)'" sortable="'avgDiscountPerc'">
                             {{trade.avgDiscountPerc | number : 2}}</td>
-                        <td data-title="'Исходная сумма'" sortable="'unpaidInvoiceValue'">
+                        <td data-title="'Исходная сумма (грн.)'" sortable="'unpaidInvoiceValue'">
                             {{trade.unpaidInvoiceValue | number : 2}}</td>
-                        <td data-title="'Предоплата'" sortable="'quantity'">
+                        <td data-title="'Предоплата (грн.)'" sortable="'quantity'">
                             {{trade.quantity | number : 2}}</td>
-                        <td data-title="'Скидка'" sortable="'discountValue'">
+                        <td data-title="'Скидка (грн.)'" sortable="'discountValue'">
                             {{trade.discountValue | number : 2}}</td>
-                        <td data-title="'Остаток к оплате'" sortable="'toPay'">
+                        <td data-title="'Остаток к оплате (грн.)'" sortable="'toPay'">
                             {{trade.toPay | number : 2}}</td>
-                        <td data-title="'Период предоплаты, дней'">
+                        <td data-title="'Период предоплаты (дни)'">
                             {{trade.invoice.daysToPayment}}</td>
                         <td data-title="'Покупатель'" sortable="'target.name'">
                             {{trade.target.name}}</td>
@@ -77,21 +77,21 @@
                         <td data-title="'Время сделки'"></td>
                         <td data-title="'Тип сделки'">
                         </td>
-                        <td data-title="'Годовая доходность'" sortable="'price'">
+                        <td data-title="'Годовая процентная ставка'" sortable="'price'">
                             {{trade.price | number : 2}}</td>
                         <td data-title="'Доходность за период'" sortable="'periodReturn'">
                             {{trade.periodReturn | number : 2}}</td>
-                        <td data-title="'% скидки'" sortable="'avgDiscountPerc'">
+                        <td data-title="'Процент скидки (%)'" sortable="'avgDiscountPerc'">
                             {{trade.avgDiscountPerc | number : 2}}</td>
-                        <td data-title="'Исходная сумма'" sortable="'unpaidInvoiceValue'">
+                        <td data-title="'Исходная сумма (грн.)'" sortable="'unpaidInvoiceValue'">
                             {{trade.unpaidInvoiceValue | number : 2}}</td>
-                        <td data-title="'Предоплата'" sortable="'quantity'">
+                        <td data-title="'Предоплата (грн.)'" sortable="'quantity'">
                             {{trade.quantity | number : 2}}</td>
-                        <td data-title="'Скидка'" sortable="'discountValue'">
+                        <td data-title="'Скидка (грн.)'" sortable="'discountValue'">
                             {{trade.discountValue | number : 2}}</td>
-                        <td data-title="'Остаток к оплате'" sortable="'toPay'">
+                        <td data-title="'Остаток к оплате (грн.)'" sortable="'toPay'">
                             {{trade.toPay | number : 2}}</td>
-                        <td data-title="'Срок, дней'"></td>
+                        <td data-title="'Срок (дни)'"></td>
                         <td data-title="'Поставщик'" sortable="'target.name'">
                             {{trade.target.name}}</td>
                         <td data-title="'# инвойса'" sortable="'invoice.id'">

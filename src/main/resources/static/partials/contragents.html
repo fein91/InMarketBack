@@ -19,20 +19,19 @@
                             <strong>{{ group.data.sum('unpaidValue') | number : 2}}</strong></td>
                         <td>
                             <strong>{{ myBuyers.calculateAvgDaysToPayment(group.data) | number : 2}}</strong></td>
-                        <td/>
-                        <td/>
+                        <td/><td/>
                     </tr>
                     <tr ng-hide="group.$hideRows" ng-repeat="invoice in group.data" ng-repeat-end>
                         <td header="'ng-table/headers/checkbox.html'">
                             <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
                         <td data-title="'Покупатель'" sortable="'target.name'"></td>
-                        <td data-title="'Сумма инвойса'" sortable="'value'">
+                        <td data-title="'Сумма инвойса (грн.)'" sortable="'value'">
                             {{invoice.value | number : 2}}</td>
-                        <td data-title="'Предоплаты'" sortable="'prepaidValue'">
+                        <td data-title="'Предоплаты (грн.)'" sortable="'prepaidValue'">
                             {{invoice.prepaidValue | number : 2}}</td>
-                        <td data-title="'Остаток к оплате'" sortable="'unpaidValue'">
+                        <td data-title="'Остаток к оплате (грн.)'" sortable="'unpaidValue'">
                             {{invoice.unpaidValue | number : 2}}</td>
-                        <td data-title="'Срок, дней'" sortable="'daysToPayment'">
+                        <td data-title="'Срок (дни)'" sortable="'daysToPayment'">
                             {{invoice.daysToPayment}}</td>
                         <td data-title="'Дата платежа'" sortable="'paymentDate'">
                             {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
@@ -66,20 +65,19 @@
                             <strong>{{ group.data.sum('unpaidValue') | number : 2}}</strong></td>
                         <td>
                             <strong>{{ mySuppliers.calculateAvgDaysToPayment(group.data) | number : 2}}</strong></td>
-                        <td/>
-                        <td/>
+                        <td/><td/>
                     </tr>
                     <tr ng-hide="group.$hideRows" ng-repeat="invoice in group.data" ng-repeat-end>
                         <td header="'ng-table/headers/checkbox.html'">
                             <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
                         <td data-title="'Поставщик'" sortable="'source.name'"></td>
-                        <td data-title="'Сумма инвойса'" sortable="'value'">
+                        <td data-title="'Сумма инвойса (грн.)'" sortable="'value'">
                             {{invoice.value | number : 2}}</td>
-                        <td data-title="'Предоплаты'" sortable="'prepaidValue'">
+                        <td data-title="'Предоплаты (грн.)'" sortable="'prepaidValue'">
                             {{invoice.prepaidValue | number : 2}}</td>
-                        <td data-title="'Остаток к оплате'" sortable="'unpaidValue'">
+                        <td data-title="'Остаток к оплате (грн.)'" sortable="'unpaidValue'">
                             {{invoice.unpaidValue | number : 2}}</td>
-                        <td data-title="'Срок, дней'" sortable="'daysToPayment'">
+                        <td data-title="'Срок (дни)'" sortable="'daysToPayment'">
                             {{invoice.daysToPayment}}</td>
                         <td data-title="'Дата платежа'" sortable="'paymentDate'">
                             {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
