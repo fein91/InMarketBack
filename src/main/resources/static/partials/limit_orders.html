@@ -1,10 +1,10 @@
 <div class="row page-content" ng-controller="LimitOrdersCtrl">
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="Получение предоплаты">
-            <limit-orders-table tableParams="{{bidsTableParams}}"></limit-orders-table>
+            <limit-orders-table table-params="bidsTableParams"></limit-orders-table>
         </uib-tab>
         <uib-tab index="1" heading="Осуществление предоплаты">
-            <limit-orders-table tableParams="{{asksTableParams}}"></limit-orders-table>
+            <limit-orders-table table-params="asksTableParams"></limit-orders-table>
         </uib-tab>
     </uib-tabset>
 </div>
