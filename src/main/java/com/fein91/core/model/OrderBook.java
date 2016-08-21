@@ -24,7 +24,7 @@ public class OrderBook {
     private InvoiceService invoiceService;
     private CalculationService calculationService;
 
-    private List<Trade> tape = new ArrayList<Trade>();
+    private List<Trade> tape = new ArrayList<>();
     private OrderTree bids = new OrderTree();
     private OrderTree asks = new OrderTree();
     private double tickSize;
@@ -180,12 +180,12 @@ public class OrderBook {
     private BigDecimal processOrderList(ArrayList<Trade> trades, OrderList orders,
                                  BigDecimal qtyRemaining, Order quote) {
         OrderSide side = quote.getOrderSide();
-        long buyer, seller;
         long takerId = quote.getTakerId();
         Iterator<Order> ordersIter = orders.iterator();
         while ((orders.getLength() > 0) && (qtyRemaining.signum() > 0) && ordersIter.hasNext()) {
 
             Order headOrder = ordersIter.next();
+            boolean orderRemoved = false;
             LOGGER.info("Head order is processing: " + headOrder.getId());
 
             List<Invoice> invoices = side == OrderSide.ASK
@@ -199,7 +199,7 @@ public class OrderBook {
             for (Invoice currentInvoice : invoices) {
                 BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
 
-                if (currentInvoice.isProcessed()
+                if (currentInvoice.isProcessed() || orderRemoved
                         || (OrderSide.ASK == side && this.bids.length() <= 0)
                         || (OrderSide.BID == side && this.asks.length() <= 0)
                         || qtyRemaining.signum() <= 0
@@ -218,7 +218,6 @@ public class OrderBook {
                 BigDecimal localOrderQty = headOrder.getQuantity().min(maxPrepaidInvoiceValue);
                 BigDecimal discountValue;
                 BigDecimal qtyTraded;
-                BigDecimal daysToPaymentMultQtyTraded;
                 if (localOrderQty.compareTo(headOrder.getQuantity()) < 0) {
                     if (qtyRemaining.compareTo(localOrderQty) <= 0) {
                         //обновляем значением ASK - qtyRem
@@ -260,6 +259,7 @@ public class OrderBook {
                         } else {
                             removeAskOrder(headOrder);
                         }
+                        orderRemoved = true;
                         qtyRemaining = qtyRemaining.subtract(qtyTraded);
                     } else {
                         //обновляем значением ASK - qtyRem
@@ -279,8 +279,8 @@ public class OrderBook {
                     throw new IllegalStateException("Shouldn't be here");
                 }
 
-                daysToPaymentMultQtyTraded = qtyTraded.multiply(BigDecimal.valueOf(daysToPayment));
-
+                BigDecimal daysToPaymentMultQtyTraded = qtyTraded.multiply(BigDecimal.valueOf(daysToPayment));
+                long buyer, seller;
                 if (side == OrderSide.ASK) {
                     buyer = headOrder.getTakerId();
                     seller = takerId;
