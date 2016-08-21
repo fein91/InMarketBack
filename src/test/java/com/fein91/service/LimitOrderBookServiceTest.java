@@ -140,6 +140,95 @@ public class LimitOrderBookServiceTest {
     }
 
     /*
+    *     b1
+    * s1 50000
+    * s1 50000
+    * s2 200000
+    *          BID
+    * s1 20000 22
+    * s2 10000 20
+    * b1 market order == 30000
+    * test case when order was removed but there are some invoices to process left and qty remaining
+    **/
+    @Test
+    @Transactional
+    @Rollback
+    public void testTc1() {
+        Counterparty buyer = counterPartyService.addCounterParty("buyer");
+        Counterparty supplier1 = counterPartyService.addCounterParty("supplier1");
+        Counterparty supplier2 = counterPartyService.addCounterParty("supplier2");
+
+        Invoice invoice1S1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(50000), ZERO, testUtils.getCurrentDayPlusDays(5)));
+        Invoice invoice2S1B = invoiceServiceImpl.addInvoice(new Invoice(supplier1, buyer, BigDecimal.valueOf(50000), ZERO, testUtils.getCurrentDayPlusDays(25)));
+        Invoice invoiceS2B = invoiceServiceImpl.addInvoice(new Invoice(supplier2, buyer, BigDecimal.valueOf(200000), ZERO, testUtils.getCurrentDayPlusDays(15)));
+
+        double supplier1AskPrice = 22d;
+        OrderRequest bidOrderRequest1 = new OrderRequestBuilder(supplier1)
+                .quantity(BigDecimal.valueOf(20000))
+                .price(BigDecimal.valueOf(supplier1AskPrice))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.LIMIT)
+                .invoicesChecked(ImmutableMap.of(invoice1S1B.getId(), true, invoice2S1B.getId(), true, invoiceS2B.getId(), true))
+                .build();
+        orderRequestServiceImpl.process(bidOrderRequest1);
+
+        double supplier2AskPrice = 20d;
+        OrderRequest bidOrderRequest2 = new OrderRequestBuilder(supplier2)
+                .quantity(BigDecimal.valueOf(10000))
+                .price(BigDecimal.valueOf(supplier2AskPrice))
+                .orderSide(OrderSide.BID)
+                .orderType(OrderType.LIMIT)
+                .invoicesChecked(ImmutableMap.of(invoice1S1B.getId(), true, invoice2S1B.getId(), true, invoiceS2B.getId(), true))
+                .build();
+        orderRequestServiceImpl.process(bidOrderRequest2);
+
+        OrderRequest askMarketOrderRequest = new OrderRequestBuilder(buyer)
+                .quantity(BigDecimal.valueOf(30000))
+                .orderSide(OrderSide.ASK)
+                .orderType(OrderType.MARKET)
+                .invoicesChecked(ImmutableMap.of(invoice1S1B.getId(), true, invoice2S1B.getId(), true, invoiceS2B.getId(), true))
+                .build();
+        OrderResult result = orderRequestServiceImpl.process(askMarketOrderRequest);
+
+        Assert.assertEquals("Actual discounts sum: " + result.getDiscountSum(),
+                0, BigDecimal.valueOf(142.47).compareTo(result.getDiscountSum()));
+        Assert.assertEquals("Actual avg days to payment: " + result.getAvgDaysToPayment(),
+                0, BigDecimal.valueOf(8.33).compareTo(result.getAvgDaysToPayment()));
+        Assert.assertEquals("Actual avg discount percent: " + result.getAvgDiscountPerc(),
+                0, BigDecimal.valueOf(0.06).compareTo(result.getAvgDiscountPerc()));
+        Assert.assertEquals("Actual apr: " + result.getApr(),
+                0, BigDecimal.valueOf(21.33).compareTo(result.getApr()));
+        Assert.assertEquals("Actual satisfied Demand: " + result.getSatisfiedDemand(),
+                0, BigDecimal.valueOf(30000).compareTo(result.getSatisfiedDemand()));
+        Assert.assertEquals("Actual tape size: " + result.getTape().size(),
+                2, result.getTape().size());
+
+        Trade tradeSupplier2Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
+        Assert.assertNotNull(tradeSupplier2Buyer);
+        Assert.assertEquals(20d, tradeSupplier2Buyer.getPrice(), 0d);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier2Buyer.getQty(),
+                BigDecimal.valueOf(10000).compareTo(tradeSupplier2Buyer.getQty()), 0);
+
+        Trade tradeSupplier1Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
+        Assert.assertNotNull(tradeSupplier1Buyer);
+        Assert.assertEquals(22d, tradeSupplier1Buyer.getPrice(), 0d);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier1Buyer.getQty(),
+                BigDecimal.valueOf(20000).compareTo(tradeSupplier1Buyer.getQty()), 0);
+
+        invoice1S1B = invoiceServiceImpl.getById(invoice1S1B.getId());
+        Assert.assertEquals("Actual invoice prepaid value: " + invoice1S1B.getPrepaidValue(),
+                0, BigDecimal.valueOf(20060.27).compareTo(invoice1S1B.getPrepaidValue().setScale(2, ROUND_HALF_UP)));
+        invoice2S1B = invoiceServiceImpl.getById(invoice2S1B.getId());
+        Assert.assertEquals("Actual invoice prepaid value: " + invoice2S1B.getPrepaidValue(),
+                BigDecimal.ZERO.compareTo(invoice2S1B.getPrepaidValue()), 0);
+
+        invoiceS2B = invoiceServiceImpl.getById(invoiceS2B.getId());
+        Assert.assertEquals("Actual invoice prepaid value: " + invoiceS2B.getPrepaidValue(),
+                BigDecimal.valueOf(10082.19).compareTo(invoiceS2B.getPrepaidValue().setScale(2, ROUND_HALF_UP)), 0);
+
+    }
+
+    /*
     *     b1  b2  b3
     * s1 100 100 800
     *    ASK
@@ -270,6 +359,19 @@ public class LimitOrderBookServiceTest {
                 .invoicesChecked(ImmutableMap.of(invoiceS1B.getId(), true, invoiceS3B.getId(), true))
                 .build();
         OrderResult result = orderRequestServiceImpl.process(askMarketOrderRequest);
+
+        Assert.assertEquals("Actual discounts sum: " + result.getDiscountSum(),
+                0, BigDecimal.valueOf(2.88).compareTo(result.getDiscountSum()));
+        Assert.assertEquals("Actual avg days to payment: " + result.getAvgDaysToPayment(),
+                0, BigDecimal.valueOf(15).compareTo(result.getAvgDaysToPayment()));
+        Assert.assertEquals("Actual avg discount percent: " + result.getAvgDiscountPerc(),
+                0, BigDecimal.valueOf(0.52).compareTo(result.getAvgDiscountPerc()));
+        Assert.assertEquals("Actual apr: " + result.getApr(),
+                0, BigDecimal.valueOf(28).compareTo(result.getApr()));
+        Assert.assertEquals("Actual satisfied Demand: " + result.getSatisfiedDemand(),
+                0, BigDecimal.valueOf(250).compareTo(result.getSatisfiedDemand()));
+        Assert.assertEquals("Actual tape size: " + result.getTape().size(),
+                1, result.getTape().size());
 
         Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);

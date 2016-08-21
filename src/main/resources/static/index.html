@@ -41,7 +41,7 @@
                                 <li><a href="#">One more separated link</a></li>
                             </ul>
                         </li>
-                        <li><a href="#">Инструкция</a></li>
+                        <li><a ng-click="downloadManual()">Инструкция</a></li>
                         <li ng-show="authenticated"><a href="" ng-click="loginCtrl.logout()">Выход</a></li>
                     </ul>
                 </div>
@@ -49,9 +49,9 @@
             <div class="container-fluid proposal-bar">
                 <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
                     <div class="col-lg-3">Можно запросить у покупателей до: {{buyer_invoices_sum | number : 2}} грн.;</div>
-                    <div class="col-lg-3">Доступно к предоплате от покупателей до: {{asks_sum | number : 2}} грн.;</div>
+                    <div class="col-lg-3">Заявки на предоплату от покупателей: {{asks_sum | number : 2}} грн.;</div>
                     <div class="col-lg-3">Можно предоплатить поставщикам до: {{supplier_invoices_sum | number : 2}} грн.;</div>
-                    <div class="col-lg-3">Поставщикам срочно нужно до: {{bids_sum | number : 2}} грн.</div>
+                    <div class="col-lg-3">Заявки на предоплату от поставщиков: {{bids_sum | number : 2}} грн.</div>
                 </div>
             </div>
         </nav>
