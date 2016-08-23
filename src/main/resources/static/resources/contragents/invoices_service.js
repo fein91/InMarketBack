@@ -23,8 +23,9 @@ angular
             var daysMultUnpaidValueSum = 0;
             var unpaidValuesSum = 0;
             angular.forEach(invoices, function (item) {
-                daysMultUnpaidValueSum += item.daysToPayment * item.unpaidValue;
-                unpaidValuesSum += item.unpaidValue;
+                var unpaidValue = item.value - item.prepaidValue;
+                daysMultUnpaidValueSum += item.daysToPayment * unpaidValue;
+                unpaidValuesSum += unpaidValue;
             });
             return daysMultUnpaidValueSum / unpaidValuesSum;
         };

@@ -3,10 +3,10 @@
         <uib-tab index="0" heading="Выдать срочно">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form ng-controller="MarketAskCtrl">
-                        <div class="form-group form-inline">
+                    <form name="askMarketForm"  ng-controller="MarketAskCtrl">
+                        <div class="form-group form-inline" ng-class="{'has-error': !askMarketForm.askQty.$pristine && askMarketForm.askQty.$invalid}">
                             <label>Введите желаемую для заказа сумму предоплаты: </label>
-                            <input type="number" min="0" step="any" class="form-control" ng-model="askQty" placeholder="Сумма"
+                            <input name="askQty" type="number" min="0" step="0.01" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" class="form-control" ng-model="askQty" placeholder="Сумма"
                                    required>
                         </div>
                         <div>
@@ -14,7 +14,7 @@
                             <table class="table table-bordered order-result-table">
                                 <col width="15%">
                                 <col width="15%">
-                                <tr><td>APR</td><td>{{askApr}}</td></tr>
+                                <tr><td>Годовая процентная ставка (%)</td><td>{{askApr}}</td></tr>
                                 <tr><td>Процент скидки (%)</td><td>{{avgDiscountPerc}}</td></tr>
                                 <tr><td>Общая сумма скидок будет составлять (грн.)</td><td>{{discountSum}}</td></tr>
                                 <tr><td>Средний срок оплаты (дни)</td><td>{{avgDaysToPayment}}</td></tr>
@@ -30,22 +30,22 @@
                 </div>
             </div>
         </uib-tab>
-        <uib-tab index="1" heading="Назначить свою цену">
+        <uib-tab index="1" heading="Отложенная заявка">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form ng-controller="LimitAskCtrl">
-                        <div class="form-group form-inline">
-                            <label>Введите желаемый APR: </label>
-                            <input ng-model="askApr" type="number" min="0" max="99" step="any" class="form-control"
+                    <form name="askLimitForm" ng-controller="LimitAskCtrl">
+                        <div class="form-group form-inline" ng-class="{'has-error': !askLimitForm.askApr.$pristine && askLimitForm.askApr.$invalid}">
+                            <label>Введите желаемую годовую процентную ставку: </label>
+                            <input name="askApr" ng-model="askApr" type="number" min="0" max="100" step="0.1" ng-pattern="/^[0-9]+(\.[0-9]{1})?$/" class="form-control"
                                    placeholder="Процент" required>
                         </div>
-                        <div class="form-group form-inline">
+                        <div class="form-group form-inline" ng-class="{'has-error': !askLimitForm.askQty.$pristine && askLimitForm.askQty.$invalid}">
                             <label>Введите желаемую сумму для осуществления предоплаты: </label>
-                            <input ng-model="askQty" type="number" min="0" step="any" class="form-control" placeholder="Сумма"
+                            <input name="askQty" ng-model="askQty" type="number" min="0" step="0.01" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" class="form-control" placeholder="Сумма"
                                    required>
                         </div>
                         <div class="alert alert-info alert-dismissable" ng-show="limitOrderPartTradedAsMarket">
-                            <p>По заданному APR к моментальному исполнению подлежит сумма {{satisfiedAskQty}} грн.</p>
+                            <p>По заданной годовой процентной ставке к моментальному исполнению подлежит сумма {{satisfiedAskQty}} грн.</p>
                         </div>
                         <div class="alert alert-warning alert-dismissable"
                              ng-show="calculationCalled && calculatedWithError" ng-bind-html="calculationErrorMsg"></div>

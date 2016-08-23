@@ -1,5 +1,7 @@
 package com.fein91.core.model;
 
+import org.springframework.util.Assert;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -81,6 +83,7 @@ public class OrderTree {
 	
 	public void updateOrderQty(BigDecimal qty, int qId) {
 		Order order = this.orderMap.get(qId);
+		Assert.notNull(order, "Order: "+ qId +" was not found in order book");
 		BigDecimal originalVol = order.getQuantity();
 		order.updateQty(qty, order.getTimestamp());
 		this.volume += (order.getQuantity().subtract(originalVol)).intValue();

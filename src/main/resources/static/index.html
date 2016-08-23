@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <head>
+    <link rel="shortcut icon" href="/imgs/favicon.png" type="image/png">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,14 +24,7 @@
         <nav ng-show="authenticated" class="navbar navbar-fixed-top">
             <div class="container-fluid navbar-inverse top-navbar">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                            aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#/contragents">INMARKET</a>
+                    <a href="#/contragents"><img src="imgs/logo-main.png" height="47px"></a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
@@ -47,7 +41,7 @@
                                 <li><a href="#">One more separated link</a></li>
                             </ul>
                         </li>
-                        <li><a href="#">Инструкция</a></li>
+                        <li><a ng-click="downloadManual()">Инструкция</a></li>
                         <li ng-show="authenticated"><a href="" ng-click="loginCtrl.logout()">Выход</a></li>
                     </ul>
                 </div>
@@ -55,9 +49,9 @@
             <div class="container-fluid proposal-bar">
                 <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
                     <div class="col-lg-3">Можно запросить у покупателей до: {{buyer_invoices_sum | number : 2}} грн.;</div>
-                    <div class="col-lg-3">Доступно к предоплате от покупателей до: {{asks_sum | number : 2}} грн.;</div>
+                    <div class="col-lg-3">Заявки на предоплату от покупателей: {{asks_sum | number : 2}} грн.;</div>
                     <div class="col-lg-3">Можно предоплатить поставщикам до: {{supplier_invoices_sum | number : 2}} грн.;</div>
-                    <div class="col-lg-3">Поставщикам срочно нужно до: {{bids_sum | number : 2}} грн.</div>
+                    <div class="col-lg-3">Заявки на предоплату от поставщиков: {{bids_sum | number : 2}} грн.</div>
                 </div>
             </div>
         </nav>

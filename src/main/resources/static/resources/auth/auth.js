@@ -27,6 +27,18 @@ angular.module('inmarket.auth', ['ngStorage'])
             return $route.current && route === $route.current.controller;
         };
 
+        $scope.downloadManual = function() {
+            $http({method: 'GET', url: '/docs/ReadMe.pdf'}).
+                success(function(data, status, headers, config) {
+                    var anchor = angular.element('<a/>');
+                    anchor.attr({
+                        href: 'data:attachment/pdf;charset=utf-8,' + encodeURI(data),
+                        target: '_blank',
+                        download: 'ReadMe.pdf'
+                    })[0].click();
+            });
+        };
+
         var authenticate = function (credentials, callback) {
 
             var headers = credentials ? {
