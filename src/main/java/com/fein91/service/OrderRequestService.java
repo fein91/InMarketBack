@@ -25,7 +25,7 @@ public interface OrderRequestService {
     OrderResult process(OrderRequest orderRequest) throws OrderRequestException;
 
     @Transactional
-    OrderResult calculate(OrderRequest orderRequest) throws OrderRequestException;
+    void calculate(OrderRequest orderRequest) throws OrderRequestException;
 
     @Transactional
     void removeById(Long orderId);

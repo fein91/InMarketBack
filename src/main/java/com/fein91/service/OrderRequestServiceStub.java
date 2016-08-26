@@ -39,8 +39,7 @@ public class OrderRequestServiceStub implements OrderRequestService {
     }
 
     @Override
-    public OrderResult calculate(OrderRequest orderRequest) {
-        return null;
+    public void calculate(OrderRequest orderRequest) {
     }
 
     @Override

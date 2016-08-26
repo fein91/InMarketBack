@@ -52,37 +52,37 @@ public class OrderRequestControllerTest {
     }
 
 
-    @Test
-    public void calculate() throws OrderRequestException {
-        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
-
-        replay(serviceMock);
-
-        controller.calculate(new OrderRequestBuilder(new Counterparty())
-                .orderSide(OrderSide.ASK)
-                .orderType(OrderType.LIMIT)
-                .price(BigDecimal.ONE)
-                .quantity(BigDecimal.TEN)
-                .build());
-
-        verify(serviceMock);
-    }
-
-    @Test(expected = OrderRequestException.class)
-    public void processWithException() throws OrderRequestException {
-        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
-
-        replay(serviceMock);
-
-        controller.process(new OrderRequest());
-    }
-
-    @Test(expected = OrderRequestException.class)
-    public void calculateWithException() throws OrderRequestException {
-        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
-
-        replay(serviceMock);
-
-        controller.calculate(new OrderRequest());
-    }
+//    @Test
+//    public void calculate() throws OrderRequestException {
+//        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
+//
+//        replay(serviceMock);
+//
+//        controller.calculate(new OrderRequestBuilder(new Counterparty())
+//                .orderSide(OrderSide.ASK)
+//                .orderType(OrderType.LIMIT)
+//                .price(BigDecimal.ONE)
+//                .quantity(BigDecimal.TEN)
+//                .build());
+//
+//        verify(serviceMock);
+//    }
+//
+//    @Test(expected = OrderRequestException.class)
+//    public void processWithException() throws OrderRequestException {
+//        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
+//
+//        replay(serviceMock);
+//
+//        controller.process(new OrderRequest());
+//    }
+//
+//    @Test(expected = OrderRequestException.class)
+//    public void calculateWithException() throws OrderRequestException {
+//        expect(serviceMock.calculate(anyObject(OrderRequest.class))).andReturn(null);
+//
+//        replay(serviceMock);
+//
+//        controller.calculate(new OrderRequest());
+//    }
 }
