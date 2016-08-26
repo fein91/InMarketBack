@@ -8,7 +8,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="fein91">
-    <title>INMARKET</title>
+    <title>NUAVANS</title>
 
     <style type="text/css">
         [ng\:cloak], [ng-cloak], .ng-cloak {
@@ -48,9 +48,9 @@
             </div>
             <div class="container-fluid proposal-bar">
                 <div class="navbar-header proposal-bar-text ng-cloak" ng-controller="ProposalCtrl">
-                    <div class="col-lg-3">Можно запросить у покупателей до: {{buyer_invoices_sum | number : 2}} грн.;</div>
+                    <div class="col-lg-3">Инвойсы с покупателями: {{buyer_invoices_sum | number : 2}} грн.;</div>
                     <div class="col-lg-3">Заявки на предоплату от покупателей: {{asks_sum | number : 2}} грн.;</div>
-                    <div class="col-lg-3">Можно предоплатить поставщикам до: {{supplier_invoices_sum | number : 2}} грн.;</div>
+                    <div class="col-lg-3">Инвойсы с поставщиками: {{supplier_invoices_sum | number : 2}} грн.;</div>
                     <div class="col-lg-3">Заявки на предоплату от поставщиков: {{bids_sum | number : 2}} грн.</div>
                 </div>
             </div>

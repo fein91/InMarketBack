@@ -27,7 +27,7 @@
                     <span class="glyphicon glyphicon-remove"></span></button>
                 <button class="btn btn-default btn-sm" ng-click="record.isEditing = true" ng-if="!record.isEditing">
                     <span class="glyphicon glyphicon-pencil"></span></button>
-                <button class="btn btn-danger btn-sm" ng-click="delBid(record)" ng-if="!record.isEditing">
+                <button class="btn btn-danger btn-sm" ng-click="openDeleteConfirmPopup(record)" ng-if="!record.isEditing">
                     <span class="glyphicon glyphicon-trash"></span></button>
             </td>
         </tr>

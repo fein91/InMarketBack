@@ -44,8 +44,8 @@
                             {{trade.invoice.daysToPayment}}</td>
                         <td data-title="'Покупатель'" sortable="'target.name'">
                             {{trade.target.name}}</td>
-                        <td data-title="'# инвойса'" sortable="'invoice.id'">
-                            {{trade.invoice.id}}</td>
+                        <td data-title="'# инвойса'" sortable="'invoice.externalId'">
+                            {{trade.invoice.externalId}}</td>
                     </tr>
                 </table>
             </div>
@@ -69,7 +69,7 @@
                         <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
-                        <td></td>
+                        <td><strong>{{calculateAvgDaysToPayment(record.historyTrades)}}</strong></td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -90,11 +90,12 @@
                             {{trade.discountValue | number : 2}}</td>
                         <td data-title="'Остаток к оплате (грн.)'" sortable="'toPay'">
                             {{trade.toPay | number : 2}}</td>
-                        <td data-title="'Срок предоплаты (дни)'"></td>
+                        <td data-title="'Срок предоплаты (дни)'">
+                            {{trade.invoice.daysToPayment}}</td>
                         <td data-title="'Поставщик'" sortable="'target.name'">
                             {{trade.target.name}}</td>
-                        <td data-title="'# инвойса'" sortable="'invoice.id'">
-                            {{trade.invoice.id}}</td>
+                        <td data-title="'# инвойса'" sortable="'invoice.externalId'">
+                            {{trade.invoice.externalId}}</td>
                     </tr>
                 </table>
             </div>

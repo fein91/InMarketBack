@@ -8,9 +8,14 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Logger;
+
+import static com.fein91.Constants.ROUNDING_MODE;
 
 @Service("InvoicesServiceStub")
 public class InvoicesServiceStub implements InvoiceService {
+
+    private final static Logger LOGGER = Logger.getLogger(InvoicesServiceStub.class.getName());
 
     @Autowired
     private InvoiceRepository invoiceRepository;
@@ -22,7 +27,16 @@ public class InvoicesServiceStub implements InvoiceService {
 
     @Override
     public Invoice updateInvoice(Invoice invoice, BigDecimal prepaidValue) {
-        return null;
+        BigDecimal unpaidInvoiceValue = invoice.getValue().subtract(prepaidValue).setScale(2, ROUNDING_MODE);
+        if (unpaidInvoiceValue.signum() < 0) {
+            throw new IllegalStateException("Invoice prepaid value can't be greater than invoice value");
+        } else if (unpaidInvoiceValue.signum() == 0) {
+            invoice.setProcessed(true);
+        }
+        invoice.setPrepaidValue(invoice.getPrepaidValue().add(prepaidValue));
+
+        LOGGER.info("Invoice with id: " + invoice.getId() + " prepaid value was updated to: " + prepaidValue);
+        return invoice;
     }
 
     @Override

@@ -195,7 +195,7 @@ public class OrderBook {
                 continue;
             }
 
-            //TODO how to define first invoice to calculate
+            //invoices are sorted by paymentDate
             for (Invoice currentInvoice : invoices) {
                 BigDecimal unpaidInvoiceValue = currentInvoice.getValue().subtract(currentInvoice.getPrepaidValue());
 

@@ -102,11 +102,15 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     protected OrderResult validateAndTrade(OrderBook lob, OrderRequest orderRequest) {
         List<Invoice> checkedInvoices = findCheckedInvoices(orderRequest);
 
-        orderRequestValidator.validateByInvoices(orderRequest, checkedInvoices);
+        if (OrderType.MARKET == orderRequest.getType()) {
+            orderRequestValidator.validateByInvoices(orderRequest, checkedInvoices);
+        }
 
         List<OrderRequest> limitOrdersToTrade = findLimitOrderRequestsToTrade(orderRequest, checkedInvoices);
 
-        orderRequestValidator.validateByOrdersToTrade(orderRequest, limitOrdersToTrade);
+        if (OrderType.MARKET == orderRequest.getType()) {
+            orderRequestValidator.validateByOrdersToTrade(orderRequest, limitOrdersToTrade);
+        }
 
         limitOrdersToTrade.forEach(limitOrder -> lobService.addOrder(lob, limitOrder));
         OrderResult result = lobService.addOrder(lob, orderRequest);

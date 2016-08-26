@@ -67,15 +67,7 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
                         });
                 };
 
-                $scope.delAsk = function(record) {
-                    self.openDeleteConfirmPopup(record, $scope.asksTableParams);
-                };
-
-                $scope.delBid = function(record) {
-                    self.openDeleteConfirmPopup(record, $scope.bidsTableParams);
-                };
-
-                self.openDeleteConfirmPopup = function(record, tableParams) {
+                $scope.openDeleteConfirmPopup = function(record) {
                     var modalInstance = $uibModal.open({
                         animation: true,
                         templateUrl: 'partials/limitOrderDeleteConfirmPopup.html',
@@ -85,7 +77,7 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
                             popupData: function () {
                                 return {
                                     "record" : record,
-                                    "tableParams" : tableParams
+                                    "tableParams" : $scope.tableParams
                                 };
                             }
                         }
