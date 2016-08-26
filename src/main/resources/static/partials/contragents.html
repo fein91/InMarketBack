@@ -42,7 +42,7 @@
             </div>
         </uib-tab>
         <uib-tab index="1" heading="Мои поставщики">
-            <div class="table-responsive" ng-controller="MySuppliersCtrl as mySuppliers" cg-busy="importPromise">
+            <div class="table-responsive" ng-controller="MySuppliersCtrl as mySuppliers" cg-busy="{promise: importPromise, message:'Происходит импорт'}">
                 <label class="btn btn-default import-btn pull-right">
                     <input type="file" name="file" accept=".xlsx" class="file-input"
                            onchange="angular.element(this).scope().import(this.files)"/>
