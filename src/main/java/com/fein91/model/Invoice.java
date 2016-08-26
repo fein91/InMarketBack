@@ -39,6 +39,10 @@ public class Invoice {
 
     private String externalId;
 
+    int sourceChecked;
+
+    int targetChecked;
+
     public Invoice() {
         //JPA
     }
@@ -113,6 +117,22 @@ public class Invoice {
 
     public void setExternalId(String  externalId) {
         this.externalId = externalId;
+    }
+
+    public boolean isSourceChecked() {
+        return sourceChecked == 1;
+    }
+
+    public void setSourceChecked(boolean sourceChecked) {
+        this.sourceChecked = sourceChecked ? 1 : 0;
+    }
+
+    public boolean isTargetChecked() {
+        return targetChecked == 1;
+    }
+
+    public void setTargetChecked(boolean targetChecked) {
+        this.targetChecked = targetChecked ? 1 : 0;
     }
 
     @Override
