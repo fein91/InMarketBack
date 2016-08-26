@@ -21,7 +21,7 @@ public class TransactionHistoryService {
 
     @Autowired
     public TransactionHistoryService(HistoryTradeService historyTradeService,
-                                     @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService) {
+                                     HistoryOrderRequestService historyOrderRequestService) {
         this.historyTradeService = historyTradeService;
         this.historyOrderRequestService = historyOrderRequestService;
     }

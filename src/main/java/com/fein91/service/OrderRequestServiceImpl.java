@@ -8,6 +8,8 @@ import com.fein91.dao.InvoiceRepository;
 import com.fein91.dao.OrderRequestRepository;
 import com.fein91.model.*;
 import com.fein91.rest.exception.OrderRequestException;
+import com.fein91.rest.exception.RollbackOnCalculateException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Service("OrderRequestServiceImpl")
+@Service
 public class OrderRequestServiceImpl implements OrderRequestService {
 
     private final static Logger LOGGER = Logger.getLogger(OrderRequestServiceImpl.class.getName());
@@ -55,9 +57,12 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     }
 
     @Override
-    @Transactional
     public OrderRequest update(OrderRequest orderRequest) {
-        calculate(orderRequest);
+        try{
+            calculate(orderRequest);
+        } catch (RollbackOnCalculateException ex) {
+            //nothing to do here
+        }
         return orderRequestRepository.save(orderRequest);
     }
 
@@ -81,9 +86,9 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
         BigDecimal unsatisfiedDemand = orderRequest.getQuantity().subtract(result.getSatisfiedDemand());
         if (unsatisfiedDemand.signum() > 0) {
-            OrderRequest limitOrderRequest;
             if (OrderType.LIMIT == orderRequest.getType()) {
-                limitOrderRequest = orderRequest;
+                OrderRequest limitOrderRequest = new OrderRequest();
+                BeanUtils.copyProperties(orderRequest, limitOrderRequest);
                 limitOrderRequest.setQuantity(unsatisfiedDemand);
                 limitOrderRequest = save(limitOrderRequest);
                 transactionHistoryService.saveLimitOrdersHistory(limitOrderRequest);
@@ -94,9 +99,13 @@ public class OrderRequestServiceImpl implements OrderRequestService {
 
     @Override
     @Transactional
-    public OrderResult calculate(OrderRequest orderRequest) {
-        OrderBook lob = orderBookBuilder.getStubInstance();
-        return validateAndTrade(lob, orderRequest);
+    public void calculate(OrderRequest orderRequest) {
+        OrderBook lob = orderBookBuilder.getInstance();
+        rollbackTrade(validateAndTrade(lob, orderRequest));
+    }
+
+    private void rollbackTrade(OrderResult orderResult) {
+        throw new RollbackOnCalculateException("Is thrown to rollback", orderResult);
     }
 
     protected OrderResult validateAndTrade(OrderBook lob, OrderRequest orderRequest) {

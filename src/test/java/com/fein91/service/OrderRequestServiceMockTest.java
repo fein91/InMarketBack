@@ -111,7 +111,7 @@ public class OrderRequestServiceMockTest {
                 .orderSide(BID)
                 .orderType(OrderType.LIMIT)
                 .build();
-        expect(orderBookBuilder.getStubInstance()).andReturn(new OrderBook());
+        expect(orderBookBuilder.getInstance()).andReturn(new OrderBook());
         expect(invoiceRepository.findInvoicesBySourceId(1L)).andReturn(ImmutableList.of(new Invoice()));
 
         replay(orderRequestRepository, orderBookBuilder, invoiceRepository);

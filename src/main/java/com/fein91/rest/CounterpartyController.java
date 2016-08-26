@@ -4,7 +4,6 @@ import com.fein91.model.*;
 import com.fein91.rest.exception.ImportExportException;
 import com.fein91.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +27,10 @@ public class CounterpartyController {
     private final ImportExportService importExportService;
 
     @Autowired
-    public CounterpartyController(@Qualifier("InvoiceServiceImpl") InvoiceService invoiceService,
-                                  @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService,
+    public CounterpartyController(InvoiceService invoiceService,
+                                  HistoryOrderRequestService historyOrderRequestService,
                                   CounterPartyService counterPartyService,
-                                  @Qualifier("OrderRequestServiceImpl") OrderRequestService orderRequestService,
+                                  OrderRequestService orderRequestService,
                                   ImportExportService importExportService) {
         this.invoiceService = invoiceService;
         this.historyOrderRequestService = historyOrderRequestService;

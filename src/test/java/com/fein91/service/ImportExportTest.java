@@ -36,7 +36,6 @@ public class ImportExportTest {
     @Autowired
     CounterPartyService counterPartyService;
     @Autowired
-    @Qualifier("InvoiceServiceImpl")
     InvoiceService invoiceService;
 
     @Test

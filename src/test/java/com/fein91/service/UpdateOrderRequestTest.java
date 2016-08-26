@@ -30,15 +30,12 @@ import static java.math.BigDecimal.ZERO;
 public class UpdateOrderRequestTest {
 
     @Autowired
-    @Qualifier("OrderRequestServiceImpl")
     private OrderRequestService orderRequestService;
     @Autowired
     private CounterPartyService counterPartyService;
     @Autowired
-    @Qualifier("InvoiceServiceImpl")
     private InvoiceService invoiceService;
     @Autowired
-    @Qualifier("HistoryOrderRequestServiceImpl")
     private HistoryOrderRequestService historyOrderRequestService;
 
     private final TestUtils testUtils = new TestUtils();

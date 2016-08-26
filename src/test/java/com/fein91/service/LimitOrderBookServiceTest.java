@@ -32,10 +32,8 @@ public class LimitOrderBookServiceTest {
     @Autowired
     CounterPartyService counterPartyService;
     @Autowired
-    @Qualifier("InvoiceServiceImpl")
     InvoiceService invoiceServiceImpl;
     @Autowired
-    @Qualifier("OrderRequestServiceImpl")
     OrderRequestService orderRequestServiceImpl;
     
     private final TestUtils testUtils = new TestUtils();

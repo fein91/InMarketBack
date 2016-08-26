@@ -6,6 +6,7 @@ import com.fein91.model.OrderResult;
 import com.fein91.model.OrderType;
 import com.fein91.rest.exception.OrderRequestException;
 import com.fein91.rest.exception.OrderRequestProcessingException;
+import com.fein91.rest.exception.RollbackOnCalculateException;
 import com.fein91.service.OrderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,7 +25,7 @@ public class OrderRequestController {
     private final OrderRequestService orderRequestServiceImpl;
 
     @Autowired
-    public OrderRequestController(@Qualifier("OrderRequestServiceImpl") OrderRequestService orderRequestServiceImpl) {
+    public OrderRequestController(OrderRequestService orderRequestServiceImpl) {
         this.orderRequestServiceImpl = orderRequestServiceImpl;
     }
 
@@ -38,7 +39,13 @@ public class OrderRequestController {
     @RequestMapping(method = RequestMethod.POST, value = "/calculate")
     public ResponseEntity<OrderResult> calculate(@RequestBody OrderRequest orderRequest) throws OrderRequestException {
         checkOrderRequest(orderRequest);
-        return new ResponseEntity<>(orderRequestServiceImpl.calculate(orderRequest), HttpStatus.OK);
+        OrderResult result = null;
+        try {
+            orderRequestServiceImpl.calculate(orderRequest);
+        } catch (RollbackOnCalculateException ex) {
+            result = ex.getOrderResult();
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET)

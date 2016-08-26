@@ -27,15 +27,12 @@ import static java.math.BigDecimal.ZERO;
 public class TransactionHistoryTest {
 
     @Autowired
-    @Qualifier("OrderRequestServiceImpl")
     private OrderRequestService orderRequestService;
     @Autowired
     private CounterPartyService counterPartyService;
     @Autowired
-    @Qualifier("InvoiceServiceImpl")
     private InvoiceService invoiceService;
     @Autowired
-    @Qualifier("HistoryOrderRequestServiceImpl")
     private HistoryOrderRequestService historyOrderRequestService;
 
     private final TestUtils testUtils = new TestUtils();
@@ -113,10 +110,13 @@ public class TransactionHistoryTest {
         Assert.assertNotNull(supplier1MarketOrder);
         Assert.assertEquals(OrderSide.BID, supplier1MarketOrder.getSide());
         Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1MarketOrder.getQuantity()));
+        Assert.assertEquals(0, BigDecimal.valueOf(22).compareTo(supplier1MarketOrder.getPrice()));
+        Assert.assertEquals(0, BigDecimal.valueOf(0.09).compareTo(supplier1MarketOrder.getAvgDiscountPerc()));
 
         HistoryTrade supplier1BuyerHistoryTrade = testUtils.findHistoryTradeByTarget(supplier1MarketOrder.getHistoryTrades(), buyer);
         Assert.assertNotNull(supplier1BuyerHistoryTrade);
         Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(supplier1BuyerHistoryTrade.getQuantity()));
+        Assert.assertEquals(0, BigDecimal.valueOf(27).compareTo(supplier1BuyerHistoryTrade.getPrice()));
 
         //check supplier2 transaction history
         List<HistoryOrderRequest> supplier2TransHistory = historyOrderRequestService.getByCounterparty(supplier2);
