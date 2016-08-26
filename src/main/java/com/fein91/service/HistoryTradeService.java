@@ -24,8 +24,8 @@ public class HistoryTradeService {
 
     @Autowired
     public HistoryTradeService(HistoryTradeRepository historyTradeRepository,
-                               @Qualifier("InvoiceServiceImpl") InvoiceService invoiceService,
-                               @Qualifier("HistoryOrderRequestServiceImpl") HistoryOrderRequestService historyOrderRequestService,
+                               InvoiceService invoiceService,
+                               HistoryOrderRequestService historyOrderRequestService,
                                CounterPartyService counterPartyService) {
         this.historyTradeRepository = historyTradeRepository;
         this.invoiceService = invoiceService;

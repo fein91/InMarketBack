@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import static com.fein91.Constants.ROUNDING_MODE;
 
-@Service("InvoiceServiceImpl")
+@Service
 public class InvoiceServiceImpl implements InvoiceService {
 
     private final static Logger LOGGER = Logger.getLogger(InvoiceServiceImpl.class.getName());

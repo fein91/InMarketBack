@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Service("HistoryOrderRequestServiceImpl")
+@Service
 public class HistoryOrderRequestServiceImpl implements HistoryOrderRequestService {
 
     private final static Logger LOGGER = Logger.getLogger(HistoryOrderRequestServiceImpl.class.getName());

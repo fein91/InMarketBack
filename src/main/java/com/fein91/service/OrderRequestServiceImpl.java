@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Service("OrderRequestServiceImpl")
+@Service
 public class OrderRequestServiceImpl implements OrderRequestService {
 
     private final static Logger LOGGER = Logger.getLogger(OrderRequestServiceImpl.class.getName());
@@ -57,9 +57,12 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     }
 
     @Override
-    @Transactional
     public OrderRequest update(OrderRequest orderRequest) {
-        calculate(orderRequest);
+        try{
+            calculate(orderRequest);
+        } catch (RollbackOnCalculateException ex) {
+            //nothing to do here
+        }
         return orderRequestRepository.save(orderRequest);
     }
 
@@ -97,7 +100,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
     @Override
     @Transactional
     public void calculate(OrderRequest orderRequest) {
-        OrderBook lob = orderBookBuilder.getStubInstance();
+        OrderBook lob = orderBookBuilder.getInstance();
         rollbackTrade(validateAndTrade(lob, orderRequest));
     }
 

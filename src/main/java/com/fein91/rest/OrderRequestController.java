@@ -25,7 +25,7 @@ public class OrderRequestController {
     private final OrderRequestService orderRequestServiceImpl;
 
     @Autowired
-    public OrderRequestController(@Qualifier("OrderRequestServiceImpl") OrderRequestService orderRequestServiceImpl) {
+    public OrderRequestController(OrderRequestService orderRequestServiceImpl) {
         this.orderRequestServiceImpl = orderRequestServiceImpl;
     }
 

@@ -32,7 +32,7 @@ public class ImportExportService {
 
     @Autowired
     public ImportExportService(CounterPartyService counterPartyService,
-                               @Qualifier("InvoiceServiceImpl") InvoiceService invoiceService) {
+                               InvoiceService invoiceService) {
         this.counterPartyService = counterPartyService;
         this.invoiceService = invoiceService;
     }

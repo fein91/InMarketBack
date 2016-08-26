@@ -30,10 +30,8 @@ public class CounterpartyServiceTest {
     @Autowired
     CounterPartyService counterPartyService;
     @Autowired
-    @Qualifier("InvoiceServiceImpl")
     InvoiceService invoiceServiceImpl;
     @Autowired
-    @Qualifier("OrderRequestServiceImpl")
     OrderRequestService orderRequestService;
 
     @Test

@@ -33,13 +33,11 @@ public class InMarketApplicationTests {
     OrderBookBuilder orderBookBuilder;
 
     @Autowired
-    @Qualifier("InvoiceServiceImpl")
     InvoiceService invoiceService;
     @Autowired
     CounterPartyService counterPartyService;
     TestUtils testUtils = new TestUtils();
     @Autowired
-    @Qualifier("OrderRequestServiceImpl")
     OrderRequestService orderRequestServiceImpl;
 
     @Test

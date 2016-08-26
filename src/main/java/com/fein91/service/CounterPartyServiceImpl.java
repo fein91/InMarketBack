@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("CounterPartyServiceImpl")
+@Service
 public class CounterPartyServiceImpl implements CounterPartyService {
 
     private final CounterpartyRepository counterpartyRepository;
