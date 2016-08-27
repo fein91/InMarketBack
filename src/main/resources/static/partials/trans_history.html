@@ -19,7 +19,7 @@
                         <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
-                        <td><strong>{{calculateAvgDaysToPayment(record.historyTrades)}}</strong></td>
+                        <td><strong>{{record.avgDaysToPayment | number : 2}}</strong></td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -69,7 +69,7 @@
                         <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
-                        <td><strong>{{calculateAvgDaysToPayment(record.historyTrades)}}</strong></td>
+                        <td><strong>{{record.avgDaysToPayment | number : 2}}</strong></td>
                         <td></td>
                         <td></td>
                     </tr>

@@ -39,10 +39,6 @@ angular.module('inmarket.trans_history', ['ngRoute'])
                 });
         };
 
-        $scope.calculateAvgDaysToPayment = function(trades) {
-            return invoicesService.calculateAvgDaysToPayment(_.map(trades, function(trade) { return trade.invoice; }));
-        };
-
         self.init = function () {
             transHistoryService.getTransactionHistory(session.counterpartyId)
                 .then(function successCallback(response) {

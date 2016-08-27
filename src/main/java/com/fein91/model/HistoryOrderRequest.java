@@ -27,6 +27,8 @@ public class HistoryOrderRequest {
 
     BigDecimal avgDiscountPerc;
 
+    BigDecimal avgDaysToPayment;
+
     Date date;
 
     int side;
@@ -118,6 +120,14 @@ public class HistoryOrderRequest {
 
     public void setHistoryTrades(List<HistoryTrade> historyTrades) {
         this.historyTrades = historyTrades;
+    }
+
+    public BigDecimal getAvgDaysToPayment() {
+        return avgDaysToPayment;
+    }
+
+    public void setAvgDaysToPayment(BigDecimal avgDaysToPayment) {
+        this.avgDaysToPayment = avgDaysToPayment;
     }
 
     @Override
