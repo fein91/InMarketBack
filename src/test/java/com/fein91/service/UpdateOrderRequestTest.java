@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -73,7 +72,7 @@ public class UpdateOrderRequestTest {
         Trade trade = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade);
         Assert.assertEquals(bidPrice.doubleValue(), trade.getPrice(), 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(60).compareTo(trade.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(60).compareTo(trade.getQuantity()));
     }
 
 

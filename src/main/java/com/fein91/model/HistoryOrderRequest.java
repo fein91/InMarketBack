@@ -25,7 +25,10 @@ public class HistoryOrderRequest {
 
     BigDecimal quantity;
 
+    @Deprecated
     BigDecimal avgDiscountPerc;
+
+    BigDecimal avgDaysToPayment;
 
     Date date;
 
@@ -72,10 +75,12 @@ public class HistoryOrderRequest {
         this.quantity = quantity;
     }
 
+    @Deprecated
     public BigDecimal getAvgDiscountPerc() {
         return avgDiscountPerc;
     }
 
+    @Deprecated
     public void setAvgDiscountPerc(BigDecimal avgDiscountPerc) {
         this.avgDiscountPerc = avgDiscountPerc;
     }
@@ -118,6 +123,14 @@ public class HistoryOrderRequest {
 
     public void setHistoryTrades(List<HistoryTrade> historyTrades) {
         this.historyTrades = historyTrades;
+    }
+
+    public BigDecimal getAvgDaysToPayment() {
+        return avgDaysToPayment;
+    }
+
+    public void setAvgDaysToPayment(BigDecimal avgDaysToPayment) {
+        this.avgDaysToPayment = avgDaysToPayment;
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.fein91.model.HistoryTrade;
 import com.fein91.dao.HistoryTradeRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,11 +43,12 @@ public class HistoryTradeService {
 
     public HistoryTrade convertFrom(Trade trade) {
         HistoryTrade historyTrade = new HistoryTrade();
-        historyTrade.setQuantity(trade.getQty());
+        historyTrade.setQuantity(trade.getQuantity());
         historyTrade.setPrice(BigDecimal.valueOf(trade.getPrice()));
         historyTrade.setDiscountValue(trade.getDiscountValue());
         historyTrade.setPeriodReturn(trade.getPeriodReturn());
         historyTrade.setUnpaidInvoiceValue(trade.getUnpaidInvoiceValue());
+        historyTrade.setDaysToPaymentMultQtyTraded(trade.getDaysToPaymentMultQtyTraded());
         historyTrade.setTarget(counterPartyService.getById(trade.getProvider()));
         historyTrade.setAffectedOrderRequest(historyOrderRequestService.getByOriginOrderRequestId(trade.getOrderHit()));
         historyTrade.setInvoice(invoiceService.getById(trade.getInvoiceId()));

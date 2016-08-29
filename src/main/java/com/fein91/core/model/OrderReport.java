@@ -15,7 +15,7 @@ public class OrderReport {
 	private Order order;
 	private BigDecimal qtyRemaining;
 	
-	public OrderReport(ArrayList<Trade> trades, 
+	public OrderReport(ArrayList<Trade> trades,
 					   boolean orderInBook, BigDecimal qtyRemaining) {
 		this.trades = trades;
 		this.orderInBook = orderInBook;

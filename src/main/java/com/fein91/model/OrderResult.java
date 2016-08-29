@@ -9,6 +9,7 @@ public class OrderResult {
     final BigDecimal apr;
     final BigDecimal satisfiedDemand;
     final BigDecimal discountSum;
+    @Deprecated
     final BigDecimal avgDiscountPerc;
     final BigDecimal avgDaysToPayment;
     @Deprecated
@@ -45,6 +46,7 @@ public class OrderResult {
         return discountSum;
     }
 
+    @Deprecated
     public BigDecimal getAvgDiscountPerc() {
         return avgDiscountPerc;
     }

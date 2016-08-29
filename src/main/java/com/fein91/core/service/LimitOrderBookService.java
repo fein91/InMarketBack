@@ -4,11 +4,12 @@ import com.fein91.builders.OrderBuilder;
 import com.fein91.core.model.Order;
 import com.fein91.core.model.OrderBook;
 import com.fein91.core.model.OrderReport;
-import com.fein91.core.model.Trade;
 import com.fein91.model.OrderRequest;
 import com.fein91.model.OrderResult;
 import com.fein91.model.OrderType;
+import com.fein91.service.CalculationService;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,6 +21,13 @@ import static com.fein91.Constants.ROUNDING_MODE;
 @Service
 public class LimitOrderBookService {
     private static Logger log = Logger.getLogger(LimitOrderBookService.class);
+
+    private CalculationService calculationService;
+
+    @Autowired
+    public LimitOrderBookService(CalculationService calculationService) {
+        this.calculationService = calculationService;
+    }
 
     public OrderResult addOrder(OrderBook lob, OrderRequest orderRequest) {
         BigDecimal quantity = orderRequest.getQuantity();
@@ -45,13 +53,11 @@ public class LimitOrderBookService {
 
         BigDecimal satisfiedDemand = quantity.subtract(orderReport.getQtyRemaining());
 
-        BigDecimal apr = calculateAPR(lob, satisfiedDemand);
-        BigDecimal totalDiscountSum = calculateTotalDiscountSum(lob);
-        BigDecimal totalInvoicesSum = calculateTotalInvoicesSum(lob);
-        BigDecimal avgDiscountPerc = totalInvoicesSum.signum() > 0
-                ? totalDiscountSum.divide(totalInvoicesSum, ROUNDING_MODE).multiply(BigDecimal.valueOf(100))
-                : BigDecimal.ZERO;
-        BigDecimal avgDaysToPayment = calculateAvgDaysToPayment(lob);
+        BigDecimal apr = calculationService.calculateAPR(lob.getTape(), satisfiedDemand);
+        BigDecimal totalDiscountSum = calculationService.calculateTotalDiscountSum(lob.getTape());
+        BigDecimal totalInvoicesSum = calculationService.calculateTotalInvoicesSum(lob.getTape());
+        BigDecimal avgDiscountPerc = calculationService.calculateAvgDiscountPerc(totalDiscountSum, totalInvoicesSum);
+        BigDecimal avgDaysToPayment = calculationService.calculateAvgDaysToPayment(lob.getTape());
 
         return new OrderResult(apr.setScale(UI_SCALE, ROUNDING_MODE),
                 satisfiedDemand.setScale(UI_SCALE, ROUNDING_MODE),
@@ -59,48 +65,5 @@ public class LimitOrderBookService {
                 avgDiscountPerc.setScale(UI_SCALE, ROUNDING_MODE),
                 avgDaysToPayment.setScale(UI_SCALE, ROUNDING_MODE),
                 orderReport.getTrades());
-    }
-
-    /**
-     * avgDaysToPayment = (invoice1.getDaysToPayment() * paymentByInvoice1 + ... + invoiceN.getDaysToPayment() * paymentByInvoiceN) / paymentByInvoice1 + ... + paymentByInvoiceN
-     * @param lob
-     * @return
-     */
-    private BigDecimal calculateAvgDaysToPayment(OrderBook lob) {
-        BigDecimal totalSumInvoicesDaysToPaymentMultQtyTraded = BigDecimal.ZERO;
-        BigDecimal paymentsSum = BigDecimal.ZERO;
-        for (Trade trade: lob.getTape()) {
-            totalSumInvoicesDaysToPaymentMultQtyTraded = totalSumInvoicesDaysToPaymentMultQtyTraded.add(trade.getDaysToPaymentMultQtyTraded());
-            paymentsSum = paymentsSum.add(trade.getQty());
-        }
-        return paymentsSum.signum() > 0 ?
-                totalSumInvoicesDaysToPaymentMultQtyTraded.divide(paymentsSum, ROUNDING_MODE)
-                : BigDecimal.ZERO;
-    }
-
-    private BigDecimal calculateTotalInvoicesSum(OrderBook lob) {
-        BigDecimal result = BigDecimal.ZERO;
-        for (Trade trade : lob.getTape()) {
-            result = result.add(trade.getInvoiceValue());
-        }
-        return result;
-    }
-
-
-    private BigDecimal calculateAPR(OrderBook lob, BigDecimal satisfiedDemand) {
-        BigDecimal apr = BigDecimal.ZERO;
-        for (Trade trade : lob.getTape()) {
-            apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQty()).divide(satisfiedDemand, ROUNDING_MODE));
-        }
-
-        return apr;
-    }
-
-    private BigDecimal calculateTotalDiscountSum(OrderBook lob) {
-        BigDecimal result = BigDecimal.ZERO;
-        for (Trade trade : lob.getTape()) {
-            result = result.add(trade.getDiscountValue());
-        }
-        return result;
     }
 }
