@@ -25,6 +25,7 @@ public class HistoryOrderRequest {
 
     BigDecimal quantity;
 
+    @Deprecated
     BigDecimal avgDiscountPerc;
 
     BigDecimal avgDaysToPayment;
@@ -74,10 +75,12 @@ public class HistoryOrderRequest {
         this.quantity = quantity;
     }
 
+    @Deprecated
     public BigDecimal getAvgDiscountPerc() {
         return avgDiscountPerc;
     }
 
+    @Deprecated
     public void setAvgDiscountPerc(BigDecimal avgDiscountPerc) {
         this.avgDiscountPerc = avgDiscountPerc;
     }
