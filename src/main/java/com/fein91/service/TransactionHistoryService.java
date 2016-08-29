@@ -2,6 +2,7 @@ package com.fein91.service;
 
 import com.fein91.core.model.OrderBook;
 import com.fein91.core.model.OrderSide;
+import com.fein91.core.model.Trade;
 import com.fein91.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class TransactionHistoryService {
     }
 
     public void saveMarketOrdersHistory(OrderRequest orderRequest, OrderBook lob, OrderResult result) {
-        HistoryOrderRequest currentCounterpartyHOR = writeHistoryOrderRequestToCurrentCounterpartyTransactionHistory(orderRequest, lob, result);
+        HistoryOrderRequest currentCounterpartyHOR = writeHistoryOrderRequestToCurrentCounterpartyTransactionHistory(orderRequest, lob.getTape(), result);
 
         Map<HistoryOrderRequest, List<HistoryTrade>> tradesByTargetCounterparty = currentCounterpartyHOR.getHistoryTrades().stream()
                 .collect(Collectors.groupingBy(HistoryTrade::getAffectedOrderRequest));
@@ -45,14 +46,14 @@ public class TransactionHistoryService {
     }
 
     private HistoryOrderRequest writeHistoryOrderRequestToCurrentCounterpartyTransactionHistory(OrderRequest orderRequest,
-                                                                                                OrderBook lob,
+                                                                                                List<Trade> trades,
                                                                                                 OrderResult result) {
         HistoryOrderRequest executedHor = historyOrderRequestService.convertFrom(orderRequest);
         executedHor.setQuantity(result.getSatisfiedDemand());
         executedHor.setPrice(result.getApr());
         executedHor.setAvgDiscountPerc(result.getAvgDiscountPerc());
         executedHor.setAvgDaysToPayment(result.getAvgDaysToPayment());
-        executedHor.setHistoryTrades(historyTradeService.convertFrom(lob.getTape()));
+        executedHor.setHistoryTrades(historyTradeService.convertFrom(trades));
         return historyOrderRequestService.save(executedHor);
     }
 
@@ -72,7 +73,7 @@ public class TransactionHistoryService {
         targetHor.setPrice(executedLimitHor.getPrice());
         targetHor.setAvgDiscountPerc(calculationService.calculateAvgDiscountPerc(totalDiscountsSum, totalInvoicesSum));
         //TODO calc avg days to payment here
-        targetHor.setAvgDaysToPayment(null);
+        //targetHor.setAvgDaysToPayment(calculationService.calculateAvgDaysToPayment());
         targetHor.setCounterparty(executedLimitHor.getCounterparty());
         targetHor.setDate(new Date());
         targetHor.setHistoryTrades(historyTradeService.copyAndUpdateTarget(target, trades));
