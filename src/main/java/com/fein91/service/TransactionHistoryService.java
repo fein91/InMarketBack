@@ -59,21 +59,21 @@ public class TransactionHistoryService {
 
     private void writeHistoryOrderRequestToTargetCounterpartyTransactionHistory(HistoryOrderRequest executedLimitHor,
                                                                                 Counterparty target,
-                                                                                List<HistoryTrade> trades, OrderSide orderSide) {
+                                                                                List<HistoryTrade> trades,
+                                                                                OrderSide orderSide) {
         HistoryOrderRequest targetHor = new HistoryOrderRequest();
         BigDecimal qty = BigDecimal.ZERO;
-        BigDecimal totalInvoicesSum = BigDecimal.ZERO;
-        BigDecimal totalDiscountsSum = BigDecimal.ZERO;
+//        BigDecimal totalInvoicesSum = BigDecimal.ZERO;
+//        BigDecimal totalDiscountsSum = BigDecimal.ZERO;
         for (HistoryTrade historyTrade : trades) {
             qty = qty.add(historyTrade.getQuantity());
-            totalInvoicesSum = totalInvoicesSum.add(historyTrade.getUnpaidInvoiceValue());
-            totalDiscountsSum = totalDiscountsSum.add(historyTrade.getDiscountValue());
+//            totalInvoicesSum = totalInvoicesSum.add(historyTrade.getUnpaidInvoiceValue());
+//            totalDiscountsSum = totalDiscountsSum.add(historyTrade.getDiscountValue());
         }
         targetHor.setQuantity(qty);
         targetHor.setPrice(executedLimitHor.getPrice());
-        targetHor.setAvgDiscountPerc(calculationService.calculateAvgDiscountPerc(totalDiscountsSum, totalInvoicesSum));
-        //TODO calc avg days to payment here
-        //targetHor.setAvgDaysToPayment(calculationService.calculateAvgDaysToPayment());
+//        targetHor.setAvgDiscountPerc(calculationService.calculateAvgDiscountPerc(totalDiscountsSum, totalInvoicesSum));
+        targetHor.setAvgDaysToPayment(calculationService.calculateAvgDaysToPayment(trades));
         targetHor.setCounterparty(executedLimitHor.getCounterparty());
         targetHor.setDate(new Date());
         targetHor.setHistoryTrades(historyTradeService.copyAndUpdateTarget(target, trades));

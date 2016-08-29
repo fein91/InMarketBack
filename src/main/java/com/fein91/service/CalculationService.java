@@ -1,6 +1,7 @@
 package com.fein91.service;
 
 import com.fein91.core.model.Trade;
+import com.fein91.model.CalculableTrade;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,7 @@ public class CalculationService {
         return daysBetween.getDays();
     }
 
+    @Deprecated
     public BigDecimal calculateAvgDiscountPerc(BigDecimal totalDiscountSum, BigDecimal totalInvoicesSum) {
         return totalInvoicesSum.signum() > 0
                 ? totalDiscountSum.divide(totalInvoicesSum, ROUNDING_MODE).multiply(BigDecimal.valueOf(100))
@@ -59,12 +61,12 @@ public class CalculationService {
      * @param trades
      * @return
      */
-    public BigDecimal calculateAvgDaysToPayment(List<Trade> trades) {
+    public BigDecimal calculateAvgDaysToPayment(List<? extends CalculableTrade> trades) {
         BigDecimal totalSumInvoicesDaysToPaymentMultQtyTraded = BigDecimal.ZERO;
         BigDecimal paymentsSum = BigDecimal.ZERO;
-        for (Trade trade : trades) {
+        for (CalculableTrade trade : trades) {
             totalSumInvoicesDaysToPaymentMultQtyTraded = totalSumInvoicesDaysToPaymentMultQtyTraded.add(trade.getDaysToPaymentMultQtyTraded());
-            paymentsSum = paymentsSum.add(trade.getQty());
+            paymentsSum = paymentsSum.add(trade.getQuantity());
         }
         return paymentsSum.signum() > 0 ?
                 totalSumInvoicesDaysToPaymentMultQtyTraded.divide(paymentsSum, ROUNDING_MODE)
@@ -83,7 +85,7 @@ public class CalculationService {
     public BigDecimal calculateAPR(List<Trade> trades, BigDecimal satisfiedDemand) {
         BigDecimal apr = BigDecimal.ZERO;
         for (Trade trade : trades) {
-            apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQty()).divide(satisfiedDemand, ROUNDING_MODE));
+            apr = apr.add(BigDecimal.valueOf(trade.getPrice()).multiply(trade.getQuantity()).divide(satisfiedDemand, ROUNDING_MODE));
         }
 
         return apr;

@@ -6,6 +6,7 @@ import com.fein91.model.HistoryOrderRequest;
 import com.fein91.model.HistoryOrderType;
 import com.fein91.model.HistoryTrade;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,9 +37,23 @@ public class TestUtils {
                 .get();
     }
 
+    public HistoryOrderRequest findHistoryOrderRequestByOrderSideAndPrice(List<HistoryOrderRequest> transHistory, HistoryOrderType orderType, BigDecimal price) {
+        return transHistory.stream()
+                .filter(historyOrderRequest -> orderType.equals(historyOrderRequest.getType()) && price.compareTo(historyOrderRequest.getPrice()) == 0)
+                .findFirst()
+                .get();
+    }
+
     public HistoryTrade findHistoryTradeByTarget(List<HistoryTrade> trades, Counterparty target) {
         return trades.stream()
                 .filter(trade -> target.equals(trade.getTarget()))
+                .findFirst()
+                .get();
+    }
+
+    public HistoryTrade findHistoryTradeByTargetAndInvoiceId(List<HistoryTrade> trades, Counterparty target, Long invoiceId) {
+        return trades.stream()
+                .filter(trade -> target.equals(trade.getTarget()) && invoiceId.equals(trade.getInvoice().getId()))
                 .findFirst()
                 .get();
     }

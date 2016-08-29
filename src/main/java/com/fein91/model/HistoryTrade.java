@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-public class HistoryTrade {
+public class HistoryTrade implements CalculableTrade {
 
     @Id
     @GeneratedValue
@@ -44,6 +44,13 @@ public class HistoryTrade {
      */
     BigDecimal unpaidInvoiceValue;
 
+    /**
+     * its needed to calculate avg days left to payment date
+     */
+    @Transient
+    @JsonIgnore
+    private BigDecimal daysToPaymentMultQtyTraded;
+
     public Long getId() {
         return id;
     }
@@ -64,6 +71,7 @@ public class HistoryTrade {
         this.affectedOrderRequest = affectedOrderRequest;
     }
 
+    @Override
     public BigDecimal getQuantity() {
         return quantity;
     }
@@ -110,6 +118,15 @@ public class HistoryTrade {
 
     public Counterparty getTarget() {
         return target;
+    }
+
+    @Override
+    public BigDecimal getDaysToPaymentMultQtyTraded() {
+        return daysToPaymentMultQtyTraded;
+    }
+
+    public void setDaysToPaymentMultQtyTraded(BigDecimal daysToPaymentMultQtyTraded) {
+        this.daysToPaymentMultQtyTraded = daysToPaymentMultQtyTraded;
     }
 
     @Override

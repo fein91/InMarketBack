@@ -1,16 +1,18 @@
 package com.fein91.core.model;
 
+import com.fein91.model.CalculableTrade;
+
 import java.math.BigDecimal;
 
-public class Trade {
+public class Trade implements CalculableTrade {
 
 	private double price;
-	private BigDecimal qty;
+	private BigDecimal quantity;
 	private long provider;
 	private long taker;
 	private long buyer;
 	private long seller;
-	private long orderHit;
+	private Long orderHit;
 	private long invoiceId;
 	private BigDecimal discountValue;
 	private BigDecimal periodReturn;
@@ -24,9 +26,9 @@ public class Trade {
 	
 	public Trade(double price, BigDecimal qty, BigDecimal discountValue, BigDecimal periodReturn, BigDecimal unpaidInvoiceValue,
 				 BigDecimal invoiceValue, BigDecimal daysToPaymentMultQtyTraded,
-				 long provider, long taker, long buyer, long seller, long orderHit, long invoiceId) {
+				 long provider, long taker, long buyer, long seller, Long orderHit, long invoiceId) {
 		this.price = price;
-		this.qty = qty;
+		this.quantity = qty;
 		this.discountValue = discountValue;
 		this.periodReturn = periodReturn;
 		this.unpaidInvoiceValue = unpaidInvoiceValue;
@@ -45,7 +47,7 @@ public class Trade {
 	public String toString() {
 		return ("\n| TRADE\tt= " +
 				"\tprice = " + price +
-				"\tquantity = " + qty +
+				"\tquantity = " + quantity +
 				"\tdiscountValue = " + discountValue +
 				"\tunpaidInvoiceValue = " + unpaidInvoiceValue +
 				"\tProvider = " + provider +
@@ -56,7 +58,7 @@ public class Trade {
 	
 	public String toCSV() {
 		return (price + ", " +
-				qty + ", " + 
+				quantity + ", " +
 				provider + ", " + 
 				taker + ", " + 
 				buyer + ", " + 
@@ -68,9 +70,9 @@ public class Trade {
 	}
 
 
-
-	public BigDecimal getQty() {
-		return qty;
+	@Override
+	public BigDecimal getQuantity() {
+		return quantity;
 	}
 
 
@@ -98,7 +100,7 @@ public class Trade {
 	}
 
 
-	public long getOrderHit() {
+	public Long getOrderHit() {
 		return orderHit;
 	}
 
@@ -118,6 +120,7 @@ public class Trade {
 		return invoiceValue;
 	}
 
+	@Override
 	public BigDecimal getDaysToPaymentMultQtyTraded() {
 		return daysToPaymentMultQtyTraded;
 	}

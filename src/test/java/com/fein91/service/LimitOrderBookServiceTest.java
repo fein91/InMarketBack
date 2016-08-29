@@ -116,22 +116,22 @@ public class LimitOrderBookServiceTest {
         Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(trade1.getPrice(), supplier1AskPrice, 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(80).compareTo(trade1.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(80).compareTo(trade1.getQuantity()));
 
         Trade trade2 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
         Assert.assertNotNull(trade2);
         Assert.assertEquals(trade2.getPrice(), supplier2AskPrice, 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(150).compareTo(trade2.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(150).compareTo(trade2.getQuantity()));
 
         Trade trade3 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier3.getId(), buyer.getId());
         Assert.assertNotNull(trade3);
         Assert.assertEquals(trade3.getPrice(), supplier3AskPrice, 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(40).compareTo(trade3.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(40).compareTo(trade3.getQuantity()));
 
         Trade trade4 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier4.getId(), buyer.getId());
         Assert.assertNotNull(trade4);
         Assert.assertEquals(trade4.getPrice(), supplier4AskPrice, 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(10).compareTo(trade4.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(10).compareTo(trade4.getQuantity()));
 
         Assert.assertEquals(BigDecimal.valueOf(280).compareTo(result.getSatisfiedDemand()), 0);
     }
@@ -203,14 +203,14 @@ public class LimitOrderBookServiceTest {
         Trade tradeSupplier2Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
         Assert.assertNotNull(tradeSupplier2Buyer);
         Assert.assertEquals(20d, tradeSupplier2Buyer.getPrice(), 0d);
-        Assert.assertEquals("Actual trade qty: " + tradeSupplier2Buyer.getQty(),
-                BigDecimal.valueOf(10000).compareTo(tradeSupplier2Buyer.getQty()), 0);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier2Buyer.getQuantity(),
+                BigDecimal.valueOf(10000).compareTo(tradeSupplier2Buyer.getQuantity()), 0);
 
         Trade tradeSupplier1Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(tradeSupplier1Buyer);
         Assert.assertEquals(22d, tradeSupplier1Buyer.getPrice(), 0d);
-        Assert.assertEquals("Actual trade qty: " + tradeSupplier1Buyer.getQty(),
-                BigDecimal.valueOf(20000).compareTo(tradeSupplier1Buyer.getQty()), 0);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier1Buyer.getQuantity(),
+                BigDecimal.valueOf(20000).compareTo(tradeSupplier1Buyer.getQuantity()), 0);
 
         invoice1S1B = invoiceServiceImpl.getById(invoice1S1B.getId());
         Assert.assertEquals("Actual invoice prepaid value: " + invoice1S1B.getPrepaidValue(),
@@ -288,18 +288,18 @@ public class LimitOrderBookServiceTest {
         Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer1.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(trade1.getPrice(), buyer1AskPrice, 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(90).compareTo(trade1.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(90).compareTo(trade1.getQuantity()));
 
         Trade trade2 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer2.getId());
         Assert.assertNotNull(trade2);
         Assert.assertEquals(trade2.getPrice(), buyer2AskPrice, 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(80).compareTo(trade2.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(80).compareTo(trade2.getQuantity()));
 
         Trade trade3 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier.getId(), buyer3.getId());
         Assert.assertNotNull(trade3);
         Assert.assertEquals(trade3.getPrice(), buyer3AskPrice, 0d);
-        Assert.assertEquals("Actual trade qty: " + trade3.getQty(),
-                0, BigDecimal.valueOf(280).compareTo(trade3.getQty()));
+        Assert.assertEquals("Actual trade qty: " + trade3.getQuantity(),
+                0, BigDecimal.valueOf(280).compareTo(trade3.getQuantity()));
 
         Assert.assertEquals(BigDecimal.valueOf(450).compareTo(result.getSatisfiedDemand()), 0);
         Assert.assertEquals("Actual apr: " + result.getApr(),
@@ -373,7 +373,7 @@ public class LimitOrderBookServiceTest {
         Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(trade1.getPrice(), supplier1AskPrice, 0d);
-        Assert.assertEquals(trade1.getQty(), BigDecimal.valueOf(250));
+        Assert.assertEquals(trade1.getQuantity(), BigDecimal.valueOf(250));
 
         Assert.assertEquals(BigDecimal.valueOf(250).compareTo(result.getSatisfiedDemand()), 0);
         Assert.assertEquals(0, BigDecimal.valueOf(28).compareTo(result.getApr()));
@@ -562,7 +562,7 @@ public class LimitOrderBookServiceTest {
 
         Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
-        Assert.assertEquals(BigDecimal.valueOf(100), trade1.getQty());
+        Assert.assertEquals(BigDecimal.valueOf(100), trade1.getQuantity());
         Assert.assertEquals(15d, trade1.getPrice(), 0d);
 
         OrderRequest marketOrderRequest2 = new OrderRequestBuilder(buyer)
@@ -575,12 +575,12 @@ public class LimitOrderBookServiceTest {
 
         Trade trade2 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade2);
-        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(trade2.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(50).compareTo(trade2.getQuantity()));
         Assert.assertEquals(15d, trade2.getPrice(), 0d);
 
         Trade trade3 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
         Assert.assertNotNull(trade3);
-        Assert.assertEquals(0, BigDecimal.valueOf(150).compareTo(trade3.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(150).compareTo(trade3.getQuantity()));
         Assert.assertEquals(14d, trade3.getPrice(), 0d);
 
         invoiceS1B = invoiceServiceImpl.getById(invoiceS1B.getId());
@@ -644,14 +644,14 @@ public class LimitOrderBookServiceTest {
         Trade trade1 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade1);
         Assert.assertEquals(26d, trade1.getPrice(), 0d);
-        Assert.assertEquals("Actual trade qty: " + trade1.getQty(),
-                0, BigDecimal.valueOf(100).compareTo(trade1.getQty()));
+        Assert.assertEquals("Actual trade qty: " + trade1.getQuantity(),
+                0, BigDecimal.valueOf(100).compareTo(trade1.getQuantity()));
 
         Trade trade2 = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
         Assert.assertNotNull(trade2);
         Assert.assertEquals(25d, trade2.getPrice(), 0d);
-        Assert.assertEquals("Actual trade qty: " + trade2.getQty(),
-                0, BigDecimal.valueOf(250).compareTo(trade2.getQty()));
+        Assert.assertEquals("Actual trade qty: " + trade2.getQuantity(),
+                0, BigDecimal.valueOf(250).compareTo(trade2.getQuantity()));
 
         Assert.assertEquals("Actual apr " + result.getApr(), BigDecimal.valueOf(25.29).compareTo(result.getApr()), 0);
     }
@@ -732,7 +732,7 @@ public class LimitOrderBookServiceTest {
         Trade trade = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade);
         Assert.assertEquals(bid1Price.doubleValue(), trade.getPrice(), 0d);
-        Assert.assertEquals(BigDecimal.valueOf(350), trade.getQty());
+        Assert.assertEquals(BigDecimal.valueOf(350), trade.getQuantity());
     }
 
     /*
@@ -790,14 +790,14 @@ public class LimitOrderBookServiceTest {
         Trade tradeSupplier2Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier2.getId(), buyer.getId());
         Assert.assertNotNull(tradeSupplier2Buyer);
         Assert.assertEquals(27d, tradeSupplier2Buyer.getPrice(), 0d);
-        Assert.assertEquals("Actual trade qty: " + tradeSupplier2Buyer.getQty(),
-                BigDecimal.valueOf(291).compareTo(tradeSupplier2Buyer.getQty()), 0);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier2Buyer.getQuantity(),
+                BigDecimal.valueOf(291).compareTo(tradeSupplier2Buyer.getQuantity()), 0);
 
         Trade tradeSupplier1Buyer = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(tradeSupplier1Buyer);
         Assert.assertEquals(26d, tradeSupplier1Buyer.getPrice(), 0d);
-        Assert.assertEquals("Actual trade qty: " + tradeSupplier1Buyer.getQty(),
-                BigDecimal.valueOf(59).compareTo(tradeSupplier1Buyer.getQty()), 0);
+        Assert.assertEquals("Actual trade qty: " + tradeSupplier1Buyer.getQuantity(),
+                BigDecimal.valueOf(59).compareTo(tradeSupplier1Buyer.getQuantity()), 0);
 
         invoice1S1B = invoiceServiceImpl.getById(invoice1S1B.getId());
         Assert.assertEquals("Actual invoice prepaid value: " + invoice1S1B.getPrepaidValue(),

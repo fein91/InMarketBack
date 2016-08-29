@@ -72,7 +72,7 @@ public class UpdateOrderRequestTest {
         Trade trade = testUtils.findTradeByBuyerAndSeller(result.getTape(), supplier1.getId(), buyer.getId());
         Assert.assertNotNull(trade);
         Assert.assertEquals(bidPrice.doubleValue(), trade.getPrice(), 0d);
-        Assert.assertEquals(0, BigDecimal.valueOf(60).compareTo(trade.getQty()));
+        Assert.assertEquals(0, BigDecimal.valueOf(60).compareTo(trade.getQuantity()));
     }
 
 
