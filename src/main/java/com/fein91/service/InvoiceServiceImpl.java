@@ -60,6 +60,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    public List<Invoice> findBySourceOrTargetId(Long counterpartyId) {
+        return invoiceRepository.findInvoicesBySourceOrTargetId(counterpartyId);
+    }
+
+    @Override
     public List<Invoice> getByTargetId(Long targetId) {
         return invoiceRepository.findInvoicesByTargetId(targetId);
     }

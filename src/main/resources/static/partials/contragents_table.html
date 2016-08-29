@@ -1,0 +1,44 @@
+<div class="table-responsive" cg-busy="{promise: importPromise, message:'Происходит импорт'}">
+    <label class="btn btn-default import-btn pull-right">
+        <input type="file" name="file" accept=".xlsx" class="file-input"
+               onchange="angular.element(this).scope().import(this.files)"/>
+        <div>Импорт</div>
+    </label>
+    <table ng-table="tableParams" class="table table-condensed table-bordered table-striped centered-table"
+           show-filter="true">
+        <tr class="ng-table-group" ng-repeat-start="group in $groups">
+            <td></td>
+            <td>
+                <a href="" ng-click="group.$hideRows = !group.$hideRows">
+                    <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
+                    <strong>{{ group.value }}</strong>
+                </a></td>
+            <td>
+                <strong>{{ group.data.sum('value') | number : 2}}</strong></td>
+            <td>
+                <strong>{{ group.data.sum('prepaidValue') | number : 2}}</strong></td>
+            <td>
+                <strong>{{ group.data.sum('unpaidValue') | number : 2}}</strong></td>
+            <td>
+                <strong>{{ calculateAvgDaysToPayment(group.data) | number : 2}}</strong></td>
+            <td/><td/>
+        </tr>
+        <tr ng-hide="group.$hideRows" ng-repeat="invoice in group.data" ng-repeat-end>
+            <td header="'ng-table/headers/checkbox.html'">
+                <input type="checkbox" ng-model="checkboxes.invoices[invoice.id]"/></td>
+            <td data-title="'Поставщик'" sortable="'source.name'"></td>
+            <td data-title="'Сумма инвойса (грн.)'" sortable="'value'">
+                {{invoice.value | number : 2}}</td>
+            <td data-title="'Выданные предоплаты (грн.)'" sortable="'prepaidValue'">
+                {{invoice.prepaidValue | number : 2}}</td>
+            <td data-title="'Остаток к оплате (грн.)'" sortable="'unpaidValue'">
+                {{invoice.unpaidValue | number : 2}}</td>
+            <td data-title="'Срок (дни)'" sortable="'daysToPayment'">
+                {{invoice.daysToPayment}}</td>
+            <td data-title="'Дата платежа'" sortable="'paymentDate'">
+                {{invoice.paymentDate | date:'dd/MM/yyyy'}}</td>
+            <td data-title="'# Инвойса'" sortable="'id'">
+                {{invoice.externalId}}</td>
+        </tr>
+    </table>
+</div>

@@ -40,20 +40,20 @@ public class CounterpartyControllerTest {
     }
 
 //    @Test
-//    public void getBySourceId() {
+//    public void getInvoicesBySourceId() {
 //        expect(invoiceService.findInvoicesBySourceId(1L)).andReturn(new ArrayList<>());
 //
 //        replay(repoMock);
 //
-//        controller.getBySourceId(1L);
+//        controller.getInvoicesBySourceId(1L);
 //    }
 //
 //    @Test
-//    public void getByTargetId() {
+//    public void getInvoicesByTargetId() {
 //        expect(repoMock.findInvoicesByTargetId(1L)).andReturn(new ArrayList<>());
 //
 //        replay(repoMock);
 //
-//        controller.getByTargetId(1L);
+//        controller.getInvoicesByTargetId(1L);
 //    }
 }

@@ -13,6 +13,8 @@ public interface InvoiceService {
 
     List<Invoice> findBySourceAndTarget(Long sourceId, Long targetId);
 
+    List<Invoice> findBySourceOrTargetId(Long counterpartyId);
+
     Invoice getById(Long invoiceId);
 
     List<Invoice> getBySourceId(Long sourceId);

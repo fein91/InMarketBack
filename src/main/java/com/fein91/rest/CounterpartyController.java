@@ -39,15 +39,20 @@ public class CounterpartyController {
         this.importExportService = importExportService;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/invoices")
+    public List<Invoice> getInvoicesBySourceOrTargetId(@PathVariable Long counterpartyId) {
+        LOGGER.info("Looking for all invoices by counterpartyID: " + counterpartyId);
+        return invoiceService.findBySourceOrTargetId(counterpartyId);
+    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{sourceId}/invoicesBySource")
-    public List<Invoice> getBySourceId(@PathVariable Long sourceId) {
+    public List<Invoice> getInvoicesBySourceId(@PathVariable Long sourceId) {
         LOGGER.info("Looking for invoices by sourceId: " + sourceId);
         return invoiceService.getBySourceId(sourceId);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{targetId}/invoicesByTarget")
-    public List<Invoice> getByTargetId(@PathVariable Long targetId) {
+    public List<Invoice> getInvoicesByTargetId(@PathVariable Long targetId) {
         LOGGER.info("Looking for invoices by target: " + targetId);
         return invoiceService.getByTargetId(targetId);
     }
@@ -59,7 +64,7 @@ public class CounterpartyController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/orderRequests")
-    public List<OrderRequest> getByCounterpartyId(@PathVariable Long counterpartyId) {
+    public List<OrderRequest> getOrderRequestsByCounterpartyId(@PathVariable Long counterpartyId) {
         return orderRequestService.getByCounterpartyId(counterpartyId);
     }
 

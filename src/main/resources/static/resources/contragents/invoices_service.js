@@ -1,8 +1,8 @@
 angular
     .module('inmarket.invoicesService', [])
     .service('invoicesService', function ($http) {
-        this.getAll = function () {
-            var url = "json/invoices_data.json";
+        this.getAll = function (counterpartyId) {
+            var url = "counterparties/" + counterpartyId + "/invoices";
             console.log("get request produced: " + url);
             return $http.get(url);
         };

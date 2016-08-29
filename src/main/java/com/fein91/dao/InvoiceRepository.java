@@ -17,6 +17,9 @@ public interface InvoiceRepository extends CrudRepository<Invoice, Long> {
 
     List<Invoice> findByTarget(Counterparty counterparty);
 
+    @Query("SELECT i FROM Invoice i where (i.source.id = :counterPartyId or i.target.id = :counterPartyId) and i.paymentDate > CURRENT_DATE")
+    List<Invoice> findInvoicesBySourceOrTargetId(@Param("counterPartyId") Long counterPartyId);
+
     @Query("SELECT i FROM Invoice i where i.source.id = :counterPartyId and i.paymentDate > CURRENT_DATE")
     List<Invoice> findInvoicesBySourceId(@Param("counterPartyId") Long counterPartyId);
 
