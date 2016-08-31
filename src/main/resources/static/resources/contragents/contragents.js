@@ -17,6 +17,7 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                 checkboxes: '=',
                 invoices: '=',
                 currentInvoicesPage: '=',
+                showImport: '@',
                 event: '@'
             },
             templateUrl: 'partials/contragents_table.html',

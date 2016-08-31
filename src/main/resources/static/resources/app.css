@@ -145,14 +145,14 @@ body {
     width: 150px;
     position: fixed;
     top: 120px;
-    right: 25px;
+    right: 185px;
 }
 
 .save-checkboxes-btn {
     width: 150px;
     position: fixed;
     top: 120px;
-    right: 185px;
+    right: 25px;
 }
 
 .error-popup-header {
