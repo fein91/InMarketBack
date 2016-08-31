@@ -1,5 +1,5 @@
 <div class="table-responsive" cg-busy="{promise: importPromise, message:'Происходит импорт'}">
-    <button class="btn btn-default save-checkboxes-btn pull-right">Сохранить</button>
+    <button class="btn btn-default save-checkboxes-btn pull-right" ng-click="saveInvoices()">Сохранить</button>
     <label class="btn btn-default import-btn pull-right" ng-if="showImport">
         <input type="file" name="file" accept=".xlsx" class="file-input"
                onchange="angular.element(this).scope().import(this.files); this.value=null; return false;"/>

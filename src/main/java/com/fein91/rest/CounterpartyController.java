@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -55,6 +56,14 @@ public class CounterpartyController {
     public List<Invoice> getInvoicesByTargetId(@PathVariable Long targetId) {
         LOGGER.info("Looking for invoices by target: " + targetId);
         return invoiceService.getByTargetId(targetId);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{counterpartyId}/updateCheckedInvoices")
+    public ResponseEntity updateCheckedInvoices(@RequestBody Map<Long, Boolean> checkedInvoices,
+                                                @PathVariable Long counterpartyId) {
+        LOGGER.info("Updating checked invoices: " + checkedInvoices);
+        invoiceService.updateCheckedInvoices(counterpartyId, checkedInvoices);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{counterpartyId}/transactionHistory")

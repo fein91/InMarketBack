@@ -50,6 +50,15 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                         });
                     };
 
+                    $scope.saveInvoices = function() {
+                        invoicesService.updateCheckedInvoices(session.counterpartyId, $scope.checkboxes.invoices)
+                            .then(function successCallback(response) {
+                                console.log('successfully updated');
+                            }, function errorCallback(response) {
+                                console.log('got ' + response.status + ' error');
+                            });
+                    };
+
                     $scope.checkAll = function () {
                         var isChecked = $scope.checkboxes.checked;
                         console.log('check all ' + isChecked);
@@ -91,6 +100,8 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
         $scope.supplierInvoices = invoices.supplierInvoices;
 
         self.init = function () {
+            invoices.cleanUp();
+
             var counterpartyId = session.counterpartyId;
             invoicesService.getAll(counterpartyId)
                 .then(function successCallback(response) {
@@ -101,10 +112,10 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                             invoice.daysToPayment = invoicesService.dateDiffInDays(new Date(), new Date(invoice.paymentDate));
 
                             if (counterpartyId == invoice.source.id) {
-                                $scope.buyerCheckboxes.invoices[invoice.id] = true;
+                                $scope.buyerCheckboxes.invoices[invoice.id] = invoice.sourceChecked;
                                 buyerInvoices.push(invoice);
                             } else if (counterpartyId == invoice.target.id) {
-                                $scope.supplierCheckboxes.invoices[invoice.id] = true;
+                                $scope.supplierCheckboxes.invoices[invoice.id] = invoice.targetChecked;
                                 supplierInvoices.push(invoice);
                             }}
                         );

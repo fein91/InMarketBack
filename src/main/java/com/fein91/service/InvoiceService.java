@@ -4,6 +4,7 @@ import com.fein91.model.Invoice;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public interface InvoiceService {
 
@@ -22,4 +23,6 @@ public interface InvoiceService {
     List<Invoice> getByTargetId(Long targetId);
 
     Invoice getByExternalId(String externalId);
+
+    void updateCheckedInvoices(Long counterpartyId, Map<Long, Boolean> checkedInvoices);
 }

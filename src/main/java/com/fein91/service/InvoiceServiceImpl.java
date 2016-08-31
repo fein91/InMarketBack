@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static com.fein91.Constants.ROUNDING_MODE;
@@ -72,5 +74,25 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public Invoice getByExternalId(String externalId) {
         return invoiceRepository.findByExternalId(externalId);
+    }
+
+    @Override
+    @Transactional
+    public void updateCheckedInvoices(Long counterpartyId, Map<Long, Boolean> checkedInvoices) {
+        List<Invoice> invoicesToUpdate = new ArrayList<>();
+        for (Map.Entry<Long, Boolean> entry : checkedInvoices.entrySet()) {
+            Long invoiceId = entry.getKey();
+            boolean isInvoiceChecked = entry.getValue();
+            Invoice invoice = invoiceRepository.findOne(invoiceId);
+            if (invoice.getSource().getId().equals(counterpartyId)) {
+                invoice.setSourceChecked(isInvoiceChecked);
+            } else if (invoice.getTarget().getId().equals(counterpartyId)) {
+                invoice.setTargetChecked(isInvoiceChecked);
+            } else {
+                LOGGER.warning("Wrong combination of counterparty: " + counterpartyId + " and checkedInvoices: " + checkedInvoices);
+            }
+            invoicesToUpdate.add(invoice);
+        }
+        invoiceRepository.save(invoicesToUpdate);
     }
 }

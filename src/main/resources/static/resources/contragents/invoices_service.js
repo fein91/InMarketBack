@@ -19,6 +19,12 @@ angular
             return $http.get(url);
         };
 
+        this.updateCheckedInvoices = function (counterpartyId, checkedInvoices) {
+            var url = "counterparties/" + counterpartyId + "/updateCheckedInvoices";
+            console.log("post request produced: " + url);
+            return $http.post(url, checkedInvoices);
+        };
+
         this.calculateAvgDaysToPayment = function (invoices) {
             var daysMultUnpaidValueSum = 0;
             var unpaidValuesSum = 0;

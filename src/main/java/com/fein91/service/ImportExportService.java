@@ -58,6 +58,8 @@ public class ImportExportService {
                         invoice.setValue(BigDecimal.valueOf(amount));
                         invoice.setPaymentDate(FORMAT.parse(stringDate));
                         invoice.setExternalId(externalInvoiceId);
+                        invoice.setSourceChecked(true);
+                        invoice.setTargetChecked(true);
 
                         invoiceService.addInvoice(invoice);
                         LOGGER.info("Invoice imported: " + invoice);
