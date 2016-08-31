@@ -148,6 +148,18 @@ body {
     right: 25px;
 }
 
+.save-checkboxes-btn {
+    width: 150px;
+    position: fixed;
+    top: 120px;
+    right: 185px;
+}
+
+.error-popup-header {
+    background-color: #B22122;
+    color: white;
+}
+
 .file-input {
     display: none !important;
 }

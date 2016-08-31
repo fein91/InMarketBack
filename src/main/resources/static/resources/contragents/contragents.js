@@ -20,7 +20,7 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                 event: '@'
             },
             templateUrl: 'partials/contragents_table.html',
-            controller: function($scope, $rootScope, $route, invoicesService, invoices, session) {
+            controller: function($scope, $rootScope, $route, $uibModal, invoicesService, invoices, session) {
                     $scope.import = function(files) {
                         $scope.importPromise = invoicesService.import(session.counterpartyId, files);
                         $scope.importPromise.then(function successCallback(response) {
@@ -28,6 +28,24 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                             $route.reload();
                         }, function errorCallback(response) {
                             console.log('got ' + response.status + ' error, msg=' + response.data.message);
+
+                            var modalInstance = $uibModal.open({
+                                animation: true,
+                                templateUrl: 'partials/error_popup.html',
+                                controller: function($scope, $uibModalInstance, errorMsg) {
+                                        $scope.errorMsg = errorMsg;
+
+                                        $scope.close = function () {
+                                            $uibModalInstance.close();
+                                        }
+                                    },
+                                size: 'sm',
+                                resolve: {
+                                    errorMsg: function () {
+                                        return response.data.message;
+                                    }
+                                }
+                            });
                         });
                     };
 

@@ -1,9 +1,10 @@
 <div class="table-responsive" cg-busy="{promise: importPromise, message:'Происходит импорт'}">
     <label class="btn btn-default import-btn pull-right">
         <input type="file" name="file" accept=".xlsx" class="file-input"
-               onchange="angular.element(this).scope().import(this.files)"/>
+               onchange="angular.element(this).scope().import(this.files); this.value=null; return false;"/>
         <div>Импорт</div>
     </label>
+    <button class="btn btn-default save-checkboxes-btn pull-right">Сохранить</button>
     <table ng-table="tableParams" class="table table-condensed table-bordered table-striped centered-table"
            show-filter="true">
         <tr class="ng-table-group" ng-repeat-start="group in $groups">
