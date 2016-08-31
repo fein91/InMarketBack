@@ -66,7 +66,8 @@ public class ImportExportService {
                     }
                 }
             }
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
+            LOGGER.severe("Error occurred while import, " + e);
             throw new ImportExportException(EXCEPTION_WHILE_IMPORT_OCCURRED.getMessage(), EXCEPTION_WHILE_IMPORT_OCCURRED.getLocalizedMessage());
         }
     }

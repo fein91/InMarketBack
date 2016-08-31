@@ -27,7 +27,7 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                             invoices.cleanUp();
                             $route.reload();
                         }, function errorCallback(response) {
-                            console.log('got ' + response.status + ' error');
+                            console.log('got ' + response.status + ' error, msg=' + response.data.message);
                         });
                     };
 
