@@ -49,6 +49,7 @@ public class OrderRequestBuilder {
         return this;
     }
 
+    @Deprecated
     public OrderRequestBuilder invoicesChecked(Map<Long, Boolean> invoicesChecked) {
         this.invoicesChecked = invoicesChecked;
         return this;

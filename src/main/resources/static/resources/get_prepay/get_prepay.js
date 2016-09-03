@@ -33,8 +33,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     "date": new Date(),
                     "counterparty": {
                         "id": session.counterpartyId
-                    },
-                    "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
+                    }
                 };
 
                 orderRequestsService.calculate(orderRequest)
@@ -74,8 +73,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                             "date": new Date(),
                             "counterparty": {
                                 "id": session.counterpartyId
-                            },
-                            "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
+                            }
                         };
                     }
                 }
@@ -168,8 +166,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                     "date": new Date(),
                     "counterparty": {
                         "id": session.counterpartyId
-                    },
-                    "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
+                    }
                 };
 
                 orderRequestsService.calculate(orderRequest)
@@ -209,8 +206,7 @@ angular.module('inmarket.get_prepay', ['ngRoute', 'chart.js'])
                             "date": new Date(),
                             "counterparty": {
                                 "id": session.counterpartyId
-                            },
-                            "invoicesChecked": invoices.buyerInvoicesCheckboxes.invoices
+                            }
                         };
                     }
                 }

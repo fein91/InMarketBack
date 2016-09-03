@@ -16,7 +16,7 @@ angular.module('inmarket.auth', ['ngStorage'])
         }
     })
 
-    .controller('loginCtrl', function ($rootScope, $scope, $http, $location, $route, $sessionStorage, session) {
+    .controller('loginCtrl', function ($rootScope, $scope, $http, $location, $route, $sessionStorage, $window, session) {
         console.log('loginCtrl inited');
 
         var self = this;
@@ -103,7 +103,7 @@ angular.module('inmarket.auth', ['ngStorage'])
                 $rootScope.authenticated = $sessionStorage.authenticated;
 
                 console.log('turn off user');
-                $location.path("/login");
+                $window.location.reload();
             });
         }
 

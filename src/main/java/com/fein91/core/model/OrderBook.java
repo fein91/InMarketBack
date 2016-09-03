@@ -224,6 +224,7 @@ public class OrderBook {
                         qtyTraded = qtyRemaining;
                         discountValue = qtyTraded.multiply(discountPercent);
 
+                        currentInvoice.setDiscountValue(currentInvoice.getDiscountValue().add(discountValue));
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
@@ -237,6 +238,8 @@ public class OrderBook {
                         //обновляем значением ASK - localASK
                         qtyTraded = localOrderQty;
                         discountValue = qtyTraded.multiply(discountPercent);
+
+                        currentInvoice.setDiscountValue(currentInvoice.getDiscountValue().add(discountValue));
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);
@@ -252,6 +255,8 @@ public class OrderBook {
                         //поглощаем
                         qtyTraded = localOrderQty;
                         discountValue = qtyTraded.multiply(discountPercent);
+
+                        currentInvoice.setDiscountValue(currentInvoice.getDiscountValue().add(discountValue));
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         if (side == OrderSide.ASK) {
@@ -265,6 +270,8 @@ public class OrderBook {
                         //обновляем значением ASK - qtyRem
                         qtyTraded = qtyRemaining;
                         discountValue = qtyTraded.multiply(discountPercent);
+
+                        currentInvoice.setDiscountValue(currentInvoice.getDiscountValue().add(discountValue));
                         invoiceService.updateInvoice(currentInvoice, qtyTraded.add(discountValue));
 
                         BigDecimal newQty = headOrder.getQuantity().subtract(qtyTraded);

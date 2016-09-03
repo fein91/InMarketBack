@@ -22,6 +22,9 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
             },
             templateUrl: 'partials/contragents_table.html',
             controller: function($scope, $rootScope, $route, $uibModal, invoicesService, invoices, session) {
+
+                    //$scope.invoiceCounterpartyName = $scope.showImport ? 'Покупатель / # Инвойса' : 'Поставщик / # Инвойса';
+
                     $scope.import = function(files) {
                         $scope.importPromise = invoicesService.import(session.counterpartyId, files);
                         $scope.importPromise.then(function successCallback(response) {
@@ -70,6 +73,10 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                         });
                     };
 
+                    $scope.calculateAvgDaysToPayment = function(invoices) {
+                        return invoicesService.calculateAvgDaysToPayment(invoices);
+                    };
+
                     // watch for data checkboxes
                     $scope.$watch('checkboxes.invoices', function (values) {
                         console.log(JSON.stringify(values) + 'checkboxes.invoices');
@@ -109,6 +116,9 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                     var supplierInvoices = [];
                     angular.forEach(response.data, function (invoice) {
                             invoice.unpaidValue = invoice.value - invoice.prepaidValue;
+                            //TODO ugly hack
+                            invoice.prepaidValue = invoice.prepaidValue - invoice.discountValue;
+
                             invoice.daysToPayment = invoicesService.dateDiffInDays(new Date(), new Date(invoice.paymentDate));
 
                             if (counterpartyId == invoice.source.id) {

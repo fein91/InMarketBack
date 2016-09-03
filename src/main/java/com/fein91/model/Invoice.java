@@ -32,6 +32,8 @@ public class Invoice {
 
     private BigDecimal prepaidValue = BigDecimal.ZERO;
 
+    private BigDecimal discountValue = BigDecimal.ZERO;
+
     private Date paymentDate;
 
     @Transient
@@ -93,6 +95,14 @@ public class Invoice {
 
     public void setPrepaidValue(BigDecimal prepaidValue) {
         this.prepaidValue = prepaidValue;
+    }
+
+    public BigDecimal getDiscountValue() {
+        return discountValue;
+    }
+
+    public void setDiscountValue(BigDecimal discountValue) {
+        this.discountValue = discountValue;
     }
 
     public Date getPaymentDate() {

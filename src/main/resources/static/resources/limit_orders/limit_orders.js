@@ -25,10 +25,6 @@ angular.module('inmarket.limit_orders', ['ngRoute'])
             templateUrl: 'partials/limit_orders_table.html',
             controller: function($scope, $uibModal, invoices, orderRequestsService) {
                 $scope.save = function(record, recordForm) {
-                    record.invoicesChecked = record.side == 'ASK'
-                        ? invoices.supplierInvoicesCheckboxes.invoices
-                        : invoices.buyerInvoicesCheckboxes.invoices;
-
                     orderRequestsService.calculate(record)
                         .then(function successCallback(response) {
                             var modalInstance = $uibModal.open({

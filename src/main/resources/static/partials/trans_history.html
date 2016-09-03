@@ -1,9 +1,9 @@
 <div class="row page-content" ng-controller="TransHistoryCtrl as transactionHistory">
     <uib-tabset active="activeJustified" justified="false" type="pills">
         <uib-tab index="0" heading="Полученные предоплаты">
-            <button ng-click="exportInvoicesBySource()" class="btn btn-default import-btn pull-right">Экспорт</button>
+            <button ng-click="exportInvoicesBySource()" class="btn btn-default export-btn pull-right">Экспорт</button>
             <div class="table-responsive">
-                <table ng-table="bidsTableParams" class="table table-condensed table-bordered table-striped centered-table"
+                <table ng-table="bidsTableParams" class="table table-condensed table-bordered centered-table"
                        show-filter="true">
                     <tr class="ng-table-group" ng-repeat-start="record in $data">
                         <td>
@@ -12,48 +12,42 @@
                                       ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"><strong>{{record.date | date:'dd/MM/yyyy HH:mm'}}</strong></span>
                             </a></td>
                         <td><strong>{{record.type | i18n}}</strong></td>
+                        <!--<td><strong>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</strong></td>-->
+                        <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.price | number : 2}}</strong></td>
+                        <td><strong>{{record.avgDaysToPayment | number : 2}}</strong></td>
                         <td><strong>{{record.periodReturn | number : 2}}</strong></td>
                         <!--<td><strong>{{record.avgDiscountPerc | number : 2}}</strong></td>-->
-                        <td><strong>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</strong></td>
-                        <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
-                        <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
-                        <td><strong>{{record.avgDaysToPayment | number : 2}}</strong></td>
-                        <td></td>
-                        <td></td>
+                        <!--<td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>-->
                     </tr>
                     <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
-                        <td data-title="'Время сделки'"></td>
-                        <td data-title="'Тип сделки'"></td>
+                        <td data-title="'Время сделки / # Инвойса'">{{trade.invoice.externalId}}</td>
+                        <td data-title="'Тип сделки / Покупатель'">{{trade.target.name}}</td>
+                        <!--<td data-title="'Исходная сумма (грн.)'" sortable="'unpaidInvoiceValue'">-->
+                            <!--{{trade.unpaidInvoiceValue | number : 2}}</td>-->
+                        <td data-title="'Предоплата (грн.)'" sortable="'quantity'">
+                            {{trade.quantity | number : 2}}</td>
                         <td data-title="'Годовая процентная ставка (%)'" sortable="'price'">
                             {{trade.price | number : 1}}</td>
-                        <td data-title="'Доходность за период'" sortable="'periodReturn'">
+                        <td data-title="'Период предоплаты (дни)'">
+                            {{trade.invoice.daysToPayment}}</td>
+                        <td data-title="'Доходность за период (%)'" sortable="'periodReturn'">
                             {{trade.periodReturn | number : 2}}</td>
                         <!--<td data-title="'Процент скидки (%)'" sortable="'avgDiscountPerc'">-->
                             <!--{{trade.avgDiscountPerc | number : 2}}</td>-->
-                        <td data-title="'Исходная сумма (грн.)'" sortable="'unpaidInvoiceValue'">
-                            {{trade.unpaidInvoiceValue | number : 2}}</td>
-                        <td data-title="'Предоплата (грн.)'" sortable="'quantity'">
-                            {{trade.quantity | number : 2}}</td>
                         <td data-title="'Скидка (грн.)'" sortable="'discountValue'">
                             {{trade.discountValue | number : 2}}</td>
-                        <td data-title="'Остаток к оплате (грн.)'" sortable="'toPay'">
-                            {{trade.toPay | number : 2}}</td>
-                        <td data-title="'Период предоплаты (дни)'">
-                            {{trade.invoice.daysToPayment}}</td>
-                        <td data-title="'Покупатель'" sortable="'target.name'">
-                            {{trade.target.name}}</td>
-                        <td data-title="'# инвойса'" sortable="'invoice.externalId'">
-                            {{trade.invoice.externalId}}</td>
+                        <!--<td data-title="'Остаток к оплате (грн.)'" sortable="'toPay'">-->
+                            <!--{{trade.toPay | number : 2}}</td>-->
                     </tr>
                 </table>
             </div>
         </uib-tab>
         <uib-tab index="1" heading="Выданные предоплаты">
             <div class="table-responsive">
-                <button ng-click="exportInvoicesByTarget()" class="btn btn-default import-btn pull-right">Экспорт</button>
-                <table ng-table="asksTableParams" class="table table-condensed table-bordered table-striped centered-table"
+                <button ng-click="exportInvoicesByTarget()" class="btn btn-default export-btn pull-right">Экспорт</button>
+                <table ng-table="asksTableParams" class="table table-condensed table-bordered centered-table"
                        show-filter="true">
                     <tr class="ng-table-group" ng-repeat-start="record in $data">
                         <td>
@@ -62,40 +56,34 @@
                                       ng-class="{ 'glyphicon-chevron-right': record.$hideRows, 'glyphicon-chevron-down': !record.$hideRows }"><strong>{{record.date | date:'dd/MM/yyyy HH:mm'}}</strong></span>
                             </a></td>
                         <td><strong>{{record.type | i18n}}</strong></td>
+                        <!--<td><strong>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</strong></td>-->
+                        <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.price | number : 2}}</strong></td>
+                        <td><strong>{{record.avgDaysToPayment | number : 2}}</strong></td>
                         <td><strong>{{record.periodReturn | number : 2}}</strong></td>
                         <!--<td><strong>{{record.avgDiscountPerc | number : 2}}</strong></td>-->
-                        <td><strong>{{record.historyTrades.sum('unpaidInvoiceValue') | number : 2}}</strong></td>
-                        <td><strong>{{record.historyTrades.sum('quantity') | number : 2}}</strong></td>
                         <td><strong>{{record.historyTrades.sum('discountValue') | number : 2}}</strong></td>
-                        <td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>
-                        <td><strong>{{record.avgDaysToPayment | number : 2}}</strong></td>
-                        <td></td>
-                        <td></td>
+                        <!--<td><strong>{{record.historyTrades.sum('toPay') | number : 2}}</strong></td>-->
                     </tr>
                     <tr ng-hide="record.$hideRows" ng-repeat="trade in record.historyTrades" ng-repeat-end>
-                        <td data-title="'Время сделки'"></td>
-                        <td data-title="'Тип сделки'"></td>
+                        <td data-title="'Время сделки / # Инвойса'">{{trade.invoice.externalId}}</td>
+                        <td data-title="'Тип сделки / Поставщик'">{{trade.target.name}}</td>
+                        <!--<td data-title="'Исходная сумма (грн.)'" sortable="'unpaidInvoiceValue'">-->
+                            <!--{{trade.unpaidInvoiceValue | number : 2}}</td>-->
+                        <td data-title="'Предоплата (грн.)'" sortable="'quantity'">
+                            {{trade.quantity | number : 2}}</td>
                         <td data-title="'Годовая процентная ставка (%)'" sortable="'price'">
                             {{trade.price | number : 1}}</td>
-                        <td data-title="'Доходность за период'" sortable="'periodReturn'">
+                        <td data-title="'Срок предоплаты (дни)'">
+                            {{trade.invoice.daysToPayment}}</td>
+                        <td data-title="'Доходность за период (%)'" sortable="'periodReturn'">
                             {{trade.periodReturn | number : 2}}</td>
                         <!--<td data-title="'Процент скидки (%)'" sortable="'avgDiscountPerc'">-->
                             <!--{{trade.avgDiscountPerc | number : 2}}</td>-->
-                        <td data-title="'Исходная сумма (грн.)'" sortable="'unpaidInvoiceValue'">
-                            {{trade.unpaidInvoiceValue | number : 2}}</td>
-                        <td data-title="'Предоплата (грн.)'" sortable="'quantity'">
-                            {{trade.quantity | number : 2}}</td>
                         <td data-title="'Скидка (грн.)'" sortable="'discountValue'">
                             {{trade.discountValue | number : 2}}</td>
-                        <td data-title="'Остаток к оплате (грн.)'" sortable="'toPay'">
-                            {{trade.toPay | number : 2}}</td>
-                        <td data-title="'Срок предоплаты (дни)'">
-                            {{trade.invoice.daysToPayment}}</td>
-                        <td data-title="'Поставщик'" sortable="'target.name'">
-                            {{trade.target.name}}</td>
-                        <td data-title="'# инвойса'" sortable="'invoice.externalId'">
-                            {{trade.invoice.externalId}}</td>
+                        <!--<td data-title="'Остаток к оплате (грн.)'" sortable="'toPay'">-->
+                            <!--{{trade.toPay | number : 2}}</td>-->
                     </tr>
                 </table>
             </div>

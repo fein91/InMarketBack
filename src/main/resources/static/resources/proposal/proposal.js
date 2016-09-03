@@ -114,17 +114,4 @@ angular.module('inmarket.proposal', ['ngRoute'])
                 return result;
             };
 
-            self.init = function () {
-                //orderRequestsService.getOrderRequests(counterpartyId)
-                //    .then(function successCallback(response){
-                //        var orderRequests = response.data;
-                //        console.log(JSON.stringify(orderRequests));
-                //
-                //    }, function errorCallback(response) {
-                //        console.log('got ' + response.status + ' error');
-                //    });
-            }
-
-            self.init();
-
         }]);

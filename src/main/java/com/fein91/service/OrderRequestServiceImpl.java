@@ -158,7 +158,7 @@ public class OrderRequestServiceImpl implements OrderRequestService {
                 ? invoiceRepository.findInvoicesBySourceId(counterpartyId)
                 : invoiceRepository.findInvoicesByTargetId(counterpartyId);
         return invoices.stream()
-                .filter(invoice -> Boolean.TRUE.equals(orderRequest.getInvoicesChecked().get(invoice.getId())))
+                .filter(invoice -> invoice.isSourceChecked() && invoice.isTargetChecked())
                 .collect(Collectors.toList());
     }
 

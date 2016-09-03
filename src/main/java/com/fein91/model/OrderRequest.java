@@ -29,6 +29,7 @@ public class OrderRequest {
 
     int type;
 
+    @Deprecated
     @Transient
     Map<Long, Boolean> invoicesChecked = new HashMap<>();
 
@@ -88,10 +89,12 @@ public class OrderRequest {
         this.type = type.getId();
     }
 
+    @Deprecated
     public Map<Long, Boolean> getInvoicesChecked() {
         return invoicesChecked;
     }
 
+    @Deprecated
     public void setInvoicesChecked(Map<Long, Boolean> invoicesChecked) {
         this.invoicesChecked = invoicesChecked;
     }
