@@ -22,7 +22,7 @@ angular.module('inmarket', [
     'inmarket.counterpartyService',
     'inmarket.invoices'])
 
-    .config(function ($routeProvider, $httpProvider) {
+    .config(function ($locationProvider, $routeProvider, $httpProvider) {
         $routeProvider
             .when('/support', {
                 templateUrl: 'partials/support.html',
@@ -43,6 +43,7 @@ angular.module('inmarket', [
             .otherwise({redirectTo: '/'});
 
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+        $locationProvider.html5Mode(true);
     })
 
     .controller('HeaderController', ['$scope', '$location', function ($scope, $location) {
@@ -51,11 +52,11 @@ angular.module('inmarket', [
         };
     }])
 
-    .run(function ($rootScope, $location, $sessionStorage, session) {
+    .run(function ($rootScope, $location, $localStorage, session) {
         $rootScope.$on('$routeChangeStart', function (event, next) {
-            if (next.originalPath === "/login" && $sessionStorage.authenticated) {
+            if (next.originalPath === "/login" && $localStorage.authenticated) {
                 event.preventDefault();
-            } else if (next.access && next.access.loginRequired && !$sessionStorage.authenticated) {
+            } else if (next.access && next.access.loginRequired && !$localStorage.authenticated) {
                 event.preventDefault();
                 $rootScope.$broadcast("event:auth-loginRequired", {});
             }
@@ -63,8 +64,8 @@ angular.module('inmarket', [
 
         $rootScope.$on('event:auth-loginRequired', function (event, data) {
             session.invalidate();
-            $sessionStorage.authenticated = false;
-            $rootScope.authenticated = $sessionStorage.authenticated;
+            $localStorage.authenticated = false;
+            $rootScope.authenticated = $localStorage.authenticated;
 
             $location.path('/login');
         });

@@ -9,6 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="fein91">
     <title>NUAVANS</title>
+    <base href="/" />
 
     <style type="text/css">
         [ng\:cloak], [ng-cloak], .ng-cloak {
@@ -24,7 +25,7 @@
         <nav ng-show="authenticated" class="navbar navbar-fixed-top">
             <div class="container-fluid navbar-inverse top-navbar">
                 <div class="navbar-header">
-                    <a href="#/contragents"><img src="imgs/logo-main.png" height="47px"></a>
+                    <a href="/contragents"><img src="imgs/logo-main.png" height="47px"></a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
@@ -32,13 +33,13 @@
                             <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                                aria-expanded="false">{{session.login}} профиль <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
+                                <li><a href="">Action</a></li>
+                                <li><a href="">Another action</a></li>
+                                <li><a href="">Something else here</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Nav header</li>
-                                <li><a href="#">Separated link</a></li>
-                                <li><a href="#">One more separated link</a></li>
+                                <li><a href="">Separated link</a></li>
+                                <li><a href="">One more separated link</a></li>
                             </ul>
                         </li>
                         <li><a ng-click="downloadManual()">Инструкция</a></li>
@@ -61,12 +62,12 @@
         <div class="row">
             <div ng-show="authenticated" class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar" ng-controller="HeaderController">
-                    <li ng-class="{ active: isActive('/contragents')}"><a href="#/contragents">Мои инвойсы<span class="sr-only">(current)</span></a></li>
-                    <li ng-class="{ active: isActive('/get_prepay')}"><a href="#/get_prepay">Получить предоплату</a></li>
-                    <li ng-class="{ active: isActive('/make_prepay')}"><a href="#/make_prepay">Осуществить предоплату</a></li>
-                    <li ng-class="{ active: isActive('/limit_orders')}"><a href="#/limit_orders">Мои отложенные заявки</a></li>
-                    <li ng-class="{ active: isActive('/trans_history')}"><a href="#/trans_history">История рыночных сделок</a></li>
-                    <li ng-class="{ active: isActive('/support')}"><a href="#/support">Поддержка</a></li>
+                    <li ng-class="{ active: isActive('/contragents')}"><a href="/contragents">Мои инвойсы<span class="sr-only">(current)</span></a></li>
+                    <li ng-class="{ active: isActive('/get_prepay')}"><a href="/get_prepay">Получить предоплату</a></li>
+                    <li ng-class="{ active: isActive('/make_prepay')}"><a href="/make_prepay">Осуществить предоплату</a></li>
+                    <li ng-class="{ active: isActive('/limit_orders')}"><a href="/limit_orders">Мои отложенные заявки</a></li>
+                    <li ng-class="{ active: isActive('/trans_history')}"><a href="/trans_history">История рыночных сделок</a></li>
+                    <li ng-class="{ active: isActive('/support')}"><a href="/support">Поддержка</a></li>
                 </ul>
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

@@ -8,15 +8,15 @@ angular.module('inmarket.auth', ['ngStorage'])
     //    }
     //})
 
-    .controller('home', function ($http, $rootScope, $location, $sessionStorage) {
-        if (!$sessionStorage.authenticated) {
+    .controller('home', function ($http, $rootScope, $location, $localStorage) {
+        if (!$localStorage.authenticated) {
             $location.path("/login");
         } else {
             $location.path("/contragents");
         }
     })
 
-    .controller('loginCtrl', function ($rootScope, $scope, $http, $location, $route, $sessionStorage, session) {
+    .controller('loginCtrl', function ($rootScope, $scope, $http, $location, $route, $localStorage, session) {
         console.log('loginCtrl inited');
 
         var self = this;
@@ -51,23 +51,23 @@ angular.module('inmarket.auth', ['ngStorage'])
                 headers: headers
             }).success(function (data) {
                 if (data.name) {
-                    $sessionStorage.authenticated = true;
+                    $localStorage.authenticated = true;
                     session.create({
                         'login': data.login,
                         'counterpartyId': data.id
                     });
                 } else {
                     console.log('set auth to false')
-                    $sessionStorage.authenticated = false;
+                    $localStorage.authenticated = false;
                     session.invalidate();
                 }
 
-                $rootScope.authenticated = $sessionStorage.authenticated;
-                callback && callback($sessionStorage.authenticated);
+                $rootScope.authenticated = $localStorage.authenticated;
+                callback && callback($localStorage.authenticated);
             }).error(function () {
                 console.log('set auth to false due to error')
-                $sessionStorage.authenticated = false;
-                $rootScope.authenticated = $sessionStorage.authenticated;
+                $localStorage.authenticated = false;
+                $rootScope.authenticated = $localStorage.authenticated;
 
                 session.invalidate();
                 callback && callback(false);
@@ -84,14 +84,14 @@ angular.module('inmarket.auth', ['ngStorage'])
                     console.log("Login succeeded")
                     $location.path("/");
                     self.error = false;
-                    $sessionStorage.authenticated = true;
-                    $rootScope.authenticated = $sessionStorage.authenticated;
+                    $localStorage.authenticated = true;
+                    $rootScope.authenticated = $localStorage.authenticated;
                 } else {
                     console.log("Login failed")
                     $location.path("/login");
                     self.error = true;
-                    $sessionStorage.authenticated = false;
-                    $rootScope.authenticated = $sessionStorage.authenticated;
+                    $localStorage.authenticated = false;
+                    $rootScope.authenticated = $localStorage.authenticated;
                 }
             })
         };
@@ -99,8 +99,8 @@ angular.module('inmarket.auth', ['ngStorage'])
         self.logout = function () {
             $http.post('logout', {}).finally(function () {
                 session.invalidate();
-                $sessionStorage.authenticated = false;
-                $rootScope.authenticated = $sessionStorage.authenticated;
+                $localStorage.authenticated = false;
+                $rootScope.authenticated = $localStorage.authenticated;
 
                 console.log('turn off user');
                 $location.path("/login");
