@@ -22,7 +22,7 @@ angular.module('inmarket', [
     'inmarket.counterpartyService',
     'inmarket.invoices'])
 
-    .config(function ($routeProvider, $httpProvider) {
+    .config(function ($locationProvider, $routeProvider, $httpProvider) {
         $routeProvider
             .when('/support', {
                 templateUrl: 'partials/support.html',
@@ -43,6 +43,7 @@ angular.module('inmarket', [
             .otherwise({redirectTo: '/'});
 
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+        $locationProvider.html5Mode(true);
     })
 
     .controller('HeaderController', ['$scope', '$location', function ($scope, $location) {
