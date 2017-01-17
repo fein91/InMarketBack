@@ -81,9 +81,11 @@ angular.module('inmarket.contragents', ['ngRoute', 'cgBusy'])
                     $scope.$watch('checkboxes.invoices', function (values) {
                         console.log(JSON.stringify(values) + 'checkboxes.invoices');
 
+                        //TODO fast hack please fix it
+                        var currentInvoicesPage = $scope.currentInvoicesPage ? $scope.currentInvoicesPage : [];
                         var checked = 0, unchecked = 0,
-                            total = $scope.currentInvoicesPage.length;
-                        angular.forEach($scope.currentInvoicesPage, function (item) {
+                            total = currentInvoicesPage.length;
+                        angular.forEach(currentInvoicesPage, function (item) {
                             checked += ($scope.checkboxes.invoices[item.id]) || 0;
                             unchecked += (!$scope.checkboxes.invoices[item.id]) || 0;
                         });

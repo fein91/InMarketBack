@@ -95,7 +95,8 @@ angular.module('inmarket.proposal', ['ngRoute'])
                 var result = [];
                 angular.forEach(invoices, function (invoice) {
                         if (invoicesCheckboxes[invoice.id]) {
-                            result[invoice.source.id] = (result[invoice.source.id] || 0) + invoice.value - invoice.prepaidValue;
+                            //result[invoice.source.id] = (result[invoice.source.id] || 0) + invoice.value - invoice.prepaidValue;
+                            result[invoice.source.id] = (result[invoice.source.id] || 0) + invoice.unpaidValue;
                         }
                     }
                 );
@@ -107,7 +108,8 @@ angular.module('inmarket.proposal', ['ngRoute'])
                 var result = [];
                 angular.forEach(invoices, function (invoice) {
                         if (invoicesCheckboxes[invoice.id]) {
-                            result[invoice.target.id] = (result[invoice.target.id] || 0) + invoice.value - invoice.prepaidValue;
+                            //result[invoice.target.id] = (result[invoice.target.id] || 0) + invoice.value - invoice.prepaidValue;
+                            result[invoice.target.id] = (result[invoice.target.id] || 0) + invoice.unpaidValue;
                         }
                     }
                 );
