@@ -1,24 +1,27 @@
 package com.fein91.service;
 
-import com.fein91.model.Invoice;
-import com.fein91.rest.exception.ImportExportException;
+import static com.fein91.rest.exception.ExceptionMessages.EXCEPTION_WHILE_IMPORT_OCCURRED;
+import static org.springframework.util.StringUtils.hasText;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static com.fein91.rest.exception.ExceptionMessages.*;
+import com.fein91.model.Invoice;
+import com.fein91.rest.exception.ImportExportException;
 
 @Service
 public class ImportExportService {
@@ -47,7 +50,9 @@ public class ImportExportService {
                     String externalInvoiceId = row.getCell(cellNum++).getStringCellValue();
                     String source = row.getCell(cellNum++).getStringCellValue();
                     double amount = row.getCell(cellNum++).getNumericCellValue();
-                    String stringDate = row.getCell(cellNum++).getStringCellValue();
+                    Date paymentDate = parseDate(row.getCell(cellNum++));
+
+                    if (!hasText(externalInvoiceId)) continue;
 
                     Invoice existedInvoice = invoiceService.getByExternalId(externalInvoiceId);
 
@@ -56,7 +61,7 @@ public class ImportExportService {
                         invoice.setSource(counterPartyService.getByNameOrAdd(source));
                         invoice.setTarget(counterPartyService.getById(counterpartyId));
                         invoice.setValue(BigDecimal.valueOf(amount));
-                        invoice.setPaymentDate(FORMAT.parse(stringDate));
+                        invoice.setPaymentDate(paymentDate);
                         invoice.setExternalId(externalInvoiceId);
                         invoice.setSourceChecked(true);
                         invoice.setTargetChecked(true);
@@ -72,6 +77,11 @@ public class ImportExportService {
             LOGGER.severe("Error occurred while import, " + e);
             throw new ImportExportException(EXCEPTION_WHILE_IMPORT_OCCURRED.getMessage(), EXCEPTION_WHILE_IMPORT_OCCURRED.getLocalizedMessage());
         }
+    }
+
+    private Date parseDate(Cell cell) throws ParseException {
+        String cellValue = new DataFormatter().formatCellValue(cell);
+        return hasText(cellValue) ? FORMAT.parse(cellValue) : null;
     }
 
     public String exportCsvBySource(Long counterpartyId) {
